@@ -1,27 +1,44 @@
 <template>
-  <aside class="filter-sidebar">
-    <!-- Rent/Sale Toggle -->
-    <div class="rent-sale-toggle">
-      <button 
-        @click="$emit('update:listingType', 'rent')"
-        :class="['toggle-btn', listingType === 'rent' ? 'active' : '']"
-      >
-        <span class="icon-rent"></span>For rent
-      </button>
-      <button 
-        @click="$emit('update:listingType', 'sale')"
-        :class="['toggle-btn', listingType === 'sale' ? 'active' : '']"
-      >
-        <span class="icon-sale"></span>For sale
-      </button>
-    </div>
-    
-    <!-- Location -->
-    <div class="filter-section">
-      <h3 class="filter-title">Location</h3>
-      <div class="form-group">
-        <div class="select-wrapper">
-          <select v-model="filters.city" class="form-select" @change="updateFilters">
+  <aside class="col-lg-4 col-xl-3 border-top-lg border-end-lg shadow-sm px-3 px-xl-4 px-xxl-5 pt-lg-2">
+    <div class="offcanvas-lg offcanvas-start" id="filters-sidebar">
+      <!-- Mobile Header (visible only on small screens) -->
+      <div class="offcanvas-header d-flex d-lg-none align-items-center">
+        <h2 class="h5 mb-0">Filters</h2>
+        <button class="btn-close" type="button" data-bs-dismiss="offcanvas" data-bs-target="#filters-sidebar"></button>
+      </div>
+      
+      <!-- Rent/Sale Toggle -->
+      <div class="offcanvas-header d-block border-bottom pt-0 pt-lg-4 px-lg-0">
+        <ul class="nav nav-tabs mb-0">
+          <li class="nav-item">
+            <a 
+              class="nav-link d-flex align-items-center" 
+              :class="{ 'active': listingType === 'rent' }"
+              @click.prevent="$emit('update:listing-type', 'rent')"
+              href="#"
+            >
+              <i class="fi-rent fs-base me-2"></i>For rent
+            </a>
+          </li>
+          <li class="nav-item">
+            <a 
+              class="nav-link d-flex align-items-center" 
+              :class="{ 'active': listingType === 'sale' }"
+              @click.prevent="$emit('update:listing-type', 'sale')"
+              href="#"
+            >
+              <i class="fi-home fs-base me-2"></i>For sale
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Filter Content -->
+      <div class="offcanvas-body py-lg-4">
+        <!-- Location -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">Location</h3>
+          <select class="form-select mb-2" v-model="filters.city" @change="updateFilters">
             <option value="">Choose city</option>
             <option value="New York">New York</option>
             <option value="Chicago">Chicago</option>
@@ -29,12 +46,7 @@
             <option value="San Francisco">San Francisco</option>
             <option value="Miami">Miami</option>
           </select>
-          <div class="select-arrow"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="select-wrapper">
-          <select v-model="filters.district" class="form-select" @change="updateFilters">
+          <select class="form-select" v-model="filters.district" @change="updateFilters">
             <option value="">Choose district</option>
             <option value="Downtown">Downtown</option>
             <option value="Midtown">Midtown</option>
@@ -42,216 +54,240 @@
             <option value="Queens">Queens</option>
             <option value="The Bronx">The Bronx</option>
           </select>
-          <div class="select-arrow"></div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Property Type -->
-    <div class="filter-section">
-      <h3 class="filter-title">Property type</h3>
-      <div class="checkbox-list">
-        <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            :id="type.value" 
-            :value="type.value" 
-            v-model="filters.propertyTypes"
-            class="checkbox-input"
-            @change="updateFilters"
-          >
-          <label :for="type.value" class="checkbox-label">{{ type.label }}</label>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Price per month -->
-    <div class="filter-section">
-      <h3 class="filter-title">Price per month</h3>
-      <div class="price-slider-container">
-        <div class="price-value">${{ filters.minPrice }}</div>
-        <div class="price-value price-value-right">${{ filters.maxPrice }}</div>
-        
-        <div class="slider-track">
-          <div class="slider-fill" :style="{
-            left: ((filters.minPrice - sliderMin) / (sliderMax - sliderMin)) * 100 + '%',
-            width: ((filters.maxPrice - filters.minPrice) / (sliderMax - sliderMin)) * 100 + '%'
-          }"></div>
         </div>
         
-        <div class="slider-handle min-handle" :style="{
-          left: ((filters.minPrice - sliderMin) / (sliderMax - sliderMin)) * 100 + '%'
-        }"></div>
-        
-        <div class="slider-handle max-handle" :style="{
-          left: ((filters.maxPrice - sliderMin) / (sliderMax - sliderMin)) * 100 + '%'
-        }"></div>
-        
-        <input 
-          type="range" 
-          class="price-range min-range" 
-          v-model.number="filters.minPrice" 
-          :min="sliderMin" 
-          :max="sliderMax" 
-          step="100"
-          @input="updateFilters"
-        >
-        <input 
-          type="range" 
-          class="price-range max-range" 
-          v-model.number="filters.maxPrice" 
-          :min="sliderMin" 
-          :max="sliderMax" 
-          step="100"
-          @input="updateFilters"
-        >
-      </div>
-      
-      <div class="price-inputs">
-        <div class="price-input-wrapper">
-          <span class="price-currency">$</span>
-          <input 
-            type="text" 
-            v-model.number="filters.minPrice" 
-            class="price-input" 
-            @change="updateFilters"
-          >
+        <!-- Property Type -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">Property type</h3>
+          <div class="overflow-auto" style="max-height: 11rem;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="house" v-model="filters.propertyTypes" value="house" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="house">House</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="apartment" v-model="filters.propertyTypes" value="apartment" checked @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="apartment">Apartment</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="room" v-model="filters.propertyTypes" value="room" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="room">Room</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="office" v-model="filters.propertyTypes" value="office" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="office">Office</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="commercial" v-model="filters.propertyTypes" value="commercial" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="commercial">Commercial</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="land" v-model="filters.propertyTypes" value="land" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="land">Land</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="daily" v-model="filters.propertyTypes" value="daily-rental" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="daily">Daily rental</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="new-building" v-model="filters.propertyTypes" value="new-building" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="new-building">New building</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="parking-lot" v-model="filters.propertyTypes" value="parking-lot" @change="updatePropertyTypeFilters">
+              <label class="form-check-label fs-sm" for="parking-lot">Parking lot</label>
+            </div>
+          </div>
         </div>
-        <div class="price-separator">—</div>
-        <div class="price-input-wrapper">
-          <span class="price-currency">$</span>
-          <input 
-            type="text" 
-            v-model.number="filters.maxPrice" 
-            class="price-input" 
-            @change="updateFilters"
-          >
+        
+        <!-- Price Range -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">{{ listingType === 'rent' ? 'Price per month' : 'Property price' }}</h3>
+          
+          <!-- Price Slider -->
+          <Slider class="mb-4" v-model="priceRange" :min="sliderMin" :max="sliderMax" :step="100" :format="{prefix: '$', decimals: 0 }" />
+          
+          <div class="d-flex align-items-center">
+            <div class="w-50 pe-2">
+              <div class="input-group">
+                <span class="input-group-text fs-base">$</span>
+                <input 
+                  class="form-control range-slider-value-min" 
+                  type="text" 
+                  v-model.number="filters.minPrice"
+                  @change="updateFilters"
+                >
+              </div>
+            </div>
+            <div class="text-muted">&mdash;</div>
+            <div class="w-50 ps-2">
+              <div class="input-group">
+                <span class="input-group-text fs-base">$</span>
+                <input 
+                  class="form-control range-slider-value-max" 
+                  type="text" 
+                  v-model.number="filters.maxPrice"
+                  @change="updateFilters"
+                >
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    
-    <!-- Beds & baths -->
-    <div class="filter-section">
-      <h3 class="filter-title">Beds & baths</h3>
-      
-      <div class="beds-baths-section">
-        <h4 class="filter-subtitle">Bedrooms</h4>
-        <div class="button-group">
-          <button 
-            v-for="option in bedroomOptions" 
-            :key="option.value"
-            type="button"
-            class="option-button"
-            :class="{ active: filters.bedrooms === option.value }"
-            @click="selectBedrooms(option.value)"
-          >
-            {{ option.label }}
+        
+        <!-- Beds & Baths -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6 pt-1">Beds &amp; baths</h3>
+          
+          <!-- Bedrooms -->
+          <label class="d-block fs-sm mb-1">Bedrooms</label>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Choose number of bedrooms">
+            <input class="btn-check" type="radio" id="studio" name="bedrooms" v-model="filters.bedrooms" value="studio" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="studio">Studio</label>
+            
+            <input class="btn-check" type="radio" id="bedrooms-1" name="bedrooms" v-model="filters.bedrooms" value="1" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bedrooms-1">1</label>
+            
+            <input class="btn-check" type="radio" id="bedrooms-2" name="bedrooms" v-model="filters.bedrooms" value="2" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bedrooms-2">2</label>
+            
+            <input class="btn-check" type="radio" id="bedrooms-3" name="bedrooms" v-model="filters.bedrooms" value="3" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bedrooms-3">3</label>
+            
+            <input class="btn-check" type="radio" id="bedrooms-4" name="bedrooms" v-model="filters.bedrooms" value="4+" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bedrooms-4">4+</label>
+          </div>
+          
+          <!-- Bathrooms -->
+          <label class="d-block fs-sm pt-2 my-1">Bathrooms</label>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Choose number of bathrooms">
+            <input class="btn-check" type="radio" id="bathrooms-1" name="bathrooms" v-model="filters.bathrooms" value="1" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bathrooms-1">1</label>
+            
+            <input class="btn-check" type="radio" id="bathrooms-2" name="bathrooms" v-model="filters.bathrooms" value="2" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bathrooms-2">2</label>
+            
+            <input class="btn-check" type="radio" id="bathrooms-3" name="bathrooms" v-model="filters.bathrooms" value="3" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bathrooms-3">3</label>
+            
+            <input class="btn-check" type="radio" id="bathrooms-4" name="bathrooms" v-model="filters.bathrooms" value="4" @change="updateFilters">
+            <label class="btn btn-outline-secondary fw-normal" for="bathrooms-4">4</label>
+          </div>
+        </div>
+        
+        <!-- Square Metres -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6 pt-1">Square metres</h3>
+          <div class="d-flex align-items-center">
+            <input 
+              class="form-control w-100" 
+              type="number" 
+              min="20" 
+              max="500" 
+              step="10" 
+              placeholder="Min"
+              v-model="filters.minArea"
+              @change="updateFilters"
+            >
+            <div class="mx-2">&mdash;</div>
+            <input 
+              class="form-control w-100" 
+              type="number" 
+              min="20" 
+              max="500" 
+              step="10" 
+              placeholder="Max"
+              v-model="filters.maxArea"
+              @change="updateFilters"
+            >
+          </div>
+        </div>
+        
+        <!-- Amenities -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">Amenities</h3>
+          <div class="overflow-auto" style="max-height: 11rem;">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="air-condition" v-model="filters.amenities" value="air-conditioning" checked @change="updateFilters">
+              <label class="form-check-label fs-sm" for="air-condition">Air conditioning</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="balcony" v-model="filters.amenities" value="balcony" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="balcony">Balcony</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="garage" v-model="filters.amenities" value="garage" checked @change="updateFilters">
+              <label class="form-check-label fs-sm" for="garage">Garage</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="gym" v-model="filters.amenities" value="gym" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="gym">Gym</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="parking" v-model="filters.amenities" value="parking" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="parking">Parking</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="pool" v-model="filters.amenities" value="pool" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="pool">Pool</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="camera" v-model="filters.amenities" value="security-cameras" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="camera">Security cameras</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wifi" v-model="filters.amenities" value="wifi" checked @change="updateFilters">
+              <label class="form-check-label fs-sm" for="wifi">WiFi</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="laundry" v-model="filters.amenities" value="laundry" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="laundry">Laundry</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="dishwasher" v-model="filters.amenities" value="dishwasher" @change="updateFilters">
+              <label class="form-check-label fs-sm" for="dishwasher">Dishwasher</label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pets -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">Pets</h3>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="allow-cats" v-model="filters.pets" value="cats-allowed" @change="updateFilters">
+            <label class="form-check-label fs-sm" for="allow-cats">Cats allowed</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="allow-dogs" v-model="filters.pets" value="dogs-allowed" @change="updateFilters">
+            <label class="form-check-label fs-sm" for="allow-dogs">Dogs allowed</label>
+          </div>
+        </div>
+        
+        <!-- Additional Options -->
+        <div class="pb-4 mb-2">
+          <h3 class="h6">Additional options</h3>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="verified" v-model="filters.additionalOptions" value="verified" @change="updateFilters">
+            <label class="form-check-label fs-sm" for="verified">Verified</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="featured" v-model="filters.additionalOptions" value="featured" @change="updateFilters">
+            <label class="form-check-label fs-sm" for="featured">Featured</label>
+          </div>
+        </div>
+        
+        <!-- Reset Filters Button -->
+        <div class="border-top py-4">
+          <button class="btn btn-outline-primary" type="button" @click="resetFilters">
+            <i class="fi-rotate-right me-2"></i>Reset filters
           </button>
         </div>
       </div>
-      
-      <div class="beds-baths-section">
-        <h4 class="filter-subtitle">Bathrooms</h4>
-        <div class="button-group">
-          <button 
-            v-for="option in bathroomOptions" 
-            :key="option.value"
-            type="button"
-            class="option-button"
-            :class="{ active: filters.bathrooms === option.value }"
-            @click="selectBathrooms(option.value)"
-          >
-            {{ option.label }}
-          </button>
-        </div>
-      </div>
     </div>
-    
-    <!-- Square metres -->
-    <div class="filter-section">
-      <h3 class="filter-title">Square metres</h3>
-      <div class="square-metres-inputs">
-        <input 
-          type="text" 
-          v-model="filters.minArea" 
-          class="area-input" 
-          placeholder="Min"
-          @change="updateFilters"
-        >
-        <div class="area-separator">—</div>
-        <input 
-          type="text" 
-          v-model="filters.maxArea" 
-          class="area-input" 
-          placeholder="Max"
-          @change="updateFilters"
-        >
-      </div>
-    </div>
-    
-    <!-- Amenities -->
-    <div class="filter-section">
-      <h3 class="filter-title">Amenities</h3>
-      <div class="checkbox-list">
-        <div v-for="amenity in amenities" :key="amenity.value" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            :id="amenity.value" 
-            :value="amenity.value" 
-            v-model="filters.amenities"
-            class="checkbox-input"
-            @change="updateFilters"
-          >
-          <label :for="amenity.value" class="checkbox-label">{{ amenity.label }}</label>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Pets -->
-    <div class="filter-section">
-      <h3 class="filter-title">Pets</h3>
-      <div class="checkbox-list">
-        <div v-for="pet in petOptions" :key="pet.value" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            :id="pet.value" 
-            :value="pet.value" 
-            v-model="filters.pets"
-            class="checkbox-input"
-            @change="updateFilters"
-          >
-          <label :for="pet.value" class="checkbox-label">{{ pet.label }}</label>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Additional options -->
-    <div class="filter-section">
-      <h3 class="filter-title">Additional options</h3>
-      <div class="checkbox-list">
-        <div v-for="option in additionalOptions" :key="option.value" class="checkbox-item">
-          <input 
-            type="checkbox" 
-            :id="option.value" 
-            :value="option.value" 
-            v-model="filters.additionalOptions"
-            class="checkbox-input"
-            @change="updateFilters"
-          >
-          <label :for="option.value" class="checkbox-label">{{ option.label }}</label>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Reset Filters Button -->
-    <button class="reset-button" type="button" @click="resetFilters">
-      Reset filters
-    </button>
   </aside>
 </template>
 
 <script setup>
 import { ref, reactive, defineProps, defineEmits, watch } from 'vue';
+
 
 const props = defineProps({
   listingType: {
@@ -264,60 +300,29 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:listingType', 'filter-changed']);
+const emit = defineEmits(['update:listing-type', 'filter-changed']);
 
 // Slider configuration
 const sliderMin = ref(0);
-const sliderMax = ref(5000);
+const sliderMax = ref(props.listingType === 'rent' ? 5000 : 1000000);
+const priceRange = ref([1100, 3000]);
 
-// Property Types
-const propertyTypes = [
-  { value: 'house', label: 'House' },
-  { value: 'apartment', label: 'Apartment' },
-  { value: 'room', label: 'Room' },
-  { value: 'office', label: 'Office' },
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'land', label: 'Land' }
-];
-
-// Bedroom options
-const bedroomOptions = [
-  { value: 'studio', label: 'Studio' },
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4+', label: '4+' }
-];
-
-// Bathroom options
-const bathroomOptions = [
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4', label: '4' }
-];
-
-// Amenities
-const amenities = [
-  { value: 'air-conditioning', label: 'Air conditioning' },
-  { value: 'balcony', label: 'Balcony' },
-  { value: 'garage', label: 'Garage' },
-  { value: 'gym', label: 'Gym' },
-  { value: 'parking', label: 'Parking' },
-  { value: 'pool', label: 'Pool' }
-];
-
-// Pet options
-const petOptions = [
-  { value: 'cats-allowed', label: 'Cats allowed' },
-  { value: 'dogs-allowed', label: 'Dogs allowed' }
-];
-
-// Additional options
-const additionalOptions = [
-  { value: 'verified', label: 'Verified' },
-  { value: 'featured', label: 'Featured' }
-];
+// Watch for listing type changes to adjust price range
+watch(() => props.listingType, (newValue) => {
+  if (newValue === 'rent') {
+    sliderMax.value = 5000;
+    if (filters.maxPrice > 5000) {
+      filters.maxPrice = 5000;
+    }
+  } else {
+    sliderMax.value = 1000000;
+    if (filters.maxPrice < 10000) {
+      filters.maxPrice = 250000;
+      filters.minPrice = 90000;
+    }
+  }
+  priceRange.value = [filters.minPrice, filters.maxPrice];
+});
 
 // Initialize filters with defaults
 const filters = reactive({
@@ -330,9 +335,16 @@ const filters = reactive({
   bathrooms: '',
   minArea: '',
   maxArea: '',
-  amenities: [],
+  amenities: ['air-conditioning', 'wifi'],
   pets: [],
   additionalOptions: []
+});
+
+// Watch for changes in price range to update filters
+watch(priceRange, (newValue) => {
+  filters.minPrice = newValue[0];
+  filters.maxPrice = newValue[1];
+  updateFilters();
 });
 
 // Watch for initialFilters prop changes
@@ -343,17 +355,13 @@ watch(() => props.initialFilters, (newFilters) => {
       filters[key] = newFilters[key];
     }
   });
+  
+  // Update price range slider
+  priceRange.value = [filters.minPrice, filters.maxPrice];
 }, { immediate: true, deep: true });
 
-// Select bedrooms
-const selectBedrooms = (value) => {
-  filters.bedrooms = filters.bedrooms === value ? '' : value;
-  updateFilters();
-};
-
-// Select bathrooms
-const selectBathrooms = (value) => {
-  filters.bathrooms = filters.bathrooms === value ? '' : value;
+// Update property type filters
+const updatePropertyTypeFilters = () => {
   updateFilters();
 };
 
@@ -390,334 +398,98 @@ const resetFilters = () => {
   filters.city = '';
   filters.district = '';
   filters.propertyTypes = [];
-  filters.minPrice = 1100;
-  filters.maxPrice = 3000;
+  
+  if (props.listingType === 'rent') {
+    filters.minPrice = 1100;
+    filters.maxPrice = 3000;
+  } else {
+    filters.minPrice = 90000;
+    filters.maxPrice = 250000;
+  }
+  
   filters.bedrooms = '';
   filters.bathrooms = '';
   filters.minArea = '';
   filters.maxArea = '';
-  filters.amenities = [];
+  filters.amenities = ['air-conditioning', 'wifi'];
   filters.pets = [];
   filters.additionalOptions = [];
+  
+  // Update price range slider
+  priceRange.value = [filters.minPrice, filters.maxPrice];
   
   updateFilters();
 };
 </script>
 
 <style scoped>
-.filter-sidebar {
-  background-color: #fff;
-  border-radius: 0;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 100%;
+/* Reset button styles */
+.btn-outline-primary {
+  color: #fd5631;
+  border-color: #fd5631;
 }
 
-.filter-section {
-  margin-bottom: 1.5rem;
-}
-
-.filter-title {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.filter-subtitle {
-  font-size: 0.875rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
-
-/* Rent/Sale Toggle */
-.rent-sale-toggle {
-  display: flex;
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-}
-
-.toggle-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border: none;
-  background: transparent;
-  color: #666;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.toggle-btn.active {
-  background-color: #fff;
-  color: #ff5a5f;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.icon-rent::before {
-  content: "";
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff5a5f'%3E%3Cpath d='M12 2.5a5.5 5.5 0 0 0-5.5 5.5v6.5H5v-3H1.5V20H22v-8.5h-3.5v3h-1.5V8a5.5 5.5 0 0 0-5-5.5zm-3.5 5.5a3.5 3.5 0 0 1 7 0V14h-7V8z'/%3E%3C/svg%3E");
-  background-size: cover;
-}
-
-.icon-sale::before {
-  content: "";
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff5a5f'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z'/%3E%3C/svg%3E");
-  background-size: cover;
-}
-
-/* Form Group */
-.form-group {
-  margin-bottom: 0.75rem;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-/* Select styling */
-.select-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.form-select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #333;
-  appearance: none;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.select-arrow {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid #666;
-  pointer-events: none;
-}
-
-/* Checkbox styling */
-.checkbox-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-input {
-  margin-right: 0.5rem;
-  cursor: pointer;
-}
-
-.checkbox-label {
-  font-size: 0.875rem;
-  color: #333;
-  cursor: pointer;
-}
-
-/* Price Range Slider */
-.price-slider-container {
-  position: relative;
-  height: 4px;
-  margin: 2rem 0 1.5rem;
-}
-
-.price-value {
-  position: absolute;
-  top: -1.5rem;
-  left: 0;
-  font-size: 0.75rem;
-  color: #666;
-}
-
-.price-value-right {
-  left: auto;
-  right: 0;
-}
-
-.slider-track {
-  width: 100%;
-  height: 4px;
-  background-color: #e0e0e0;
-  border-radius: 2px;
-}
-
-.slider-fill {
-  position: absolute;
-  height: 4px;
-  background-color: #ff5a5f;
-  border-radius: 2px;
-}
-
-.slider-handle {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background-color: #ff5a5f;
-  border-radius: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-}
-
-.price-range {
-  position: absolute;
-  width: 100%;
-  height: 20px;
-  top: -8px;
-  background: none;
-  -webkit-appearance: none;
-  appearance: none; /* Add this line */
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-}
-
-.price-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #ff5a5f;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.min-range {
-  z-index: 3;
-}
-
-/* Price Inputs */
-.price-inputs {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.price-input-wrapper {
-  position: relative;
-  flex: 1;
-}
-
-.price-currency {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-  font-size: 0.875rem;
-}
-
-.price-input {
-  width: 100%;
-  padding: 0.75rem 0.75rem 0.75rem 1.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #333;
-}
-
-.price-separator {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* Beds & Baths */
-.beds-baths-section {
-  margin-bottom: 1rem;
-}
-
-.beds-baths-section:last-child {
-  margin-bottom: 0;
-}
-
-.button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.option-button {
-  padding: 0.5rem 0.75rem;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.option-button.active {
-  background-color: #ff5a5f;
+.btn-outline-primary:hover {
+  background-color: #fd5631;
   color: white;
-  border-color: #ff5a5f;
 }
 
-/* Square Metres */
-.square-metres-inputs {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* Radio button group styles */
+.btn-outline-secondary {
+  border-color: #dfe2e6;
+  color: #5d6974;
 }
 
-.area-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: #333;
-}
-
-.area-separator {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* Reset Button */
-.reset-button {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: #fff;
-  border: 1px solid #ff5a5f;
-  border-radius: 4px;
-  color: #ff5a5f;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.reset-button:hover {
-  background-color: #ff5a5f;
+.btn-check:checked + .btn-outline-secondary {
+  background-color: #fd5631;
+  border-color: #fd5631;
   color: white;
+}
+
+/* Icons */
+.fi-rent::before {
+  content: "🏢";
+  font-size: 18px;
+}
+
+.fi-home::before {
+  content: "🏠";
+  font-size: 18px;
+}
+
+.fi-rotate-right::before {
+  content: "↻";
+}
+
+/* Responsive styles */
+@media (max-width: 991.98px) {
+  .offcanvas-lg {
+    position: fixed;
+    bottom: 0;
+    z-index: 1045;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    visibility: hidden;
+    background-color: white;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .offcanvas-lg.show {
+    transform: translateX(0);
+    visibility: visible;
+  }
+}
+
+@media (min-width: 992px) {
+  .offcanvas-lg {
+    position: static;
+    display: block !important;
+    transform: none !important;
+    width: auto !important;
+    height: auto !important;
+    visibility: visible !important;
+  }
 }
 </style>

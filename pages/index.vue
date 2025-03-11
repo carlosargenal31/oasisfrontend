@@ -23,7 +23,7 @@ import FeaturedProperties from '~/components/home/FeaturedProperties.vue';
 import Cities from '~/components/home/Cities.vue';
 //import Partners from '~/components/home/Partners.vue';
 //import Agents from '~/components/home/Agents.vue';
-import CallToAction from '~/components/home/CallToAction.vue';
+//import CallToAction from '~/components/home/CallToAction.vue';
 </script>
 
 <style>

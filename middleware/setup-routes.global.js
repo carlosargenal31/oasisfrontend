@@ -1,41 +1,18 @@
 // middleware/setup-routes.global.js
-export default defineNuxtRouteMiddleware((to) => {
-  // This middleware runs on every route change
-  
-  // Define which routes require authentication
-  const authRoutes = [
-    '/dashboard',
-    '/profile',
-    '/bookings',
-    '/favorites',
-    '/messages',
-    '/properties/create',
-    '/properties/edit'
-  ];
-  
-  // Admin only routes
-  const adminRoutes = [
-    '/admin'
-  ];
-  
-  // Guest only routes (like login/register)
-  const guestRoutes = [
-    '/auth/login',
-    '/auth/register',
-    '/auth/forgot-password'
-  ];
-  
-  // Set meta based on route path
-  if (authRoutes.some(route => to.path === route || to.path.startsWith(route + '/'))) {
-    to.meta.requiresAuth = true;
-  }
-  
-  if (adminRoutes.some(route => to.path === route || to.path.startsWith(route + '/'))) {
-    to.meta.requiresAuth = true;
-    to.meta.requiredRole = 'admin';
-  }
-  
-  if (guestRoutes.some(route => to.path === route)) {
-    to.meta.guestOnly = true;
+
+export default defineNuxtRouteMiddleware((to, from) => {
+  // Asegurarnos de que las rutas estén correctamente configuradas
+  // Este middleware se ejecuta antes de cualquier otro
+
+  // Verificar si hay redireccionamientos específicos que queramos hacer
+  const redirects = {
+    '/register': '/auth/register',
+    '/login': '/auth/login',
+    '/signup': '/auth/register'
+  };
+
+  // Si la ruta actual está en nuestra lista de redirecciones, redirigir
+  if (redirects[to.path]) {
+    return navigateTo(redirects[to.path], { redirectCode: 301 });
   }
 });

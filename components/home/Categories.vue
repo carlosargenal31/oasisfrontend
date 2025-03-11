@@ -12,7 +12,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           <!-- Casa -->
           <div class="category-item">
-            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties?category=houses">
+            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties/rent?category=houses">
               <div class="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-blue-50 category-icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -25,7 +25,7 @@
   
           <!-- Apartamentos -->
           <div class="category-item">
-            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties?category=apartments">
+            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties/rent?category=apartments">
               <div class="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-blue-50 category-icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 11h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4"></path>
@@ -42,7 +42,7 @@
   
           <!-- Comercial -->
           <div class="category-item">
-            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties?category=commercial">
+            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties/rent?category=commercial">
               <div class="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-blue-50 category-icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"></path>
@@ -56,7 +56,7 @@
   
           <!-- Alquiler Diario -->
           <div class="category-item">
-            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties?category=daily-rental">
+            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties/rent?category=daily-rental">
               <div class="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-blue-50 category-icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -70,7 +70,7 @@
   
           <!-- Nuevas Construcciones -->
           <div class="category-item">
-            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties?category=new-buildings">
+            <router-link class="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow h-full" to="/properties/sale?category=new-buildings">
               <div class="w-16 h-16 flex items-center justify-center rounded-full mb-4 bg-blue-50 category-icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 22V9.76a2 2 0 0 1 .51-1.33L11.78 1a.7.7 0 0 1 .44 0l10.26 7.43a2 2 0 0 1 .51 1.33V22"></path>
@@ -100,7 +100,7 @@
               <!-- Menú desplegable -->
               <div class="absolute right-0 z-10 mt-2 hidden group-hover:block">
                 <div class="bg-white rounded-md shadow-lg py-1 min-w-[200px]">
-                  <router-link to="/properties?category=rooms" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                  <router-link to="/properties/rent?category=rooms" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 4v16"></path>
                       <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
@@ -109,7 +109,7 @@
                     </svg>
                     <span class="font-medium">Habitaciones</span>
                   </router-link>
-                  <router-link to="/properties?category=offices" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                  <router-link to="/properties/rent?category=offices" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                       <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -117,13 +117,13 @@
                     </svg>
                     <span class="font-medium">Oficinas</span>
                   </router-link>
-                  <router-link to="/properties?category=land" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                  <router-link to="/properties/sale?category=land" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                     <span class="font-medium">Terrenos</span>
                   </router-link>
-                  <router-link to="/properties?category=parking" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                  <router-link to="/properties/sale?category=parking" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#1E3A8A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                       <path d="M9 9h6v6H9z"></path>

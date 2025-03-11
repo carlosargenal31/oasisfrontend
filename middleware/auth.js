@@ -2,34 +2,28 @@
 import { useAuthStore } from '~/store/auth';
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  // Skip middleware during server-side rendering
-  if (process.server) return;
-  
-  // Acceder al store
-  const authStore = useAuthStore();
-  
-  // Initialize auth state if not already done
-  if (!authStore.isInitialized) {
-    authStore.initialize();
-  }
-  
-  // Si la ruta requiere auth y el usuario no está autenticado
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // Guardar la ruta prevista para redirección después del login
-    if (process.client) {
-      localStorage.setItem('authRedirect', to.fullPath);
+  // En el lado del cliente
+  if (process.client) {
+    const authStore = useAuthStore();
+    
+    // Asegurarse de que el store esté inicializado
+    if (!authStore.isInitialized) {
+      authStore.initialize();
     }
     
-    return navigateTo('/auth/login');
-  }
-  
-  // Si la ruta es solo para invitados (como página de login) y el usuario está autenticado
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return navigateTo('/dashboard');
-  }
-  
-  // Para rutas específicas de rol
-  if (to.meta.requiredRole && (!authStore.isAuthenticated || authStore.user?.role !== to.meta.requiredRole)) {
-    return navigateTo('/unauthorized');
+    // Verificar si la ruta requiere autenticación
+    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+      // Guardar la URL a la que se intentaba acceder
+      return navigateTo({
+        path: '/auth/login',
+        query: { redirect: to.fullPath }
+      });
+    }
+    
+    // Si la ruta es para usuarios no autenticados (como login o register)
+    // y el usuario ya está autenticado, redirigir al dashboard
+    if (to.meta.guestOnly && authStore.isAuthenticated) {
+      return navigateTo('/dashboard');
+    }
   }
 });
