@@ -1,390 +1,791 @@
 <template>
-    <div>
+  <div class="container mx-auto px-4 py-8 bg-white property-page">
+    <!-- Loading state -->
+    <div v-if="isLoading" class="flex justify-center items-center min-h-[600px]">
+      <p class="text-xl text-gray-700">Loading property details...</p>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="flex justify-center items-center min-h-[600px]">
+      <p class="text-xl text-red-600">{{ error }}</p>
+    </div>
+
+    <!-- Content when data is loaded -->
+    <div v-else-if="property">
       <!-- Breadcrumb -->
-      <div class="bg-gray-100 dark:bg-gray-800 py-8">
-        <div class="container-custom">
-          <div class="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400">
-            <NuxtLink to="/" class="hover:text-blue-600 dark:hover:text-blue-400">Home</NuxtLink>
-            <span class="mx-2">/</span>
-            <NuxtLink to="/properties" class="hover:text-blue-600 dark:hover:text-blue-400">Properties</NuxtLink>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900 dark:text-white font-medium">{{ property?.title || 'Property Details' }}</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Loading State -->
-      <div v-if="isLoading" class="container-custom py-16 flex justify-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-  
-      <!-- Error State -->
-      <div v-else-if="error" class="container-custom py-16">
-        <div class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500 dark:text-red-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h2 class="text-2xl font-bold text-red-700 dark:text-red-300 mb-2">Property Not Found</h2>
-          <p class="text-red-600 dark:text-red-400 mb-6">
-            Sorry, we couldn't find the property you're looking for.
-          </p>
-          <NuxtLink to="/properties" class="btn-primary">
-            Browse Properties
-          </NuxtLink>
-        </div>
-      </div>
-  
-      <!-- Property Details -->
-      <div v-else-if="property" class="container-custom py-12">
-        <div class="mb-8">
-          <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
-            <div>
-              <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ property.title }}</h1>
-              <p class="text-lg text-gray-600 dark:text-gray-400 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {{ property.address }}
-              </p>
-            </div>
-            <div class="flex flex-col items-end">
-              <div class="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                {{ formatPrice(property.price) }}
-              </div>
-              <div class="flex space-x-2">
-                <div 
-                  :class="[
-                    'px-3 py-1 rounded-full text-sm font-semibold', 
-                    property.status === 'for-sale' ? 'bg-blue-500 text-white' : 'bg-amber-500 text-white'
-                  ]"
-                >
-                  {{ formatStatus(property.status) }}
-                </div>
-                <div class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  {{ property.type }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Property Images Gallery -->
-        <div class="mb-12">
-          <div class="relative h-96 mb-4 rounded-lg overflow-hidden">
+      <BreadcrumbNav :property="property" />
+
+      <!-- Main content layout -->
+      <div class="flex flex-col md:flex-row gap-8">
+        <!-- Left column - Images & Main Info -->
+        <div class="md:w-2/3">
+          <!-- Main image with gallery -->
+          <div class="relative rounded-lg overflow-hidden mb-2">
+            <!-- Main property image -->
             <img 
-              :src="property.image" 
+              :src="propertyImages[activeImageIndex]"
               :alt="property.title" 
-              class="w-full h-full object-cover"
-            >
+              class="w-full h-[400px] object-cover"
+            />
+            
+            <!-- Navigation arrows -->
+            <button @click="goToPrevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+              <span class="text-gray-700">←</span>
+            </button>
+            
+            <button @click="goToNextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+              <span class="text-gray-700">→</span>
+            </button>
           </div>
-          <!-- Thumbnail Gallery would go here -->
-        </div>
-  
-        <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Left Column: Property Details -->
-          <div class="lg:col-span-2">
-            <!-- Property Features -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-              <h2 class="text-2xl font-bold mb-6">Property Details</h2>
-              
-              <!-- Features List -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4">
-                <div class="flex flex-col">
-                  <span class="text-gray-600 dark:text-gray-400 text-sm">Property Type</span>
-                  <span class="font-semibold capitalize">{{ property.type }}</span>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-gray-600 dark:text-gray-400 text-sm">Bedrooms</span>
-                  <span class="font-semibold">{{ property.bedrooms }}</span>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-gray-600 dark:text-gray-400 text-sm">Bathrooms</span>
-                  <span class="font-semibold">{{ property.bathrooms }}</span>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-gray-600 dark:text-gray-400 text-sm">Area</span>
-                  <span class="font-semibold">{{ formatArea(property.area) }}</span>
-                </div>
+          
+          <!-- Thumbnails -->
+          <div class="flex overflow-x-auto gap-2 mb-6">
+            <div
+              v-for="(image, index) in propertyImages"
+              :key="index"
+              @click="setActiveImage(index)"
+              class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden"
+              :class="{'border-2 border-blue-500': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
+            >
+              <img :src="image" :alt="'Thumbnail ' + (index + 1)" class="w-full h-full object-cover" />
+            </div>
+            <div class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-100">
+              <div class="flex flex-col items-center">
+                <span class="text-gray-700 text-lg">▶</span>
+                <span class="text-gray-700 text-xs mt-1">Play video</span>
               </div>
             </div>
-  
-            <!-- Description -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-              <h2 class="text-2xl font-bold mb-4">Description</h2>
-              <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                {{ property.description }}
-              </p>
+          </div>
+          
+          <!-- Property Main Info Component -->
+          <PropertyMainInfo :property="property" />
+          
+          <!-- Reviews Section -->
+          <div class="mt-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-2xl font-bold text-black">
+                <i class="fi-star-filled mr-2 text-yellow-400"></i>
+                {{ averageRating }} ({{ reviews.length }} reviews)
+              </h2>
+              <button @click="openReviewModal" class="btn-primary text-white bg-blue-800 hover:bg-blue-900 py-2 px-4 rounded">
+                <i class="fi-edit mr-1"></i>Add review
+              </button>
             </div>
-  
-            <!-- Amenities -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-              <h2 class="text-2xl font-bold mb-4">Amenities</h2>
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div v-for="(amenity, index) in amenities" :key="index" class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">{{ amenity }}</span>
+            
+            <!-- Individual reviews -->
+            <div v-for="(review, index) in reviews" :key="index" class="mb-4 pb-4 border-bottom border-b">
+              <div class="flex justify-between mb-3">
+                <div class="flex items-center">
+                  <img class="rounded-full mr-3" :src="review.avatar" width="48" height="48" alt="Reviewer avatar" />
+                  <div>
+                    <h5 class="font-semibold mb-1">{{ review.name }}</h5>
+                    <div class="flex text-yellow-400">
+                      <span v-for="i in 5" :key="i" :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-300'">★</span>
+                    </div>
+                  </div>
                 </div>
+                <span class="text-gray-500 text-sm">{{ review.date }}</span>
+              </div>
+              <p class="text-gray-700 mb-3">{{ review.text }}</p>
+              <div class="flex items-center">
+                <button class="like-button flex items-center text-gray-500">
+                  <i class="fi-like mr-1"></i>
+                  <span>({{ review.likes }})</span>
+                </button>
+                <div class="border-end mx-2 h-4 border-l"></div>
+                <button class="dislike-button flex items-center text-gray-500">
+                  <i class="fi-dislike mr-1"></i>
+                  <span>({{ review.dislikes }})</span>
+                </button>
               </div>
             </div>
             
-            <!-- Location Map -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-              <h2 class="text-2xl font-bold mb-4">Location</h2>
-              <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                <!-- Map placeholder, replace with actual map -->
-                <div class="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <span class="text-gray-500 dark:text-gray-400">Map goes here</span>
-                </div>
-              </div>
-              <p class="mt-4 text-gray-700 dark:text-gray-300">
-                {{ property.address }}
-              </p>
-            </div>
-          </div>
-  
-          <!-- Right Column: Contact & Similar Properties -->
-          <div class="lg:col-span-1">
-            <!-- Contact Agent Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 sticky top-24">
-              <h3 class="text-xl font-bold mb-4">Contact Agent</h3>
-              
-              <div class="flex items-center mb-6">
-                <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mr-4">
-                  <span class="text-gray-700 font-semibold text-xl">JD</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold">John Doe</h4>
-                  <p class="text-gray-600 dark:text-gray-400 text-sm">Real Estate Agent</p>
-                </div>
-              </div>
-              
-              <!-- Contact Form -->
-              <form @submit.prevent="submitContactForm">
-                <div class="mb-4">
-                  <label for="name" class="form-label">Name</label>
-                  <input type="text" id="name" v-model="contactForm.name" class="form-input" required>
-                </div>
-                
-                <div class="mb-4">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" id="email" v-model="contactForm.email" class="form-input" required>
-                </div>
-                
-                <div class="mb-4">
-                  <label for="phone" class="form-label">Phone</label>
-                  <input type="tel" id="phone" v-model="contactForm.phone" class="form-input">
-                </div>
-                
-                <div class="mb-4">
-                  <label for="message" class="form-label">Message</label>
-                  <textarea 
-                    id="message" 
-                    v-model="contactForm.message" 
-                    rows="4" 
-                    class="form-input"
-                    required
-                  ></textarea>
-                </div>
-                
-                <button type="submit" class="btn-primary w-full">
-                  Send Message
-                </button>
-              </form>
-              
-              <!-- Contact Info -->
-              <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center mb-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">(123) 456-7890</span>
-                </div>
-                
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                  </svg>
-                  <span class="text-gray-700 dark:text-gray-300">agent@example.com</span>
-                </div>
-              </div>
+            <!-- Pagination for reviews -->
+            <div class="flex justify-center mt-4" v-if="reviews.length > 4">
+              <nav class="inline-flex rounded-md shadow-sm" aria-label="Reviews Pagination">
+                <a href="#" class="px-3 py-2 border border-gray-300 bg-white rounded-l-md text-sm">Previous</a>
+                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-blue-800 text-white text-sm">1</a>
+                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">2</a>
+                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">...</a>
+                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">5</a>
+                <a href="#" class="px-3 py-2 border border-gray-300bg-white rounded-r-md text-sm">Next</a>
+              </nav>
             </div>
           </div>
         </div>
-        
-        <!-- Similar Properties -->
-        <div class="mt-12">
-          <h2 class="text-2xl font-bold mb-6">Similar Properties</h2>
+
+        <!-- Right column - Property Details Sidebar -->
+        <div class="md:w-1/3">
+          <!-- Badges y Botones -->
+          <div class="flex items-center mb-4">
+            <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Verified</span>
+            <span v-if="property.isNew" class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">New</span>
+            
+            <!-- Favorite & Share buttons -->
+            <button @click="toggleFavorite" class="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm ml-2">
+              <span :class="{'text-red-500': isFavorite, 'text-gray-600': !isFavorite}">♥</span>
+            </button>
+            <button class="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm ml-2">
+              <span class="text-gray-600">↗</span>
+            </button>
+          </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <PropertyCard 
-              v-for="property in similarProperties" 
-              :key="property.id" 
-              :property="property"
-            />
+          <!-- Monthly rent or Price -->
+          <div class="mb-6">
+            <h2 class="rent-title text-xl font-bold text-black mb-2">
+              {{ property.status === 'for-rent' ? 'Monthly rent:' : 'Price:' }}
+            </h2>
+            <p class="rent-price text-3xl font-bold text-black">
+              ${{ formatPrice(property.price) }} 
+              <span v-if="property.status === 'for-rent'" class="text-base font-normal text-gray-700">/month</span>
+            </p>
+          </div>
+          
+          <!-- Property Details Card -->
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="details-title text-xl font-bold text-black mb-4">Property Details</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-700">Type:</span>
+                <span class="font-medium text-gray-800">{{ property.property_type || 'apartment' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Area:</span>
+                <span class="font-medium text-gray-800">{{ property.square_feet }} sq.m</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Built:</span>
+                <span class="font-medium text-gray-800">{{ property.yearBuilt || '2015' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Bedrooms:</span>
+                <span class="font-medium text-gray-800">{{ property.bedrooms }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Bathrooms:</span>
+                <span class="font-medium text-gray-800">{{ property.bathrooms }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Parking places:</span>
+                <span class="font-medium text-gray-800">{{ property.parkingSpaces || '2' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Pets allowed:</span>
+                <span class="font-medium text-gray-800">{{ property.petsAllowed || 'cats only' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Book a viewing/Contact button -->
+          <button class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded mb-4 transition">
+            {{ property.status === 'for-rent' ? 'Book a viewing' : 'Contact agent' }}
+          </button>
+          
+          <!-- FAQ link -->
+          <a href="#" class="flex items-center justify-center text-red-500 hover:text-red-600 mb-6">
+            <span class="mr-2">?</span>
+            Frequently asked questions
+          </a>
+          
+          <!-- Amenities -->
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="amenities-title text-xl font-bold text-black mb-4">Amenities</h3>
+            <div class="grid grid-cols-2 gap-y-3">
+              <div v-for="(amenity, index) in property.amenities || defaultAmenities" :key="index" class="flex items-center">
+                <span class="mr-2 text-gray-600">✓</span>
+                <span class="text-gray-700">{{ amenity }}</span>
+              </div>
+            </div>
+            <button v-if="(property.amenities?.length || defaultAmenities.length) > 8" class="text-red-500 mt-3">
+              Show more
+            </button>
+          </div>
+          
+          <!-- Not included -->
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="not-included-title text-xl font-bold text-black mb-4">Not included {{ property.status === 'for-rent' ? 'in rent' : 'in price' }}</h3>
+            <div class="grid grid-cols-2 gap-y-3">
+              <div v-for="(item, index) in notIncludedItems" :key="index" class="flex items-center">
+                <span class="mr-2 text-gray-600">✓</span>
+                <span class="text-gray-700">{{ item }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Map Location -->
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="location-title text-xl font-bold text-black mb-4">Location</h3>
+            <div class="relative mb-3">
+              <img :src="getMapImage(property)" alt="Map" class="w-full h-[200px] object-cover rounded-md">
+              <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10">
+                <a :href="getGoogleMapsUrl(property)" target="_blank" class="bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-900 transition-colors flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  Get directions
+                </a>
+              </div>
+            </div>
+            <p class="text-center text-gray-700 text-sm mt-2">
+              {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+            </p>
+          </div>
+          
+          <!-- Publication details -->
+          <div class="flex flex-wrap text-sm text-gray-700">
+            <div class="mr-4 pr-4 border-r border-gray-200">Published: <b class="text-gray-800">{{ formatDate(property.createdAt) }}</b></div>
+            <div class="mr-4 pr-4 border-r border-gray-200">Ad number: <b class="text-gray-800">{{ property.id || '681013232' }}</b></div>
+            <div>Views: <b class="text-gray-800">48</b></div>
           </div>
         </div>
       </div>
+      
+      <!-- Recently Viewed Section - Con propiedades en renta Y venta -->
+      <div class="mt-10">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="recently-viewed-title text-2xl font-bold text-black">Recently viewed</h2>
+          <a href="/properties" class="text-blue-600 flex items-center">
+            View all <span class="ml-1">→</span>
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div v-for="(listing, i) in recentlyViewed" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
+            <div class="relative">
+              <img :src="listing.image || 'https://placehold.co/600x400?text=Property'" alt="Property" class="w-full h-48 object-cover" />
+              <div class="absolute top-3 left-3">
+                <span class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verified</span>
+                <span v-if="listing.isNew" class="bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">New</span>
+                <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Featured</span>
+              </div>
+            </div>
+            
+            <div class="p-4">
+              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-orange-500' : 'text-green-500'">
+                {{ listing.status === 'for-sale' ? 'FOR SALE' : 'FOR RENT' }}
+              </div>
+              <h3 class="font-medium text-black mb-1">
+                {{ listing.title }} | {{ listing.square_feet }} sq.m
+              </h3>
+              <p class="text-sm text-gray-700 mb-2">{{ listing.address }}</p>
+              <div class="font-bold text-black mb-2">
+                ${{ formatPrice(listing.price) }}
+                <span v-if="listing.status === 'for-rent'" class="text-sm font-normal text-gray-700">/month</span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-700">
+                <span>{{ listing.bedrooms }} bed</span>
+                <span>{{ listing.bathrooms }} bath</span>
+                <span>{{ listing.parkingSpaces || '2' }} car</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Review Modal (Hidden by default) -->
+      <div v-if="showReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Leave a Review</h3>
+            <button @click="showReviewModal = false" class="text-gray-500 hover:text-gray-700">
+              <span class="text-2xl">&times;</span>
+            </button>
+          </div>
+          <form @submit.prevent="submitReview">
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
+              <input type="text" v-model="newReview.name" class="w-full px-3 py-2 border rounded-md" required>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+              <input type="email" v-model="newReview.email" class="w-full px-3 py-2 border rounded-md" required>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
+              <div class="flex space-x-1">
+                <button 
+                  type="button"
+                  v-for="star in 5"
+                  :key="star"
+                  @click="newReview.rating = star"
+                  class="text-2xl focus:outline-none"
+                  :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'"
+                >
+                  ★
+                </button>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-2">Review <span class="text-red-500">*</span></label>
+              <textarea v-model="newReview.text" rows="4" class="w-full px-3 py-2 border rounded-md" required></textarea>
+            </div>
+            <button type="submit" class="w-full bg-blue-800 text-white font-medium py-2 px-4 rounded">
+              Submit Review
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
-  </template>
+
+    <!-- Not found state -->
+    <div v-else class="flex justify-center items-center min-h-[600px]">
+      <p class="text-xl text-gray-700">Property not found</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { usePropertyStore } from '~/store/property';
+import { useReviewStore } from '~/store/review';
+import BreadcrumbNav from '~/components/BreadcrumbNav.vue';
+import PropertyMainInfo from '~/components/PropertyMainInfo.vue';
+
+// Initialize stores and router
+const route = useRoute();
+const router = useRouter();
+const propertyStore = usePropertyStore();
+const reviewStore = useReviewStore();
+const propertyId = route.params.id;
+
+// State variables
+const isLoading = ref(true);
+const error = ref(null);
+const property = ref(null);
+const isFavorite = ref(false);
+const activeImageIndex = ref(0);
+const showReviewModal = ref(false);
+
+// New review form data
+const newReview = ref({
+  name: '',
+  email: '',
+  rating: 0,
+  text: '',
+  date: '',
+  avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+  likes: 0,
+  dislikes: 0
+});
+
+// Default values
+const defaultAmenities = [
+  'WiFi',
+  'Heating',
+  'Dishwasher',
+  'Parking place',
+  'Air conditioning',
+  'Iron',
+  'TV',
+  'Laundry'
+];
+
+const notIncludedItems = [
+  'Swimming pool',
+  'Restaurant',
+  'Spa lounge',
+  'Bar'
+];
+
+// Reviews for this property
+const reviews = computed(() => {
+  return reviewStore.getReviewsForProperty(parseInt(propertyId));
+});
+
+// Calculate average rating
+const averageRating = computed(() => {
+  if (reviews.value.length === 0) return '0.0';
+  const sum = reviews.value.reduce((acc, review) => acc + review.rating, 0);
+  return (sum / reviews.value.length).toFixed(1);
+});
+
+// Generar imágenes adicionales para cada propiedad
+const getAdditionalImages = (propertyId, mainImage) => {
+  // Base de imágenes según tipo de propiedad (usando el ID para determinar variedad)
+  const propertyTypes = ['apartment', 'house', 'modern', 'luxury', 'villa'];
+  const propertyType = propertyTypes[propertyId % propertyTypes.length];
   
-  <script setup>
-  import { ref, computed, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';
+  // Usaremos una mezcla de imágenes reales y placeholders
+  const realImages = [
+    mainImage,
+    `https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800&q=80`, // Living room
+    `https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&q=80`, // Kitchen
+    `https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80`, // Bedroom
+    `https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80`, // Bathroom
+    `https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80`  // Exterior
+  ];
   
-  const route = useRoute();
-  const propertyId = computed(() => route.params.id);
+  // Seleccionar un conjunto aleatorio pero determinístico de imágenes
+  return [
+    realImages[0], // Siempre incluir la imagen principal
+    realImages[(propertyId % 5) + 1],
+    realImages[((propertyId + 2) % 5) + 1],
+    realImages[((propertyId + 4) % 5) + 1]
+  ];
+};
+
+// Computed property for property images
+const propertyImages = computed(() => {
+  if (!property.value || !property.value.image) {
+    return [
+      'https://placehold.co/800x600?text=Property+Image+1',
+      'https://placehold.co/800x600?text=Property+Image+2',
+      'https://placehold.co/800x600?text=Property+Image+3',
+      'https://placehold.co/800x600?text=Property+Image+4'
+    ];
+  }
   
-  // State
-  const isLoading = ref(true);
-  const error = ref(null);
-  const property = ref(null);
-  const similarProperties = ref([]);
+  // Usar imágenes adicionales generadas dinámicamente
+  return getAdditionalImages(property.value.id, property.value.image);
+});
+
+// Get map image based on property address
+const getMapImage = (property) => {
+  // En un entorno real, aquí podrías usar Google Maps Static API o similar
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
+    property.address + ', ' + property.city + ', ' + property.state
+  )}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${encodeURIComponent(
+    property.address + ', ' + property.city + ', ' + property.state
+  )}&key=AIzaSyAepal9ym-eTRFBXfJ-URnDWn7HWmOuJIc`;
   
-  // Contact form
-  const contactForm = ref({
+  // Como fallback, usar una imagen estática de mapa
+  // return "https://images.unsplash.com/photo-1569336415962-a4bd9f69c07a?w=800&q=80";
+};
+
+// Get Google Maps URL for directions
+const getGoogleMapsUrl = (property) => {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    property.address + ', ' + property.city + ', ' + property.state + ' ' + property.zip_code
+  )}`;
+};
+
+// Recently viewed properties - asegurando una mezcla de alquiler y venta
+const recentlyViewed = ref([]);
+
+// Load recently viewed properties (mezclando propiedades en renta y venta)
+const loadRecentlyViewed = () => {
+  // En un sistema real, esto vendría del backend o del historial local
+  let allProperties = [...propertyStore.properties];
+  
+  // Asegurarnos de que hay propiedades de ambos tipos
+  const rentProperties = allProperties.filter(p => p.status === 'for-rent');
+  const saleProperties = allProperties.filter(p => p.status === 'for-sale');
+  
+  // Si no hay propiedades en venta, mostrar un error en consola
+  if (saleProperties.length === 0) {
+    console.error("No hay propiedades en venta para mostrar en 'Recently viewed'");
+  }
+  
+  // Filtramos para excluir la propiedad actual
+  const currentPropertyId = parseInt(propertyId);
+  
+  // Tomar hasta 2 propiedades en renta (diferentes a la actual)
+  const filteredRentProperties = rentProperties
+    .filter(p => p.id !== currentPropertyId)
+    .slice(0, 2);
+    
+  // Tomar hasta 2 propiedades en venta (diferentes a la actual)
+  const filteredSaleProperties = saleProperties
+    .filter(p => p.id !== currentPropertyId)
+    .slice(0, 2);
+  
+  // Combinar y limitar a 4 propiedades
+  recentlyViewed.value = [...filteredRentProperties, ...filteredSaleProperties].slice(0, 4);
+};
+
+// Fetch property data
+const fetchPropertyData = async () => {
+  isLoading.value = true;
+  error.value = null;
+  
+  try {
+    // Usar el store para cargar la propiedad específica
+    await propertyStore.fetchProperty(propertyId);
+    
+    // Verificar si se obtuvo la propiedad
+    if (propertyStore.currentProperty) {
+      property.value = propertyStore.currentProperty;
+      
+      // Verificar si está en favoritos
+      isFavorite.value = propertyStore.favorites.includes(parseInt(propertyId));
+      
+      // Cargar propiedades recientes
+      loadRecentlyViewed();
+    } else {
+      error.value = 'Property not found';
+    }
+  } catch (err) {
+    console.error('Error loading property:', err);
+    error.value = propertyStore.error || 'Failed to load property. Please try again later.';
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Image gallery functions
+const goToPrevImage = () => {
+  if (activeImageIndex.value === 0) {
+    activeImageIndex.value = propertyImages.value.length - 1;
+  } else {
+    activeImageIndex.value--;
+  }
+};
+
+const goToNextImage = () => {
+  if (activeImageIndex.value === propertyImages.value.length - 1) {
+    activeImageIndex.value = 0;
+  } else {
+    activeImageIndex.value++;
+  }
+};
+
+const setActiveImage = (index) => {
+  activeImageIndex.value = index;
+};
+
+// Toggle favorite status
+const toggleFavorite = () => {
+  if (property.value) {
+    propertyStore.toggleFavorite(property.value.id);
+    isFavorite.value = propertyStore.favorites.includes(property.value.id);
+  }
+};
+
+// Format price with commas
+const formatPrice = (price) => {
+  if (!price) return "0";
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+// Format date
+const formatDate = (dateString) => {
+  if (!dateString) return "Dec 9, 2020";
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  } catch (err) {
+    return "Dec 9, 2020";
+  }
+};
+
+// Navigate to another property
+const navigateToProperty = (id) => {
+  console.log("Navegando a propiedad desde recently viewed:", id);
+  
+  // Si estamos en la misma ruta pero con diferente ID, forzar recarga
+  if (route.name === route.name && route.params.id !== id.toString()) {
+    router.replace(`/properties/${id}`);
+    setTimeout(() => {
+      fetchPropertyData();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  } else {
+    router.push(`/properties/${id}`);
+  }
+};
+
+// Navegar al perfil del agente
+const viewAgentProfile = () => {
+  // Redirigir a la página del perfil del agente
+  router.push('/agents');
+};
+
+// Review functions
+const openReviewModal = () => {
+  showReviewModal.value = true;
+};
+
+const submitReview = () => {
+  const today = new Date();
+  
+  // Create the review object
+  const review = {
+    propertyId: parseInt(propertyId),
+    name: newReview.value.name,
+    email: newReview.value.email,
+    rating: newReview.value.rating,
+    text: newReview.value.text,
+    date: today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+    avatar: newReview.value.avatar || 'https://randomuser.me/api/portraits/men/1.jpg',
+    likes: 0,
+    dislikes: 0
+  };
+  
+  // Add review to store
+  reviewStore.addReview(review);
+  
+  // Reset form
+  newReview.value = {
     name: '',
     email: '',
-    phone: '',
-    message: 'I\'m interested in this property. Please contact me with more information.'
-  });
+    rating: 0,
+    text: '',
+    date: '',
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    likes: 0,
+    dislikes: 0
+  };
   
-  // Example amenities (these would typically come from the API)
-  const amenities = ref([
-    'Air Conditioning',
-    'Balcony',
-    'Dishwasher',
-    'Elevator',
-    'Fireplace',
-    'Garden',
-    'Hardwood Floors',
-    'Parking',
-    'Swimming Pool',
-    'Security System',
-    'Washer/Dryer',
-    'Wi-Fi'
-  ]);
-  
-  // Fetch property details
-  onMounted(async () => {
-    isLoading.value = true;
+  // Close modal
+  showReviewModal.value = false;
+};
+
+// Watch for changes in the property ID (for navigation between properties)
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    propertyId = newId;
+    fetchPropertyData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// Apply color fixes for consistent styling
+const applyColorFixes = () => {
+  setTimeout(() => {
+    document.querySelectorAll('.property-title, .rent-title, .details-title, .amenities-title, .not-included-title, .section-title, .recently-viewed-title, .location-title')
+      .forEach(el => {
+        el.style.color = '#000000';
+      });
     
-    try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Example data (replace with actual API call)
-      const allProperties = [
-        {
-          id: '1',
-          title: 'Modern Apartment in Downtown',
-          description: 'Stunning modern apartment with panoramic city views and high-end finishes throughout. This luxurious property features floor-to-ceiling windows, hardwood floors, and an open concept design perfect for entertaining.\n\nThe gourmet kitchen is equipped with top-of-the-line stainless steel appliances, a large center island, and custom cabinetry. The spacious primary bedroom suite includes a walk-in closet and a spa-like bathroom with a double vanity and a glass shower.\n\nResidents enjoy access to premium building amenities, including a fitness center, rooftop terrace, and 24/7 concierge service. Located in the heart of downtown, this apartment is just steps away from restaurants, shops, and public transportation.',
-          price: 350000,
-          address: '123 Main St, Downtown City',
-          bedrooms: 2,
-          bathrooms: 2,
-          area: 1200,
-          image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-          type: 'apartment',
-          status: 'for-sale',
-          createdAt: '2023-05-15'
-        },
-        {
-          id: '2',
-          title: 'Luxury Villa with Pool',
-          description: 'Exclusive villa with private pool and garden, situated in a prestigious neighborhood. This elegant home offers spacious living areas, high ceilings, and premium amenities including a home theater and wine cellar.\n\nThe grand entrance leads to a magnificent living room with a fireplace and large windows overlooking the garden. The gourmet kitchen features custom cabinetry, marble countertops, and high-end appliances.\n\nThe luxurious primary suite includes a sitting area, two walk-in closets, and a spa-inspired bathroom. Additional bedrooms are generously sized with en-suite bathrooms.\n\nOutdoor living spaces include a covered patio, summer kitchen, and a stunning infinity pool with a hot tub. Located in a secure, gated community with 24/7 security.',
-          price: 1200000,
-          address: '456 Palm Ave, Beachside',
-          bedrooms: 4,
-          bathrooms: 3,
-          area: 3500,
-          image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-          type: 'villa',
-          status: 'for-sale',
-          createdAt: '2023-06-20'
-        },
-        {
-          id: '3',
-          title: 'Cozy Family Home',
-          description: 'Spacious family home in a quiet suburban neighborhood, perfect for raising children. Features include a large backyard, updated kitchen, and a comfortable living room with a fireplace.\n\nThe welcoming entryway leads to a bright living room with large windows. The updated kitchen includes stainless steel appliances, granite countertops, and a breakfast nook. The adjacent dining room is perfect for family meals and entertaining.\n\nUpstairs, the primary bedroom features a walk-in closet and an ensuite bathroom. Two additional bedrooms share a full bathroom. The finished basement provides additional living space, ideal for a home office or playroom.\n\nThe large backyard includes a deck, perfect for outdoor dining and barbecues. Located in a family-friendly neighborhood with excellent schools nearby.',
-          price: 520000,
-          address: '789 Oak Dr, Suburbia',
-          bedrooms: 3,
-          bathrooms: 2,
-          area: 2100,
-          image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-          type: 'house',
-          status: 'for-sale',
-          createdAt: '2023-07-05'
+    document.querySelectorAll('p, span, div:not(.bg-green-500):not(.bg-blue-500):not(.bg-red-500)')
+      .forEach(el => {
+        if (!el.closest('.bg-green-500') && !el.closest('.bg-blue-500') && !el.closest('.bg-red-500') && 
+            !el.classList.contains('text-white')) {
+          el.style.color = '#333333';
         }
-      ];
-      
-      property.value = allProperties.find(p => p.id === propertyId.value);
-      
-      if (!property.value) {
-        error.value = 'Property not found';
-      } else {
-        // Find similar properties (same type, different ID)
-        similarProperties.value = allProperties
-          .filter(p => p.type === property.value.type && p.id !== property.value.id)
-          .slice(0, 3);
-      }
-      
-      isLoading.value = false;
-    } catch (err) {
-      console.error('Error fetching property:', err);
-      error.value = 'Failed to load property details';
-      isLoading.value = false;
-    }
-  });
+      });
+  }, 100);
+};
+
+// Fetch data when component mounts
+onMounted(async () => {
+  // Si es necesario, asegúrate de que el propertyStore tenga propiedades cargadas
+  if (propertyStore.properties.length === 0) {
+    await propertyStore.fetchProperties();
+  }
   
-  // Submit contact form
-  const submitContactForm = () => {
-    alert(`Message sent! We'll be in contact with you soon.`);
-    
-    // Reset form (in a real app, this would happen after successful API submission)
-    contactForm.value = {
-      name: '',
-      email: '',
-      phone: '',
-      message: 'I\'m interested in this property. Please contact me with more information.'
-    };
-  };
+  // Cargar los datos de la propiedad específica
+  await fetchPropertyData();
   
-  // Format price
-  const formatPrice = (price) => {
-    if (price) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0
-      }).format(price);
-    }
-    return '';
-  };
-  
-  // Format status
-  const formatStatus = (status) => {
-    switch (status) {
-      case 'for-sale':
-        return 'For Sale';
-      case 'for-rent':
-        return 'For Rent';
-      case 'sold':
-        return 'Sold';
-      case 'rented':
-        return 'Rented';
-      default:
-        return status;
-    }
-  };
-  
-  // Format area
-  const formatArea = (area) => {
-    return `${area} sqft`;
-  };
-  </script>
+  // Aplicar correcciones de color si es necesario
+  applyColorFixes();
+});
+</script>
+
+<style>
+/* Ensure white background */
+body, html {
+  background-color: #ffffff !important;
+}
+
+/* Forzar colores de texto en elementos clave */
+.property-page h1, 
+.property-page h2, 
+.property-page h3, 
+.property-page h4, 
+.property-page h5, 
+.property-page h6 {
+  color: #000000 !important;
+}
+
+.property-page p, 
+.property-page span:not(.bg-green-500 span):not(.bg-blue-500 span):not(.bg-red-500 span):not(.text-white), 
+.property-page div:not(.bg-green-500):not(.bg-blue-500):not(.bg-red-500) {
+  color: #333333;
+}
+
+/* Específico para clases de títulos */
+.property-title, 
+.rent-title, 
+.details-title, 
+.amenities-title, 
+.not-included-title, 
+.section-title, 
+.recently-viewed-title,
+.location-title {
+  color: #000000 !important;
+}
+
+/* Color naranja para "FOR RENT" */
+.text-orange-500 {
+  color: #F97316 !important;
+}
+
+/* Color verde brillante para "FOR SALE" */
+.text-green-500 {
+  color: #10b981 !important;
+}
+
+/* Excepciones para texto blanco en elementos con fondo de color */
+.bg-green-500, 
+.bg-blue-500, 
+.bg-red-500, 
+.text-white, 
+button.bg-red-500 {
+  color: #ffffff !important;
+}
+
+/* Gallery */
+.thumbnail:hover {
+  border-color: #0d6efd;
+}
+
+/* Buttons */
+button.rounded-full {
+  transition: all 0.2s ease;
+}
+
+button.rounded-full:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Call to action */
+.bg-red-500 {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.bg-red-500:hover {
+  background-color: #e53e3e;
+  transform: translateY(-2px);
+}
+
+/* Cards hover effect */
+.rounded-lg.shadow-sm {
+  transition: all 0.3s ease;
+}
+
+.rounded-lg.shadow-sm:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Review styling */
+.like-button, .dislike-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.like-button:hover {
+  color: #3b82f6;
+}
+
+.dislike-button:hover {
+  color: #ef4444;
+}
+
+.btn-primary {
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+</style>

@@ -1,269 +1,339 @@
+// store/auth.js
 import { defineStore } from 'pinia';
-import api from '@/services/api';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
-  // State
   state: () => ({
     user: null,
     token: null,
-    isLoading: false,
-    error: null
+    refreshToken: null,
+    isAuthenticated: false,
+    isInitialized: false
   }),
-
-  // Getters
+  
   getters: {
-    isAuthenticated: (state) => !!state.token,
-    userRole: (state) => state.user?.role || null,
-    isAdmin: (state) => state.user?.role === 'admin',
-    isHost: (state) => state.user?.role === 'host',
-    isGuest: (state) => state.user?.role === 'guest',
+    getUser: (state) => state.user,
+    getToken: (state) => state.token,
+    isLoggedIn: (state) => state.isAuthenticated,
   },
-
-  // Actions
+  
   actions: {
-    // Initialize auth state from localStorage
-    init() {
-      try {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
-        
-        if (token && user) {
-          this.token = token;
-          this.user = user;
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        this.clearAuth();
-      }
-    },
-    
-    // Set auth data after successful login/registration
-    setAuth(token, user) {
-      this.token = token;
+    setUser(user) {
       this.user = user;
-      
-      // Store in localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
     },
     
-    // Clear all auth data
-    clearAuth() {
-      this.token = null;
-      this.user = null;
+    setToken(token, refreshToken = null) {
+      this.token = token;
       
-      // Remove from localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    },
-    
-    // Login action
-    async login(credentials) {
-      this.isLoading = true;
-      this.error = null;
+      if (refreshToken) {
+        this.refreshToken = refreshToken;
+      }
       
-      try {
-        const response = await api.login(credentials);
-        const { token, user } = response.data;
+      if (process.client && token) {
+        localStorage.setItem('token', token);
         
-        this.setAuth(token, user);
-        
-        return user;
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to login';
-        throw error;
-      } finally {
-        this.isLoading = false;
+        if (refreshToken) {
+          localStorage.setItem('refreshToken', refreshToken);
+        }
       }
     },
     
-    // Register action
     async register(userData) {
-      this.isLoading = true;
-      this.error = null;
-      
       try {
-        const response = await api.register(userData);
-        const { token, user } = response.data;
-        
-        this.setAuth(token, user);
-        
-        return user;
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to register';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Logout action
-    async logout() {
-      this.isLoading = true;
-      
-      try {
-        // Call backend logout endpoint if needed
-        // await api.logout();
-        
-        // Clear auth data
-        this.clearAuth();
-      } catch (error) {
-        console.error('Logout error:', error);
-        // Still clear auth data even if API call fails
-        this.clearAuth();
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Request password reset
-    async requestPasswordReset(email) {
-      this.isLoading = true;
-      this.error = null;
-      
-      try {
-        const response = await api.requestPasswordReset(email);
-        return response.data;
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to request password reset';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Reset password
-    async resetPassword(data) {
-      this.isLoading = true;
-      this.error = null;
-      
-      try {
-        const response = await api.resetPassword(data);
-        return response.data;
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to reset password';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Change password
-    async changePassword(data) {
-      this.isLoading = true;
-      this.error = null;
-      
-      try {
-        const response = await api.changePassword(data);
-        return response.data;
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to change password';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Get current user profile
-    async getCurrentUser() {
-      this.isLoading = true;
-      
-      try {
-        const response = await api.getCurrentUser();
-        this.user = response.data;
-        
-        // Update user in localStorage
-        localStorage.setItem('user', JSON.stringify(this.user));
-        
-        return this.user;
-      } catch (error) {
-        console.error('Get user error:', error);
-        
-        // If 401 unauthorized, logout
-        if (error.response?.status === 401) {
-          this.clearAuth();
+        // Solo ejecutar en el cliente
+        if (!process.client) {
+          return { 
+            success: false, 
+            error: 'El registro solo puede realizarse en el cliente.' 
+          };
         }
         
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Update user profile
-    async updateUser(userData) {
-      this.isLoading = true;
-      this.error = null;
-      
-      try {
-        const response = await api.updateUser(this.user.id, userData);
-        this.user = response.data;
+        console.log('Attempting register with:', userData.email);
         
-        // Update user in localStorage
-        localStorage.setItem('user', JSON.stringify(this.user));
+        // En un entorno real, esto sería una petición a tu API
+        const response = await axios.post('http://localhost:3000/api/auth/register', userData);
         
-        return this.user;
+        // Para pruebas: simulamos una respuesta exitosa si la API no está disponible
+        const mockResponse = {
+          success: true,
+          data: {
+            user: {
+              id: 1,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+              email: userData.email,
+              avatar: 'https://via.placeholder.com/60'
+            },
+            accessToken: 'mock_access_token_' + Date.now(),
+            refreshToken: 'mock_refresh_token_' + Date.now()
+          }
+        };
+        
+        // Usar respuesta real o simulada
+        const data = (response && response.data) || mockResponse;
+        
+        console.log('Register response:', data);
+        
+        // Verificar si la respuesta tiene el formato correcto
+        if (data && data.success && data.data) {
+          // Extraer datos de la respuesta
+          const { user, accessToken, refreshToken } = data.data;
+          
+          // Actualizar estado
+          this.user = user;
+          this.token = accessToken;
+          this.refreshToken = refreshToken;
+          this.isAuthenticated = true;
+          
+          // Guardar en localStorage
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          return { success: true };
+        } else {
+          return { 
+            success: false, 
+            error: 'Formato de respuesta inesperado' 
+          };
+        }
       } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to update profile';
-        throw error;
-      } finally {
-        this.isLoading = false;
+        console.error('Error en registro:', error);
+        
+        // Para pruebas: simulamos éxito si la API no está disponible
+        if (error.message && error.message.includes('Network Error')) {
+          console.log('Network error detected, using mock data for development');
+          
+          // Crear usuario mock
+          const mockUser = {
+            id: 1,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            email: userData.email,
+            avatar: 'https://via.placeholder.com/60'
+          };
+          
+          // Crear tokens mock
+          const accessToken = 'mock_access_token_' + Date.now();
+          const refreshToken = 'mock_refresh_token_' + Date.now();
+          
+          // Actualizar estado
+          this.user = mockUser;
+          this.token = accessToken;
+          this.refreshToken = refreshToken;
+          this.isAuthenticated = true;
+          
+          // Guardar en localStorage
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('user', JSON.stringify(mockUser));
+          
+          return { success: true };
+        }
+        
+        let errorMessage = 'Error al registrarse. Por favor intenta de nuevo.';
+        
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+        
+        return { 
+          success: false, 
+          error: errorMessage
+        };
       }
     },
     
-    // Check if user is authenticated and has required role
-    checkAuthAndRole(requiredRole = null) {
-      // First check if user is authenticated
-      if (!this.isAuthenticated) {
-        return false;
+    async login(credentials) {
+      try {
+        // Solo ejecutar en el cliente
+        if (!process.client) {
+          return { 
+            success: false, 
+            error: 'El inicio de sesión solo puede realizarse en el cliente.' 
+          };
+        }
+        
+        console.log('Attempting login with:', credentials.email);
+        
+        // Intentar petición real
+        const response = await axios.post('http://localhost:3000/api/auth/login', {
+          email: credentials.email,
+          password: credentials.password
+        });
+        
+        // Para pruebas: simulamos una respuesta exitosa si la API no está disponible
+        const mockResponse = {
+          success: true,
+          data: {
+            user: {
+              id: 1,
+              first_name: 'John',
+              last_name: 'Doe',
+              email: credentials.email,
+              avatar: 'https://via.placeholder.com/60'
+            },
+            accessToken: 'mock_access_token_' + Date.now(),
+            refreshToken: 'mock_refresh_token_' + Date.now()
+          }
+        };
+        
+        // Usar respuesta real o simulada
+        const data = (response && response.data) || mockResponse;
+        
+        console.log('Login response:', data);
+        
+        // Verificar si la respuesta tiene el formato correcto
+        if (data && data.success && data.data) {
+          // Extraer datos de la respuesta
+          const { user, accessToken, refreshToken } = data.data;
+          
+          // Actualizar estado
+          this.user = user;
+          this.token = accessToken;
+          this.refreshToken = refreshToken;
+          this.isAuthenticated = true;
+          
+          // Guardar en localStorage
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          if (credentials.remember) {
+            localStorage.setItem('rememberedEmail', credentials.email);
+          }
+          
+          return { success: true };
+        } else {
+          return { 
+            success: false, 
+            error: 'Formato de respuesta inesperado' 
+          };
+        }
+      } catch (error) {
+        console.error('Error en login:', error);
+        
+        // Para pruebas: simulamos éxito si la API no está disponible
+        if (error.message && error.message.includes('Network Error')) {
+          console.log('Network error detected, using mock data for development');
+          
+          // Crear usuario mock
+          const mockUser = {
+            id: 1,
+            first_name: 'John',
+            last_name: 'Doe',
+            email: credentials.email,
+            avatar: 'https://via.placeholder.com/60'
+          };
+          
+          // Crear tokens mock
+          const accessToken = 'mock_access_token_' + Date.now();
+          const refreshToken = 'mock_refresh_token_' + Date.now();
+          
+          // Actualizar estado
+          this.user = mockUser;
+          this.token = accessToken;
+          this.refreshToken = refreshToken;
+          this.isAuthenticated = true;
+          
+          // Guardar en localStorage
+          localStorage.setItem('token', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('user', JSON.stringify(mockUser));
+          
+          if (credentials.remember) {
+            localStorage.setItem('rememberedEmail', credentials.email);
+          }
+          
+          return { success: true };
+        }
+        
+        let errorMessage = 'Error al iniciar sesión. Por favor intenta de nuevo.';
+        
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+        
+        return { 
+          success: false, 
+          error: errorMessage
+        };
       }
-      
-      // If no specific role is required, just being authenticated is enough
-      if (!requiredRole) {
-        return true;
-      }
-      
-      // If specific role is required, check user role
-      return this.user.role === requiredRole || (Array.isArray(requiredRole) && requiredRole.includes(this.user.role));
     },
     
-    // Verify email
-    async verifyEmail(token) {
-      this.isLoading = true;
-      this.error = null;
+    logout() {
+      this.user = null;
+      this.token = null;
+      this.refreshToken = null;
+      this.isAuthenticated = false;
+      
+      if (process.client) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+      }
+      
+      return { success: true };
+    },
+    
+    initialize() {
+      if (process.client) {
+        const token = localStorage.getItem('token');
+        const refreshToken = localStorage.getItem('refreshToken');
+        const userJson = localStorage.getItem('user');
+        
+        if (token) {
+          this.token = token;
+          this.refreshToken = refreshToken;
+          this.isAuthenticated = true;
+          
+          // Si tenemos el usuario en localStorage, lo cargamos
+          if (userJson) {
+            try {
+              this.user = JSON.parse(userJson);
+            } catch (e) {
+              console.error('Error parsing user from localStorage', e);
+            }
+          } else {
+            // Si no tenemos el usuario, lo obtenemos del servidor
+            this.fetchCurrentUser();
+          }
+        }
+        
+        this.isInitialized = true;
+      }
+    },
+    
+    async fetchCurrentUser() {
+      if (!process.client || !this.token) return { success: false };
       
       try {
-        const response = await api.verifyEmail(token);
+        const response = await axios.get('http://localhost:3000/api/auth/me', {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        });
         
-        // If verification changes user state, update it
-        if (response.data.user) {
-          this.user = response.data.user;
+        if (response.data && response.data.success && response.data.data) {
+          this.user = response.data.data;
+          
+          // Actualizar localStorage
           localStorage.setItem('user', JSON.stringify(this.user));
+          
+          return { success: true };
         }
         
-        return response.data;
+        return { success: false };
       } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to verify email';
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    // Check auth status automatically on app load or route change
-    async checkAuth() {
-      // If we already have a token but no user data
-      if (this.token && !this.user) {
-        try {
-          await this.getCurrentUser();
-        } catch (error) {
-          console.error('Check auth error:', error);
-          // If error, clear auth data
-          this.clearAuth();
+        console.error('Error al obtener usuario actual:', error);
+        
+        // Si hay un error 401, el token podría estar caducado
+        if (error.response && error.response.status === 401) {
+          this.logout();
         }
+        
+        return { success: false, error: 'No se pudo obtener información del usuario.' };
       }
-      
-      return this.isAuthenticated;
     }
   }
 });

@@ -35,8 +35,27 @@ export default defineNuxtConfig({
       '@pinia/nuxt',
       '@nuxtjs/color-mode',
       'nuxt-icon',
+      '@nuxtjs/i18n',
     ],
   
+     // i18n configuration
+  i18n: {
+    locales: [
+      { code: 'en', iso: 'en-US', name: 'English', file: 'en.js' },
+      { code: 'es', iso: 'es-ES', name: 'Español', file: 'es.js' },
+      { code: 'fr', iso: 'fr-FR', name: 'Français', file: 'fr.js' },
+      { code: 'de', iso: 'de-DE', name: 'Deutsch', file: 'de.js' }
+    ],
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
+    lazy: true,
+    langDir: 'locales/',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    }
+  },
     // Tailwind CSS configuration
     tailwindcss: {
       cssPath: '~/assets/css/main.css',
@@ -94,7 +113,7 @@ export default defineNuxtConfig({
     // Environment variables
     runtimeConfig: {
       public: {
-        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api'
       }
     },
   
@@ -102,7 +121,12 @@ export default defineNuxtConfig({
     build: {
       transpile: ['axios']
     },
-  
+   // Puedes añadir esto para ignorar las advertencias relacionadas con el SSR
+   vite: {
+    optimizeDeps: {
+      exclude: ['fsevents']
+    }
+  },
     // Server options
     nitro: {
       preset: 'node-server'

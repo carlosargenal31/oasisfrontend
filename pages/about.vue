@@ -1,188 +1,239 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import Breadcrumb from '@/components/about/Breadcrumb.vue'
+import Main from '@/components/about/main.vue'
+import Team from '@/components/about/team.vue'
+import Reviews from '@/components/about/reviews.vue'
+
+const breadcrumbData = ref([
+    {
+        title: 'Home',
+        link: '/',
+        subitems: [
+            {
+                title: 'About'
+            }
+        ]
+    }
+])
+
+definePageMeta({
+    title: 'About Us',
+});
+</script>
+
 <template>
-    <div>
-      <!-- Header Section -->
-      <div class="bg-gray-100 dark:bg-gray-800 py-8">
-        <div class="container-custom">
-          <h1 class="text-3xl font-bold mb-2">About OASIS</h1>
-          <div class="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400">
-            <NuxtLink to="/" class="hover:text-blue-600 dark:hover:text-blue-400">Home</NuxtLink>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900 dark:text-white font-medium">About</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Main Content -->
-      <div class="container-custom py-12">
-        <!-- Introduction -->
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
-          <p class="text-gray-700 dark:text-gray-300 mb-4">
-            OASIS is dedicated to transforming the real estate experience. We believe finding the perfect property should be 
-            convenient, transparent, and enjoyable. Our platform connects property seekers with verified property owners 
-            and professional agents, creating a smooth and reliable real estate journey.
-          </p>
-          <p class="text-gray-700 dark:text-gray-300">
-            Whether you're looking to buy, sell, or rent, OASIS provides the tools and resources needed to make informed 
-            decisions and achieve your real estate goals.
-          </p>
-        </div>
-        
-        <!-- Company Values -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div class="card p-6">
-            <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">Trust & Reliability</h3>
-            <p class="text-gray-600 dark:text-gray-400">
-              We verify all listings and users to create a trusted platform where you can transact with confidence.
-            </p>
-          </div>
-          
-          <div class="card p-6">
-            <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">Innovation</h3>
-            <p class="text-gray-600 dark:text-gray-400">
-              We continuously improve our platform with cutting-edge technology to make your real estate experience seamless.
-            </p>
-          </div>
-          
-          <div class="card p-6">
-            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">Community</h3>
-            <p class="text-gray-600 dark:text-gray-400">
-              We foster a supportive community of property seekers and providers, creating a collaborative real estate ecosystem.
-            </p>
-          </div>
-        </div>
-        
-        <!-- Our Story -->
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold mb-4">Our Story</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <p class="text-gray-700 dark:text-gray-300 mb-4">
-                OASIS was founded in 2023 by a team of real estate professionals and technology enthusiasts who recognized 
-                the need for a more efficient and transparent property marketplace.
-              </p>
-              <p class="text-gray-700 dark:text-gray-300 mb-4">
-                After experiencing the challenges of property transactions firsthand, our founders set out to build a 
-                platform that addressed common pain points: lack of verified information, communication barriers, and 
-                complicated transaction processes.
-              </p>
-              <p class="text-gray-700 dark:text-gray-300">
-                Today, OASIS has grown into a comprehensive real estate platform serving thousands of users across multiple 
-                regions, continuously evolving to meet the needs of our diverse community.
-              </p>
-            </div>
-            <div class="rounded-lg overflow-hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2073&q=80" 
-                alt="Team collaboration" 
-                class="w-full h-auto"
-              >
-            </div>
-          </div>
-        </div>
-        
-        <!-- Team Section -->
-        <div>
-          <h2 class="text-2xl font-bold mb-4">Our Team</h2>
-          <p class="text-gray-700 dark:text-gray-300 mb-8">
-            OASIS is powered by a diverse team of experts in real estate, technology, customer service, and business 
-            development. Together, we work tirelessly to provide the best possible experience for our users.
-          </p>
-          
-          <!-- Team Members -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Team Member 1 -->
-            <div class="card overflow-hidden">
-              <div class="aspect-w-1 aspect-h-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80" 
-                  alt="Team member" 
-                  class="w-full h-full object-cover"
-                >
-              </div>
-              <div class="p-4 text-center">
-                <h3 class="font-semibold text-lg mb-1">John Doe</h3>
-                <p class="text-blue-600 dark:text-blue-400 text-sm mb-2">CEO & Founder</p>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                  15+ years in real estate and technology entrepreneurship.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Team Member 2 -->
-            <div class="card overflow-hidden">
-              <div class="aspect-w-1 aspect-h-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=776&q=80" 
-                  alt="Team member" 
-                  class="w-full h-full object-cover"
-                >
-              </div>
-              <div class="p-4 text-center">
-                <h3 class="font-semibold text-lg mb-1">Jane Smith</h3>
-                <p class="text-blue-600 dark:text-blue-400 text-sm mb-2">CTO</p>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                  Expert in software development and AI solutions.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Team Member 3 -->
-            <div class="card overflow-hidden">
-              <div class="aspect-w-1 aspect-h-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80" 
-                  alt="Team member" 
-                  class="w-full h-full object-cover"
-                >
-              </div>
-              <div class="p-4 text-center">
-                <h3 class="font-semibold text-lg mb-1">Robert Johnson</h3>
-                <p class="text-blue-600 dark:text-blue-400 text-sm mb-2">Head of Real Estate</p>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                  20+ years experience in property management and sales.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Team Member 4 -->
-            <div class="card overflow-hidden">
-              <div class="aspect-w-1 aspect-h-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=922&q=80" 
-                  alt="Team member" 
-                  class="w-full h-full object-cover"
-                >
-              </div>
-              <div class="p-4 text-center">
-                <h3 class="font-semibold text-lg mb-1">Emily Wilson</h3>
-                <p class="text-blue-600 dark:text-blue-400 text-sm mb-2">Customer Success Manager</p>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                  Dedicated to ensuring exceptional user experiences.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Breadcrumb-->
+    <div class="container mt-5 mb-md-4 pt-5">
+        <Breadcrumb :data="breadcrumbData" />
     </div>
-  </template>
-  
-  <script setup>
-  // About page component
-  </script>
+
+    <Main />
+
+    <!-- Why choose us?-->
+    <section class="container mb-2 mb-xl-5 pb-lg-4">
+        <h2 class="h3 mb-4">Why choose us?</h2>
+        <!-- Features -->
+        <div class="row">
+            <!-- Feature -->
+            <div class="col-lg-4">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#fd5631">
+                            <path d="M13.585 21.456a10.416 10.416 0 1 0 20.832 0c0-5.76-4.656-10.464-10.416-10.464s-10.416 4.704-10.416 10.464zm18.096 0c0 4.224-3.456 7.68-7.68 7.68s-7.68-3.456-7.68-7.68 3.456-7.68 7.68-7.68 7.68 3.408 7.68 7.68zm-10.225-.96a1.36 1.36 0 0 0-1.92 0 1.36 1.36 0 0 0 0 1.92l2.352 2.352c.24.24.624.384.96.384s.72-.144.96-.384l4.512-4.512a1.36 1.36 0 0 0 0-1.92 1.36 1.36 0 0 0-1.92 0l-3.552 3.552-1.392-1.392zM42 10.512C29.568 5.568 24.96 1.584 24.912 1.536c-.528-.48-1.296-.48-1.824 0C23.04 1.584 18.48 5.52 6 10.512c-.528.192-.864.72-.864 1.248 0 24.576 17.424 34.464 18.192 34.848.192.096.432.192.672.192a1.2 1.2 0 0 0 .672-.192c.72-.384 18.192-10.272 18.192-34.848 0-.528-.336-1.056-.864-1.248zM24 43.824C20.928 41.808 8.304 32.352 7.872 12.72 17.328 8.88 22.128 5.664 24 4.32c1.872 1.392 6.672 4.56 16.128 8.4C39.744 32.352 27.072 41.808 24 43.824z"></path>
+                        </svg>
+                        <h3 class="h5 card-title pb-1">Safety is our priority</h3>
+                        <p class="card-text">
+                            Vel et aliquet diam vulputate hendrerit lorem eget amet adipiscing. At ut ut
+                            consectetur in sed massa arcu risus sed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#fd5631">
+                            <path d="M39.976 40.416l-5.667-26.529c-.098-.44-.391-.831-.782-1.026L20.531 6.217l-.928-4.202c-.195-.831-.977-1.368-1.808-1.173s-1.368.977-1.172 1.808l.879 4.202-9.136 11.335c-.293.342-.391.831-.293 1.27l5.618 26.529c.195.831.977 1.368 1.808 1.173l23.304-4.934a1.59 1.59 0 0 0 1.173-1.808zm-23.597 3.469L11.2 19.554l7.182-8.843.635 2.931c.195.831.977 1.368 1.808 1.172s1.368-.977 1.172-1.808l-.635-2.931 10.162 5.179 5.179 24.33-20.324 4.299zm7.963-17.149l-2.052.44a1.54 1.54 0 0 1-1.857-1.27c-.146-.831.44-1.612 1.27-1.759l2.052-.44c.684-.146 1.368.195 1.71.782.098.244.342.342.586.293l1.954-.44c.293-.049.489-.391.391-.684-.733-2.003-2.736-3.225-4.837-3.029l-.391-1.954c-.049-.293-.342-.489-.635-.391l-1.954.391c-.293.049-.489.342-.391.635l.391 1.954c-2.247.733-3.664 3.029-3.127 5.374.586 2.492 3.078 4.006 5.521 3.469l2.003-.44c.831-.195 1.661.293 1.857 1.124.244.879-.293 1.71-1.172 1.905l-2.101.44c-.684.147-1.368-.195-1.71-.782-.098-.195-.342-.342-.586-.293l-1.954.44c-.342.049-.488.391-.391.684.733 2.003 2.736 3.224 4.837 3.029l.391 1.905c.049.293.342.489.635.391l1.954-.391c.293-.049.489-.342.391-.635l-.391-1.905c2.247-.733 3.664-3.029 3.127-5.374-.538-2.492-3.029-4.006-5.521-3.469z"></path>
+                        </svg>
+                        <h3 class="h5 card-title pb-1">Fair price</h3>
+                        <p class="card-text">
+                            Tincidunt mauris sit eu, lacinia pharetra, lorem neque dui. Maecenas ultricies laoreet
+                            facilisis fusce amet, consequat neque.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Feature -->
+            <div class="col-lg-4">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none">
+                            <path fill-rule="evenodd" d="M5.493 32.863a6.53 6.53 0 0 1-5.446-6.441v-3.981a6.53 6.53 0 0 1 1.913-4.619c1.225-1.225 2.887-1.913 4.619-1.913h.435C7.709 7.137 15.048.234 24 .234s16.291 6.903 16.986 15.675h.435a6.53 6.53 0 0 1 6.532 6.532v3.981a6.53 6.53 0 0 1-6.532 6.532h-1.928a1.45 1.45 0 0 1-1.447-1.448V17.274A14.05 14.05 0 0 0 24 3.228 14.05 14.05 0 0 0 9.954 17.274v14.232a1.45 1.45 0 0 1-1.447 1.448h0a8.87 8.87 0 0 0 8.821 7.935h.199c.248-.839.702-1.611 1.332-2.241.991-.991 2.336-1.548 3.738-1.548h2.807a5.29 5.29 0 0 1 5.287 5.286 5.29 5.29 0 0 1-5.287 5.287h-2.807a5.29 5.29 0 0 1-5.071-3.789h-.198c-3.147 0-6.164-1.25-8.39-3.475-2.025-2.025-3.242-4.707-3.445-7.545zm22.203 9.523c0-1.266-1.026-2.292-2.292-2.292h-2.807a2.29 2.29 0 0 0-2.292 2.292c0 1.266 1.026 2.292 2.292 2.292h2.807c1.266 0 2.292-1.026 2.292-2.292zM6.96 18.903h-.381a3.54 3.54 0 0 0-3.538 3.538v3.981a3.54 3.54 0 0 0 3.538 3.538h.381V18.903zm34.08 0V29.96h.381a3.54 3.54 0 0 0 3.538-3.538v-3.981a3.54 3.54 0 0 0-3.538-3.538h-.381z" fill="#fd5631"></path>
+                        </svg>
+                        <h3 class="h5 card-title pb-1">Support 24/7</h3>
+                        <p class="card-text">
+                            Id velit, dui condimentum dictumst sapien quis a elementum dignissim. Dignissim
+                            ultrices scelerisque ultrices nisi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works-->
+    <section class="container mb-5 pb-2 pb-lg-4">
+        <div class="row gy-4">
+            <div class="col-md-5 col-12">
+                <img class="d-block mx-auto" src="@/assets/images/about/hero/01.jpg" alt="Illustration" />
+            </div>
+            <div class="col-lg-6 offset-lg-1 col-md-7 col-12">
+                <h2 class="h3 mb-lg-5 mb-sm-4">How it works</h2>
+                <div class="steps steps-vertical">
+                    <div class="step active">
+                        <div class="step-progress"><span class="step-number">1</span></div>
+                        <div class="step-label ms-4">
+                            <h3 class="h5 mb-2 pb-1">Choose your property</h3>
+                            <p class="mb-0">
+                                Odio velit, massa augue etiam in parturient volutpat orci. Pulvinar amet, at est ac
+                                curabitur mauris, semper cursus metus. Imperdiet sed massa amet at turpis. Dis
+                                risus, donec in ac ultricies tempor eu, amet.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-progress"><span class="step-number">2</span></div>
+                        <div class="step-label ms-4">
+                            <h3 class="h5 mb-2 pb-1">See the property directly</h3>
+                            <p class="mb-0">
+                                Id orci senectus dignissim magna nec diam bibendum at. Morbi quis turpis nulla
+                                condimentum est elementum. Tristique in accumsan eget vestibulum volutpat pretium.
+                                Sed id elit duis turpis diam justo. Dignissim blandit rutrum venenatis.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-progress"><span class="step-number">3</span></div>
+                        <div class="step-label ms-4">
+                            <h3 class="h5 mb-2 pb-1">Easy payment</h3>
+                            <p class="mb-0">
+                                Ut mattis nascetur aliquam neque velit nunc sed. Morbi congue mauris amet ultrices
+                                molestie tellus proin odio diam. Feugiat elit, habitasse egestas egestas id nec
+                                potenti. Donec convallis donec tristique mattis et viverra.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <Team />
+
+    <Reviews />
+
+    <!-- Find property-->
+    <section class="container mb-5 pb-sm-3 pb-lg-4">
+        <div class="bg-secondary rounded-3">
+            <div class="col-md-11 col-12 offset-md-1 p-md-0 p-2 d-flex align-items-center justify-content-between">
+                <div class="me-md-5 py-md-5 px-md-0 p-4" style="max-width: 526px">
+                    <h2 class="mb-md-4">
+                        Buy property with confidence. <br />
+                        Sell without pressure.
+                    </h2>
+                    <p class="mb-4 pb-md-3 fs-lg">
+                        Amet libero morbi venenatis ut est. Iaculis leo ultricies nunc id ante adipiscing. Vel
+                        metus odio at faucibus ac.
+                    </p>
+                    <nuxt-link class="btn btn-lg btn-primary" to="/catalog/sale">
+                        <i class="fi-search me-2"></i>Find property
+                    </nuxt-link>
+                </div>
+                <div class="col-4 d-md-block d-none align-self-end px-0">
+                    <img class="mt-n5" src="@/assets/images/about/hero/01.jpg" width="406" alt="Cover image" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent posts-->
+    <section class="container mb-5 pb-lg-5">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 pb-2">
+            <h2 class="h3 mb-sm-0">Our recent highlights</h2>
+            <nuxt-link class="btn btn-link fw-normal ms-sm-3 p-0" to="/pages/blog/grid">Go to blog
+                <i class="fi-arrow-long-right ms-2"></i>
+            </nuxt-link>
+        </div>
+        <!-- Blog posts-->
+        <div class="row">
+            <div class="col-lg-4">
+                <article>
+                    <a class="d-block mb-3" to="/pages/blog/single">
+                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
+                    </a>
+                    <a class="fs-xs text-uppercase text-decoration-none" href="javascript:void(0);">Property Market Analysis</a>
+                    <h3 class="fs-base pt-1">
+                        <a class="nav-link" to="/pages/blog/single">When Is the Right Time to Downsize Your Home?</a>
+                    </h3>
+                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
+                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
+                        <div class="ps-2">
+                            <h6 class="fs-sm text-nav lh-base mb-1">Cody Fisher</h6>
+                            <div class="d-flex text-body fs-xs">
+                                <span class="me-2 pe-1"><i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Nov 24</span>
+                                <span><i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>No comments</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            </div>
+            <div class="col-lg-4">
+                <article>
+                    <a class="d-block mb-3" to="/pages/blog/single">
+                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
+                    </a>
+                    <a class="fs-xs text-uppercase text-decoration-none" href="javascript:void(0);">Tips &amp; Advice</a>
+                    <h3 class="fs-base pt-1">
+                        <a class="nav-link" to="/pages/blog/single">7 Tips for Achieving Maximum Coziness</a>
+                    </h3>
+                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
+                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
+                        <div class="ps-2">
+                            <h6 class="fs-sm text-nav lh-base mb-1">Darrell Steward</h6>
+                            <div class="d-flex text-body fs-xs">
+                                <span class="me-2 pe-1">
+                                    <i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Dec 15</span>
+                                <span>
+                                    <i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>2 comments</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            </div>
+            <div class="col-lg-4">
+                <article>
+                    <nuxt-link class="d-block mb-3" to="/pages/blog/single">
+                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
+                    </nuxt-link>
+                    <a class="fs-xs text-uppercase text-decoration-none" href="">Inspiration</a>
+                    <h3 class="fs-base pt-1">
+                        <nuxt-link class="nav-link" to="/pages/blog/single">5 Easy-to-Ambitious Projects to Improve Your Home</nuxt-link>
+                    </h3>
+                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
+                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
+                        <div class="ps-2">
+                            <h6 class="fs-sm text-nav lh-base mb-1">Kathryn Murphy</h6>
+                            <div class="d-flex text-body fs-xs">
+                                <span class="me-2 pe-1">
+                                    <i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Nov 28</span>
+                                <span>
+                                    <i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>4 comments</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            </div>
+        </div>
+    </section>
+</template>

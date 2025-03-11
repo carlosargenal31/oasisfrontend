@@ -1,0 +1,332 @@
+/* Estilos para la página de detalle de propiedad */
+
+/* Estilos base y reinicio */
+body, html {
+    background-color: #ffffff !important;
+    color: #333333;
+    font-family: sans-serif;
+  }
+  
+  /* Contenedor principal */
+  .property-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #333333;
+  }
+  
+  /* Forzar colores de texto en elementos clave */
+  .property-page h1, 
+  .property-page h2, 
+  .property-page h3, 
+  .property-page h4, 
+  .property-page h5, 
+  .property-page h6 {
+    color: #000000 !important;
+  }
+  
+  /* Estilos específicos para clases de títulos */
+  .property-title, 
+  .rent-title, 
+  .details-title, 
+  .amenities-title, 
+  .not-included-title, 
+  .section-title, 
+  .recently-viewed-title {
+    color: #000000 !important;
+    font-weight: bold;
+  }
+  
+  /* Estilos para textos */
+  .property-page p, 
+  .property-page span:not(.text-white), 
+  .property-page div {
+    color: #333333;
+  }
+  
+  /* Excepciones para texto blanco en elementos con fondo de color */
+  .bg-green-500, 
+  .bg-blue-500, 
+  .bg-red-500, 
+  .text-white, 
+  button.bg-red-500,
+  .bg-green-500 span, 
+  .bg-blue-500 span, 
+  .bg-red-500 span {
+    color: #ffffff !important;
+  }
+  
+  /* Estilos para la dirección */
+  .property-address {
+    color: #666666;
+  }
+  
+  /* Estilos para detalles de propiedad */
+  .property-details {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .property-details .detail-label {
+    color: #666666;
+  }
+  
+  .property-details .detail-value {
+    color: #333333;
+    font-weight: 500;
+  }
+  
+  /* Estilos para la galería */
+  .gallery-container {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .thumbnail {
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    width: 80px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+  }
+  
+  .thumbnail:hover {
+    border-color: #0d6efd;
+  }
+  
+  .thumbnail.active {
+    border-color: #0d6efd;
+  }
+  
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Botones de navegación */
+  button.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    transition: all 0.2s ease;
+  }
+  
+  button.nav-arrow:hover {
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  button.prev-arrow {
+    left: 16px;
+  }
+  
+  button.next-arrow {
+    right: 16px;
+  }
+  
+  /* Botones de acción (favorito, compartir) */
+  .action-button {
+    background-color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    border: 1px solid #eeeeee;
+  }
+  
+  .action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .favorite-active {
+    color: #e53e3e !important;
+  }
+  
+  /* Estilos para las etiquetas/badges */
+  .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  
+  .badge-verified {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .badge-new {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .badge-featured {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  /* Estilos para "Book a viewing" botón */
+  .booking-button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+  
+  .booking-button:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Estilos para las cards de propiedades recientes */
+  .property-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    background-color: white;
+  }
+  
+  .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .card-image {
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .card-status {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    color: #3b82f6;
+  }
+  
+  .card-title {
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 4px;
+  }
+  
+  .card-location {
+    font-size: 13px;
+    color: #666666;
+    margin-bottom: 8px;
+  }
+  
+  .card-price {
+    font-weight: 700;
+    font-size: 18px;
+    color: #000000;
+    margin-bottom: 8px;
+  }
+  
+  .card-price-period {
+    font-weight: 400;
+    font-size: 14px;
+    color: #666666;
+  }
+  
+  .card-features {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #666666;
+  }
+  
+  /* Amenities section */
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .amenity-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .amenity-item:before {
+    content: "✓";
+    margin-right: 8px;
+    color: #666666;
+  }
+  
+  /* Publication details */
+  .publication-details {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #666666;
+    margin-top: 20px;
+  }
+  
+  .publication-item {
+    margin-right: 12px;
+    padding-right: 12px;
+    border-right: 1px solid #ddd;
+  }
+  
+  .publication-item:last-child {
+    border-right: none;
+  }
+  
+  .publication-value {
+    font-weight: 600;
+    color: #333333;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .property-page {
+      padding: 10px;
+    }
+    
+    .property-title {
+      font-size: 24px;
+    }
+    
+    .thumbnail {
+      width: 60px;
+      height: 45px;
+    }
+    
+    .amenities-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .property-card {
+      margin-bottom: 20px;
+    }
+  }

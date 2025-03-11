@@ -1,33 +1,35 @@
-import { useAuthStore } from '@/store/auth';
+// middleware/auth.js
+import { useAuthStore } from '~/store/auth';
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware((to, from) => {
+  // Skip middleware during server-side rendering
+  if (process.server) return;
+  
+  // Acceder al store
   const authStore = useAuthStore();
   
   // Initialize auth state if not already done
-  if (!authStore.isAuthenticated) {
-    authStore.init();
+  if (!authStore.isInitialized) {
+    authStore.initialize();
   }
-
-  // Check if the route requires authentication
-  if (to.meta.requiresAuth) {
-    // If not authenticated, redirect to login
-    if (!authStore.isAuthenticated) {
-      return navigateTo({
-        path: '/auth/login',
-        query: { redirect: to.fullPath }
-      });
+  
+  // Si la ruta requiere auth y el usuario no está autenticado
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // Guardar la ruta prevista para redirección después del login
+    if (process.client) {
+      localStorage.setItem('authRedirect', to.fullPath);
     }
     
-    // Check if a specific role is required
-    if (to.meta.requiredRole && !authStore.checkAuthAndRole(to.meta.requiredRole)) {
-      // If user doesn't have the required role, redirect to home or unauthorized page
-      return navigateTo('/unauthorized');
-    }
+    return navigateTo('/auth/login');
   }
-
-  // If the route is an auth route (login, register, etc.) and user is authenticated,
-  // redirect to home or dashboard
-  if (to.meta.isAuthRoute && authStore.isAuthenticated) {
-    return navigateTo('/');
+  
+  // Si la ruta es solo para invitados (como página de login) y el usuario está autenticado
+  if (to.meta.guestOnly && authStore.isAuthenticated) {
+    return navigateTo('/dashboard');
+  }
+  
+  // Para rutas específicas de rol
+  if (to.meta.requiredRole && (!authStore.isAuthenticated || authStore.user?.role !== to.meta.requiredRole)) {
+    return navigateTo('/unauthorized');
   }
 });
