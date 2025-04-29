@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <h1 class="text-2xl font-bold mb-6 text-center">Log In to Your Account</h1>
+  <div class="bg-white text-black p-6 rounded-lg shadow-lg max-w-md mx-auto">
+    <div class="flex justify-center mb-6">
+      <img src="~/public/images/oasis-logo.png" alt="OASIS Logo" class="h-16" />
+    </div>
+    
+    <h1 class="text-2xl font-bold mb-6 text-center text-black">Inicia sesión en tu cuenta</h1>
     
     <form @submit.prevent="handleLogin" class="space-y-6">
       <!-- Error Alert -->
@@ -15,23 +19,23 @@
       
       <!-- Email Input -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+        <label for="email" class="block text-sm font-medium text-black mb-1">Correo electrónico</label>
         <input 
           id="email" 
           v-model="email" 
           type="email" 
           required 
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          placeholder="your@email.com"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          placeholder="tu@correo.com"
         />
       </div>
       
       <!-- Password Input -->
       <div>
         <div class="flex justify-between">
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-          <a href="/auth/login?forgotPassword=true" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-            Forgot password?
+          <label for="password" class="block text-sm font-medium text-black mb-1">Contraseña</label>
+          <a href="/auth/login?forgotPassword=true" class="text-sm text-blue-600 hover:underline">
+            ¿Olvidaste tu contraseña?
           </a>
         </div>
         <input 
@@ -39,25 +43,25 @@
           v-model="password" 
           type="password" 
           required 
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
           placeholder="••••••••"
         />
       </div>
       
       <!-- Forgot password form -->
       <div v-if="showForgotPasswordForm" class="bg-blue-50 p-4 rounded border border-blue-100">
-        <h3 class="text-lg font-medium mb-2">Reset Your Password</h3>
-        <p class="text-sm text-gray-600 mb-3">Enter your email address and we'll send you instructions to reset your password.</p>
+        <h3 class="text-lg font-medium mb-2 text-black">Reestablece tu contraseña</h3>
+        <p class="text-sm text-gray-600 mb-3">Ingresa tu correo electrónico y te enviaremos instrucciones para reestablecer tu contraseña.</p>
         
         <div class="mb-4">
-          <label for="resetEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label for="resetEmail" class="block text-sm font-medium text-black mb-1">Correo electrónico</label>
           <input 
             id="resetEmail" 
             v-model="resetEmail" 
             type="email" 
             required 
-            class="w-full px-4 py-2 border rounded-lg"
-            placeholder="your@email.com"
+            class="w-full px-4 py-2 border rounded-lg text-black bg-white"
+            placeholder="tu@correo.com"
           />
         </div>
         
@@ -68,15 +72,15 @@
             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none"
             :disabled="resetLoading"
           >
-            <span v-if="resetLoading">Sending...</span>
-            <span v-else>Send Reset Link</span>
+            <span v-if="resetLoading">Enviando...</span>
+            <span v-else>Enviar enlace</span>
           </button>
           <button 
             type="button"
             @click="showForgotPasswordForm = false" 
-            class="px-4 py-2 border rounded hover:bg-gray-50 focus:outline-none"
+            class="px-4 py-2 border rounded hover:bg-gray-50 focus:outline-none text-black"
           >
-            Cancel
+            Cancelar
           </button>
         </div>
       </div>
@@ -89,8 +93,8 @@
           type="checkbox" 
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
-        <label for="remember" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-          Remember me
+        <label for="remember" class="ml-2 block text-sm text-black">
+          Recordarme
         </label>
       </div>
       
@@ -105,29 +109,19 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Logging in...
+          Iniciando sesión...
         </span>
-        <span v-else>Log In</span>
+        <span v-else>Iniciar sesión</span>
       </button>
       
       <!-- Sign Up Link -->
-      <div class="text-center text-sm">
-        Don't have an account? 
-        <NuxtLink to="/auth/register" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-          Sign up
+      <div class="text-center text-sm text-black">
+        ¿No tienes una cuenta? 
+        <NuxtLink to="/auth/register" class="text-blue-600 hover:underline font-medium">
+          Regístrate
         </NuxtLink>
       </div>
 
-      <!-- Demo Login -->
-      <div class="text-center mt-4 border-t pt-4">
-        <button 
-          type="button" 
-          @click="useDemoAccount"
-          class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Use Demo Account
-        </button>
-      </div>
     </form>
   </div>
 </template>
@@ -173,7 +167,7 @@ onMounted(() => {
 // Handle password reset request
 const handleResetPassword = async () => {
   if (!resetEmail.value) {
-    error.value = 'Please enter your email address.';
+    error.value = 'Por favor, ingresa tu correo electrónico.';
     return;
   }
   
@@ -186,16 +180,16 @@ const handleResetPassword = async () => {
     });
     
     if (response.data && response.data.success) {
-      success.value = 'Password reset instructions have been sent to your email.';
+      success.value = 'Se han enviado instrucciones para reestablecer tu contraseña a tu correo electrónico.';
       showForgotPasswordForm.value = false;
     } else {
-      error.value = 'Failed to send reset instructions. Please try again.';
+      error.value = 'Error al enviar instrucciones de restablecimiento. Por favor, inténtalo de nuevo.';
     }
   } catch (err) {
-    console.error('Reset password error:', err);
+    console.error('Error de restablecimiento de contraseña:', err);
     
     if (err.response && err.response.data) {
-      error.value = err.response.data.message || 'Failed to send reset instructions. Please try again.';
+      error.value = err.response.data.message || 'Error al enviar instrucciones de restablecimiento. Por favor, inténtalo de nuevo.';
     } else {
       error.value = `Error: ${err.message}`;
     }
@@ -204,14 +198,14 @@ const handleResetPassword = async () => {
   }
 };
 
-// Inside handleLogin function in pages/auth/login.vue
+// Función de inicio de sesión
 const handleLogin = async () => {
   try {
     loading.value = true;
     error.value = '';
     success.value = '';
     
-    console.log('Attempting login with:', email.value, password.value);
+    console.log('Intentando iniciar sesión con:', email.value, password.value);
     
     // Hacer una solicitud directa a la API
     const response = await axios.post('http://localhost:3000/api/auth/login', {
@@ -219,17 +213,17 @@ const handleLogin = async () => {
       password: password.value
     });
     
-    console.log('Login response:', response);
+    console.log('Respuesta de inicio de sesión:', response);
     
     if (response.data && response.data.success && response.data.data) {
       // Extraer datos de la respuesta
       const { user, accessToken, refreshToken } = response.data.data;
       
-      console.log('Login successful. User:', user.first_name, user.last_name);
+      console.log('Inicio de sesión exitoso. Usuario:', user.first_name, user.last_name);
       
       // Guardar en localStorage
-      localStorage.setItem('token', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('access_token', accessToken); // Nombre correcto para el token
+      localStorage.setItem('refresh_token', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
       
       if (rememberMe.value) {
@@ -238,25 +232,15 @@ const handleLogin = async () => {
       
       success.value = '¡Inicio de sesión exitoso! Redirigiendo...';
       
-      // Obtener ruta de redirección
-      let redirectPath = '/dashboard';
-      if (process.client) {
-        const storedRedirect = localStorage.getItem('authRedirect');
-        if (storedRedirect) {
-          redirectPath = storedRedirect;
-          localStorage.removeItem('authRedirect');
-        }
-      }
-      
-      // Redirigir después de un breve retraso para mostrar el mensaje de éxito
+      // Redirigir directamente a la página de información de cuenta
       setTimeout(() => {
-        router.push(redirectPath);
+        router.push('/account/account-info');
       }, 1000);
     } else {
       error.value = 'Formato de respuesta inesperado';
     }
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('Error de inicio de sesión:', err);
     
     if (err.response && err.response.data) {
       error.value = err.response.data.message || 'Error de inicio de sesión';
@@ -279,9 +263,12 @@ const useDemoAccount = () => {
 definePageMeta({
   layout: 'auth'
 });
-
-// Al final de la sección <script setup> en pages/dashboard.vue
-definePageMeta({
-  middleware: ['auth']
-});
 </script>
+
+<style>
+/* Estilos adicionales para garantizar fondo blanco y texto negro */
+body {
+  background-color: white;
+  color: black;
+}
+</style>

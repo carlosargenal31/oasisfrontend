@@ -26,7 +26,7 @@
         <!-- Back to home -->
         <div class="mt-6 text-center">
           <NuxtLink to="/" class="text-blue-600 dark:text-blue-400 text-sm hover:underline">
-            Back to Homepage
+            Volver a la Página de Inicio
           </NuxtLink>
         </div>
       </div>

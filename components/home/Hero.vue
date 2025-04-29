@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 // Importar imagen de fondo
 import heroImg from '@/assets/images/hero-image.jpg'
@@ -9,29 +10,83 @@ const router = useRouter();
 const searchType = ref('rent');
 const location = ref('');
 const propertyType = ref('');
-const price = ref(450000);
+const price = ref(1000000); // Ajustado para mostrar en lempiras
 
-// Función para formatear el precio
+// Lista de ciudades hondureñas
+const cities = ref([
+  'Tegucigalpa',
+  'Roatán',
+  'San Pedro Sula',
+  'La Ceiba',
+  'Valle de Ángeles',
+  'Comayagüela',
+  'Puerto Cortés',
+  'Copán Ruinas',
+  'Comayagua',
+  'Tela'
+]);
+
+// Lista de tipos de propiedades
+const propertyTypes = [
+  { value: 'house', label: 'Casa' },
+  { value: 'apartment', label: 'Apartamento' },
+  { value: 'room', label: 'Habitación' },
+  { value: 'office', label: 'Oficina' },
+  { value: 'commercial', label: 'Comercial' },
+  { value: 'land', label: 'Terreno' },
+  { value: 'daily-rental', label: 'Alquiler diario' },
+  { value: 'new-building', label: 'Edificio nuevo' },
+  { value: 'parking-lot', label: 'Estacionamiento' }
+];
+
+// API URL
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+
+
+
+// Función para formatear el precio en lempiras
 const formatPrice = (value) => {
-  return new Intl.NumberFormat('es-ES', {
+  return new Intl.NumberFormat('es-HN', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(value);
 };
 
+// Ajustar el precio máximo según el tipo de búsqueda
+const maxPrice = () => {
+  return searchType.value === 'rent' ? 300000 : 5000000;
+};
+
+// Ajustar los pasos del slider según el tipo de búsqueda
+const priceStep = () => {
+  return searchType.value === 'rent' ? 5000 : 50000;
+};
+
 const searchProperties = () => {
   const queryParams = new URLSearchParams();
   
-  if (searchType.value) queryParams.append('type', searchType.value);
-  if (location.value) queryParams.append('location', location.value);
-  if (propertyType.value) queryParams.append('propertyType', propertyType.value);
-  if (price.value) queryParams.append('maxPrice', price.value.toString());
-  
-  router.push({
-    path: '/properties',
-    query: Object.fromEntries(queryParams)
-  });
+  if (searchType.value) {
+    // Redirigir a rutas específicas
+    const basePath = `/properties/${searchType.value}`;
+    
+    if (location.value) queryParams.append('city', location.value);
+    if (propertyType.value) queryParams.append('property_type', propertyType.value);
+    if (price.value) queryParams.append('maxPrice', price.value.toString());
+    
+    const queryString = queryParams.toString();
+    const url = queryString ? `${basePath}?${queryString}` : basePath;
+    
+    router.push(url);
+  } else {
+    // Comportamiento predeterminado si no hay tipo de búsqueda
+    router.push({
+      path: '/properties',
+      query: Object.fromEntries(queryParams)
+    });
+  }
 };
+
+
 </script>
 
 <template>
@@ -52,7 +107,7 @@ const searchProperties = () => {
     <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
       <div class="text-center max-w-4xl mx-auto mb-12">
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-          La forma más fácil de encontrar una propiedad perfecta
+          La forma más fácil de encontrar la propiedad perfecta
         </h1>
       </div>
       
@@ -81,12 +136,8 @@ const searchProperties = () => {
               v-model="location"
               class="w-full h-full appearance-none bg-transparent px-6 py-4 pl-12 text-gray-700 focus:outline-none cursor-pointer"
             >
-              <option value="">Ubicación</option>
-              <option value="new-york">Nueva York</option>
-              <option value="chicago">Chicago</option>
-              <option value="los-angeles">Los Ángeles</option>
-              <option value="san-diego">San Diego</option>
-              <option value="miami">Miami</option>
+              <option value="">Ciudad</option>
+              <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
             </select>
             <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,11 +154,7 @@ const searchProperties = () => {
               class="w-full h-full appearance-none bg-transparent px-6 py-4 pl-12 text-gray-700 focus:outline-none cursor-pointer"
             >
               <option value="">Tipo de propiedad</option>
-              <option value="houses">Casas</option>
-              <option value="apartments">Apartamentos</option>
-              <option value="commercial">Comercial</option>
-              <option value="daily-rental">Alquiler diario</option>
-              <option value="new-buildings">Nuevas construcciones</option>
+              <option v-for="type in propertyTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
             </select>
             <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,12 +176,12 @@ const searchProperties = () => {
                     type="range" 
                     v-model="price" 
                     min="0" 
-                    max="1000000" 
-                    step="10000"
+                    :max="maxPrice()" 
+                    :step="priceStep()"
                     class="w-24 md:w-32 h-1 bg-gray-300 rounded-lg appearance-none focus:outline-none"
                   >
                   <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white text-blue-900 text-xs font-semibold px-2 py-1 rounded-full shadow">
-                    ${{ price.toLocaleString() }}
+                    L {{ formatPrice(price) }}
                   </div>
                 </div>
               </div>
@@ -153,3 +200,44 @@ const searchProperties = () => {
     </div>
   </section>
 </template>
+
+<style scoped>
+/* Estilo personalizado para el slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .15s ease-in-out;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: #2563eb;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .15s ease-in-out;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  background: #2563eb;
+}
+</style>

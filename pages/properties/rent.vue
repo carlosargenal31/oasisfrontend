@@ -12,7 +12,7 @@
               <svg class="inline-block mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-4h4v-2h-4V7h-2v4H8v2h4z" fill="currentColor"/>
               </svg>
-              For rent
+              En alquiler
             </button>
             <button 
               @click="navigateToSale"
@@ -21,38 +21,24 @@
               <svg class="inline-block mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" fill="currentColor"/>
               </svg>
-              For sale
+              En venta
             </button>
           </div>
           
           <!-- Location -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Location</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Ubicación</h3>
             <div class="mb-3">
               <select v-model="filters.city" class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" @change="handleFilterChange">
-                <option value="">Choose city</option>
-                <option value="New York">New York</option>
-                <option value="Chicago">Chicago</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="San Francisco">San Francisco</option>
-                <option value="Miami">Miami</option>
-              </select>
-            </div>
-            <div>
-              <select v-model="filters.district" class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" @change="handleFilterChange">
-                <option value="">Choose district</option>
-                <option value="Downtown">Downtown</option>
-                <option value="Midtown">Midtown</option>
-                <option value="Brooklyn">Brooklyn</option>
-                <option value="Queens">Queens</option>
-                <option value="The Bronx">The Bronx</option>
+                <option value="">Seleccionar ciudad</option>
+                <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
               </select>
             </div>
           </div>
           
           <!-- Property Type -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Property type</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de propiedad</h3>
             <div class="property-types overflow-y-auto max-h-48">
               <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
                 <input 
@@ -69,74 +55,125 @@
           </div>
           
           <!-- Price Range Component -->
-          <PriceSlider 
-            :is-rent="true"
-            :initial-min-price="filters.minPrice"
-            :initial-max-price="filters.maxPrice"
-            @update:price="updatePriceRange"
-          />
+          <div class="filter-section mb-5">
+            <h3 class="filter-title text-base font-medium text-black mb-3">Precio por mes</h3>
+            <div class="price-range-slider mb-4 relative">
+              <div class="relative w-full h-1 bg-gray-200 rounded-full my-6">
+                <!-- Barra de rango de precio -->
+                <div 
+                  class="absolute h-1 bg-red-500 rounded-full"
+                  :style="{
+                    left: getLeftPosition() + '%',
+                    width: getWidthPosition() + '%'
+                  }"
+                ></div>
+                
+                <!-- Control deslizante mínimo -->
+                <div 
+                  class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
+                  :style="{ left: getLeftPosition() + '%' }"
+                  @mousedown="startDragging('min')"
+                  @touchstart="startDragging('min')"
+                ></div>
+                
+                <!-- Control deslizante máximo -->
+                <div 
+                  class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
+                  :style="{ left: getRightPosition() + '%' }"
+                  @mousedown="startDragging('max')"
+                  @touchstart="startDragging('max')"
+                ></div>
+              </div>
+            </div>
+            
+            <div class="flex items-center mt-4">
+              <div class="w-50 pe-2 flex-1">
+                <div class="input-group flex items-center border border-gray-300 rounded-md">
+                  <span class="pl-3 text-gray-500">L</span>
+                  <input 
+                    type="number" 
+                    v-model.number="filters.minPrice" 
+                    @change="handleFilterChange"
+                    class="w-full p-2 border-none focus:ring-0 text-black font-medium"
+                  >
+                </div>
+              </div>
+              <div class="text-muted mx-2">—</div>
+              <div class="w-50 ps-2 flex-1">
+                <div class="input-group flex items-center border border-gray-300 rounded-md">
+                  <span class="pl-3 text-gray-500">L</span>
+                  <input 
+                    type="number" 
+                    v-model.number="filters.maxPrice" 
+                    @change="handleFilterChange"
+                    class="w-full p-2 border-none focus:ring-0 text-black font-medium"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
           
           <!-- Bedrooms -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Bedrooms</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Habitaciones</h3>
             <div class="flex space-x-2">
               <label 
-                v-for="option in ['Studio', '1', '2', '3', '4+']" 
-                :key="option"
+                v-for="option in bedOptions" 
+                :key="option.value"
                 :class="[
                   'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                  filters.bedrooms === option.toLowerCase() 
+                  filters.bedrooms === option.value 
                     ? 'border-blue-500 text-white bg-blue-500' 
                     : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
                 ]"
               >
                 <input 
                   type="radio" 
-                  :value="option.toLowerCase()" 
+                  :value="option.value" 
                   v-model="filters.bedrooms"
                   @change="handleFilterChange"
                   class="sr-only"
                 >
-                {{ option }}
+                {{ option.label }}
               </label>
             </div>
           </div>
           
           <!-- Bathrooms -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Bathrooms</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Baños</h3>
             <div class="flex space-x-2">
               <label 
-                v-for="option in ['1', '2', '3', '4']" 
-                :key="option"
+                v-for="option in bathOptions" 
+                :key="option.value"
                 :class="[
                   'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                  filters.bathrooms === option 
+                  filters.bathrooms === option.value 
                     ? 'border-blue-500 text-white bg-blue-500' 
                     : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
                 ]"
               >
                 <input 
                   type="radio" 
-                  :value="option" 
+                  :value="option.value" 
                   v-model="filters.bathrooms"
                   @change="handleFilterChange"
                   class="sr-only"
                 >
-                {{ option }}
+                {{ option.label }}
               </label>
             </div>
           </div>
           
           <!-- Square Meters -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Square meters</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Metros cuadrados</h3>
             <div class="flex items-center">
               <input 
                 type="number" 
                 v-model="filters.minArea" 
                 @change="handleFilterChange"
-                placeholder="Min"
+                placeholder="Mín"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
               >
               <span class="mx-3 text-gray-500">—</span>
@@ -144,7 +181,7 @@
                 type="number" 
                 v-model="filters.maxArea" 
                 @change="handleFilterChange"
-                placeholder="Max"
+                placeholder="Máx"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
               >
             </div>
@@ -152,7 +189,7 @@
           
           <!-- Amenities -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Amenities</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Comodidades</h3>
             <div class="amenities-list overflow-y-auto max-h-48">
               <div v-for="amenity in amenities" :key="amenity.value" class="checkbox-item flex items-center mb-2">
                 <input 
@@ -170,7 +207,7 @@
           
           <!-- Pets -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Pets</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Mascotas</h3>
             <div class="pets-list">
               <div v-for="pet in petOptions" :key="pet.value" class="checkbox-item flex items-center mb-2">
                 <input 
@@ -188,7 +225,7 @@
           
           <!-- Additional Options -->
           <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Additional options</h3>
+            <h3 class="filter-title text-base font-medium text-black mb-3">Opciones adicionales</h3>
             <div class="options-list">
               <div v-for="option in additionalOptions" :key="option.value" class="checkbox-item flex items-center mb-2">
                 <input 
@@ -207,12 +244,12 @@
           <!-- Reset Filters Button -->
           <button 
             @click="resetFilters" 
-            class="reset-button w-full flex items-center justify-center py-3 px-4 border border-red-400 rounded-md bg-white text-red-500 hover:bg-red-50 transition"
+            class="reset-button w-full flex items-center justify-center py-3 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
           >
             <svg class="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 16c1.671 0 3-1.329 3-3s-1.329-3-3-3-3 1.329-3 3 1.329 3 3 3z M20.817 11.186a8.94 8.94 0 0 0-1.355-3.219 9.053 9.053 0 0 0-2.43-2.43 8.95 8.95 0 0 0-3.219-1.355 9.028 9.028 0 0 0-1.838-.182V2L8 5l3.975 3V6.002c.484-.002.968.044 1.435.14a6.961 6.961 0 0 1 2.502 1.053 7.005 7.005 0 0 1 1.892 1.892A6.967 6.967 0 0 1 19 13a7.032 7.032 0 0 1-.55 2.725 7.11 7.11 0 0 1-.644 1.188 7.2 7.2 0 0 1-.858 1.039 7.028 7.028 0 0 1-3.536 1.907 7.13 7.13 0 0 1-2.822 0 6.961 6.961 0 0 1-2.503-1.054 7.002 7.002 0 0 1-1.89-1.89A6.996 6.996 0 0 1 5 13H3a9.02 9.02 0 0 0 1.539 5.034 9.096 9.096 0 0 0 2.428 2.428A8.95 8.95 0 0 0 12 22a9.09 9.09 0 0 0 1.814-.183 9.014 9.014 0 0 0 3.218-1.355 8.886 8.886 0 0 0 1.331-1.099 9.228 9.228 0 0 0 1.1-1.332A8.952 8.952 0 0 0 21 13a9.09 9.09 0 0 0-.183-1.814z" fill="currentColor"/>
             </svg>
-            Reset filters
+            Restablecer filtros
           </button>
         </div>
 
@@ -220,42 +257,42 @@
         <div class="content-column flex-1">
           <!-- Breadcrumb -->
           <div class="breadcrumb flex items-center mb-4 text-sm">
-            <a href="/" class="text-gray-600 hover:text-blue-500">Home</a>
+            <a href="/" class="text-gray-600 hover:text-blue-500">Inicio</a>
             <span class="mx-2 text-gray-500">›</span>
-            <span class="text-black">Property for rent</span>
+            <span class="text-black">Propiedades en alquiler</span>
           </div>
           
           <!-- Page Title -->
-          <h1 class="text-2xl font-bold text-black mb-4">Property for rent</h1>
+          <h1 class="text-2xl font-bold text-black mb-4">Propiedades en alquiler</h1>
           
           <!-- Controls and Sorting -->
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-2">
-              <span class="text-gray-500">Sort by:</span>
+              <span class="text-gray-500">Ordenar por:</span>
               <select 
                 v-model="sortBy" 
                 class="sort-select py-1 px-3 border border-gray-300 rounded-md bg-white text-black"
                 @change="handleSortChange"
               >
-                <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Más recientes</option>
+                <option value="price-low">Precio: de menor a mayor</option>
+                <option value="price-high">Precio: de mayor a menor</option>
               </select>
             </div>
           </div>
           
           <!-- Results Count -->
           <div class="results-count text-gray-600 mb-4">
-            {{ propertyStore.totalProperties }} results
+            {{ totalProperties }} resultados
           </div>
           
           <!-- Loading State -->
-          <div v-if="propertyStore.loading" class="flex justify-center items-center py-20">
+          <div v-if="loading" class="flex justify-center items-center py-20">
             <div class="spinner border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
           </div>
           
           <!-- Properties Grid -->
-          <div v-else-if="!propertyStore.error && propertyStore.properties.length > 0" class="properties-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-else-if="!error && properties.length > 0" class="properties-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Property Card -->
             <div 
               v-for="property in sortedProperties" 
@@ -267,20 +304,20 @@
               <!-- Property Image -->
               <div class="property-image-container relative">
                 <img 
-                  :src="property.image || 'https://placehold.co/600x400?text=No+Image'" 
+                  :src="property.image || 'https://placehold.co/600x400?text=Sin+Imagen'" 
                   :alt="property.title" 
                   class="property-image w-full h-48 object-cover"
                 >
                 
                 <!-- Badges -->
                 <div class="property-badges absolute top-3 left-3">
-                  <span v-if="property.isVerified" class="badge bg-green-500 text-white text-xs font-medium px-2 py-1 rounded block mb-1">Verified</span>
-                  <span v-if="property.isNew" class="badge bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded block">NEW</span>
+                  <span v-if="property.isVerified" class="badge bg-green-500 text-white text-xs font-medium px-2 py-1 rounded block mb-1">Verificado</span>
+                  <span v-if="property.isNew" class="badge bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded block">NUEVO</span>
                 </div>
                 
                 <!-- Favorite Button - Only visible on hover -->
                 <button 
-                  v-show="hoveredPropertyId === property.id || propertyStore.favorites.includes(property.id)"
+                  v-show="hoveredPropertyId === property.id || isFavorite(property.id)"
                   @click.stop="toggleFavorite(property.id)" 
                   class="absolute top-3 right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
                 >
@@ -290,7 +327,7 @@
                     viewBox="0 0 24 24" 
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
-                    :class="propertyStore.favorites.includes(property.id) ? 'text-blue-500' : 'text-gray-400'"
+                    :class="isFavorite(property.id) ? 'text-blue-500' : 'text-gray-400'"
                   >
                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/>
                   </svg>
@@ -301,12 +338,12 @@
               <div @click="navigateToProperty(property.id)" class="cursor-pointer">
                 <!-- For Rent Label - Keep this in red -->
                 <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
-                  FOR RENT
+                  EN ALQUILER
                 </div>
                 
                 <!-- Title and Area -->
                 <h3 class="font-medium text-black px-4 mt-1">
-                  {{ property.title }} | {{ property.square_feet }} sq.m
+                  {{ property.title }} | {{ property.square_feet }} m²
                 </h3>
                 
                 <!-- Address -->
@@ -317,8 +354,8 @@
                   <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11.8 10.9C9.53 10.31 8.8 9.7 8.8 8.75C8.8 7.66 9.81 6.9 11.5 6.9C13.28 6.9 13.94 7.75 14 9H16.21C16.14 7.28 15.09 5.7 13 5.19V3H10V5.16C8.06 5.58 6.5 6.84 6.5 8.77C6.5 11.08 8.41 12.23 11.2 12.9C13.7 13.5 14.2 14.38 14.2 15.31C14.2 16 13.71 17.1 11.5 17.1C9.44 17.1 8.63 16.18 8.52 15H6.32C6.44 17.19 8.08 18.42 10 18.83V21H13V18.85C14.95 18.48 16.5 17.35 16.5 15.3C16.5 12.46 14.07 11.49 11.8 10.9Z" fill="currentColor"/>
                   </svg>
-                  <span class="font-bold text-black">${{ formatPrice(property.price) }}</span>
-                  <span class="text-sm text-gray-600 ml-1">/month</span>
+                  <span class="font-bold text-black">L {{ formatPrice(property.price) }}</span>
+                  <span class="text-sm text-gray-600 ml-1">/mes</span>
                 </div>
                 
                 <!-- Features -->
@@ -347,36 +384,36 @@
           </div>
           
           <!-- No Results -->
-          <div v-else-if="!propertyStore.error && propertyStore.properties.length === 0" class="flex flex-col items-center justify-center py-16">
+          <div v-else-if="!error && properties.length === 0" class="flex flex-col items-center justify-center py-16">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-gray-400 mb-4" viewBox="0 0 24 24">
               <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
             </svg>
-            <h3 class="text-lg font-medium text-black mb-2">No properties found</h3>
-            <p class="text-gray-600 mb-4">Try adjusting your search criteria</p>
+            <h3 class="text-lg font-medium text-black mb-2">No se encontraron propiedades</h3>
+            <p class="text-gray-600 mb-4">Intente ajustar sus criterios de búsqueda</p>
             <button 
               @click="resetFilters" 
               class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
             >
-              Reset Filters
+              Restablecer filtros
             </button>
           </div>
           
           <!-- Error State -->
-          <div v-else-if="propertyStore.error" class="flex flex-col items-center justify-center py-16">
+          <div v-else-if="error" class="flex flex-col items-center justify-center py-16">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-blue-500 mb-4" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
             </svg>
-            <p class="text-blue-500 font-medium mb-4">{{ propertyStore.error }}</p>
+            <p class="text-blue-500 font-medium mb-4">{{ error }}</p>
             <button 
               @click="fetchProperties" 
               class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
             >
-              Try Again
+              Intentar de nuevo
             </button>
           </div>
           
           <!-- Pagination -->
-          <div v-if="totalPages > 1 && !propertyStore.loading" class="pagination flex justify-center mt-8">
+          <div v-if="totalPages > 1 && !loading" class="pagination flex justify-center mt-8">
             <button 
               class="page-btn border border-gray-300 rounded-md w-10 h-10 flex items-center justify-center mx-1" 
               :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
@@ -414,83 +451,163 @@
         </div>
       </div>
     </div>
-    
-    <!-- Map Component -->
-    <PropertyMap 
-      :isVisible="showMap" 
-      :properties="propertyStore.properties" 
-      @close="toggleMapView" 
-    />
   </div>
 </template>
+
 <script setup>
-import { ref, computed, watch, onMounted, nextTick, onUnmounted } from 'vue';
-import { usePropertyStore } from '~/store/property';
-import { useRoute, useRouter } from 'vue-router';
-import PropertyMap from '~/components/PropertyMap.vue';
-import PriceSlider from '~/components/PriceSlider.vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '~/store/user';
+import { useFavoritesStore } from '~/store/favorites';
+import axios from 'axios';
 
-// Initialize stores and router
-const propertyStore = usePropertyStore();
-const route = useRoute();
+// Router y ruta actual
 const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
+const favoritesStore = useFavoritesStore();
 
-// UI state
-const sortBy = ref('newest');
+// Estado de las propiedades y filtros
+const properties = ref([]);
+const totalProperties = ref(0);
+const loading = ref(true);
+const error = ref(null);
+const hoveredPropertyId = ref(null);
+const selectedPropertyTypes = ref([]);
+
+// Paginación
 const currentPage = ref(1);
 const itemsPerPage = ref(9);
-const hoveredPropertyId = ref(null);
-const showMap = ref(false);
+const sortBy = ref('newest');
+
+// Datos disponibles para selección - Lista actualizada y dinámica
+const availableCities = ref([
+  'Tegucigalpa',
+  'Roatán',
+  'San Pedro Sula',
+  'La Ceiba',
+  'Valle de Ángeles',
+  'Comayagüela',
+  'Puerto Cortés',
+  'Copán Ruinas',
+  'Comayagua',
+  'Tela'
+]);
+
+// Opciones de habitaciones
+const bedOptions = [
+  { value: 'studio', label: 'Estudio' },
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4+', label: '4+' }
+];
+
+// Opciones de baños
+const bathOptions = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' }
+];
 
 // Property Types
 const propertyTypes = [
-  { value: 'house', label: 'House' },
-  { value: 'apartment', label: 'Apartment' },
-  { value: 'room', label: 'Room' },
-  { value: 'office', label: 'Office' },
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'land', label: 'Land' },
-  { value: 'daily-rental', label: 'Daily rental' },
-  { value: 'new-building', label: 'New building' },
-  { value: 'parking-lot', label: 'Parking lot' }
+  { value: 'house', label: 'Casa' },
+  { value: 'apartment', label: 'Apartamento' },
+  { value: 'room', label: 'Habitación' },
+  { value: 'office', label: 'Oficina' },
+  { value: 'commercial', label: 'Comercial' },
+  { value: 'land', label: 'Terreno' },
+  { value: 'daily-rental', label: 'Alquiler diario' },
+  { value: 'new-building', label: 'Edificio nuevo' },
+  { value: 'parking-lot', label: 'Estacionamiento' }
 ];
 
-// Amenities options
+// Amenities options - Todas las comodidades solicitadas
 const amenities = [
-  { value: 'air-conditioning', label: 'Air conditioning' },
-  { value: 'balcony', label: 'Balcony' },
-  { value: 'garage', label: 'Garage' },
-  { value: 'gym', label: 'Gym' },
+  { value: 'aerotermia', label: 'Aerotermia' },
+  { value: 'agua-incluida', label: 'Agua incluida' },
+  { value: 'aire-acondicionado', label: 'Aire acondicionado' },
+  { value: 'alarma', label: 'Alarma' },
+  { value: 'almacen', label: 'Almacén' },
+  { value: 'alta-rentabilidad', label: 'Alta rentabilidad' },
+  { value: 'amueblado', label: 'Amueblado' },
+  { value: 'armarios-empotrados', label: 'Armarios empotrados' },
+  { value: 'ascensor', label: 'Ascensor' },
+  { value: 'balcon', label: 'Balcón' },
+  { value: 'barbacoa', label: 'Barbacoa' },
+  { value: 'calefaccion', label: 'Calefacción' },
+  { value: 'chimenea', label: 'Chimenea' },
+  { value: 'cocina-equipada', label: 'Cocina equipada' },
+  { value: 'doble-altura', label: 'Doble altura' },
+  { value: 'domotica', label: 'Domótica' },
+  { value: 'edificable', label: 'Edificable' },
+  { value: 'eficiencia-energetica-a', label: 'Eficiencia energética A' },
+  { value: 'electricidad-incluida', label: 'Electricidad incluida' },
+  { value: 'escaparate', label: 'Escaparate' },
+  { value: 'esquina', label: 'Esquina' },
+  { value: 'falso-techo', label: 'Falso techo' },
+  { value: 'fibra-optica', label: 'Fibra óptica' },
+  { value: 'facil-maniobra', label: 'Fácil maniobra' },
+  { value: 'garaje', label: 'Garaje' },
+  { value: 'gimnasio', label: 'Gimnasio' },
+  { value: 'jacuzzi', label: 'Jacuzzi' },
+  { value: 'jardines', label: 'Jardines' },
+  { value: 'jardin', label: 'Jardín' },
+  { value: 'lavadora', label: 'Lavadora' },
+  { value: 'lavavajillas', label: 'Lavavajillas' },
+  { value: 'licencia-actividad', label: 'Licencia actividad' },
+  { value: 'locales-comerciales', label: 'Locales comerciales' },
   { value: 'parking', label: 'Parking' },
-  { value: 'pool', label: 'Pool' },
-  { value: 'security-cameras', label: 'Security cameras' },
+  { value: 'persiana-metalica', label: 'Persiana metálica' },
+  { value: 'piscina', label: 'Piscina' },
+  { value: 'piscina-comunitaria', label: 'Piscina comunitaria' },
+  { value: 'primera-linea-playa', label: 'Primera línea playa' },
+  { value: 'puerta-automatica', label: 'Puerta automática' },
+  { value: 'recepcion', label: 'Recepción' },
+  { value: 'reformado', label: 'Reformado' },
+  { value: 'ropa-cama', label: 'Ropa cama' },
+  { value: 'salas-reuniones', label: 'Salas reuniones' },
+  { value: 'salida-humos', label: 'Salida humos' },
+  { value: 'seguridad-24h', label: 'Seguridad 24h' },
+  { value: 'servicios-conectados', label: 'Servicios conectados' },
+  { value: 'suelo-radiante', label: 'Suelo radiante' },
+  { value: 'suelo-tecnico', label: 'Suelo técnico' },
+  { value: 'suministros-independientes', label: 'Suministros independientes' },
+  { value: 'terraza', label: 'Terraza' },
+  { value: 'totalmente-alquilado', label: 'Totalmente alquilado' },
+  { value: 'trastero', label: 'Trastero' },
+  { value: 'ubicacion-prime', label: 'Ubicación prime' },
+  { value: 'urbanizacion-privada', label: 'Urbanización privada' },
+  { value: 'urbanizado', label: 'Urbanizado' },
+  { value: 'vigilancia-24h', label: 'Vigilancia 24h' },
+  { value: 'vistas-mar', label: 'Vistas mar' },
+  { value: 'vistas-montana', label: 'Vistas montaña' },
+  { value: 'vistas-panoramicas', label: 'Vistas panorámicas' },
   { value: 'wifi', label: 'WiFi' },
-  { value: 'laundry', label: 'Laundry' },
-  { value: 'dishwasher', label: 'Dishwasher' }
+  { value: 'zona-infantil', label: 'Zona infantil' }
 ];
 
 // Pet options
 const petOptions = [
-  { value: 'cats-allowed', label: 'Cats allowed' },
-  { value: 'dogs-allowed', label: 'Dogs allowed' }
+  { value: 'cats-allowed', label: 'Se permiten gatos' },
+  { value: 'dogs-allowed', label: 'Se permiten perros' }
 ];
 
 // Additional options
 const additionalOptions = [
-  { value: 'verified', label: 'Verified' },
-  { value: 'featured', label: 'Featured' }
+  { value: 'verified', label: 'Verificado' },
+  { value: 'featured', label: 'Destacado' },
+  { value: 'new', label: 'Nuevo' }
 ];
 
-// Selected property types for multi-select
-const selectedPropertyTypes = ref([]);
-
-// Filters
+// Filtros
 const filters = ref({
   city: '',
-  district: '',
   property_type: null,
-  minPrice: 200,
-  maxPrice: 5000,
+  minPrice: 0,   // Ajustados a lempiras (aprox. $200 USD)
+  maxPrice: 200000, // Ajustados a lempiras (aprox. $5,000 USD)
   bedrooms: '',
   bathrooms: '',
   minArea: '',
@@ -501,22 +618,153 @@ const filters = ref({
   status: 'for-rent' // Siempre en modo alquiler para esta página
 });
 
+// API URL
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+
+
+
 // Navegación a la página de propiedades en venta
 const navigateToSale = () => {
   router.push('/properties/sale');
 };
 
-// Update property type filters
+// Verificar si una propiedad es favorita
+const isFavorite = (propertyId) => {
+  return favoritesStore.isFavorite(propertyId);
+};
+
+// Alternar estado de favorito
+const toggleFavorite = async (propertyId) => {
+  try {
+    // Buscar la propiedad completa por ID
+    const property = properties.value.find(p => p.id === propertyId);
+    
+    if (property) {
+      // Usar el objeto completo de la propiedad si está disponible
+      await favoritesStore.toggleFavorite(property);
+    } else {
+      // Usar solo el ID si no se encuentra la propiedad
+      await favoritesStore.toggleFavorite(propertyId);
+    }
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+  }
+};
+
+// Actualizar los tipos de propiedad seleccionados
 const updatePropertyTypeFilters = () => {
   if (selectedPropertyTypes.value.length === 1) {
     filters.value.property_type = selectedPropertyTypes.value[0];
   } else if (selectedPropertyTypes.value.length > 1) {
-    // Handle multiple selected types
+    // Manejo de múltiples tipos seleccionados
     filters.value.property_type = selectedPropertyTypes.value;
   } else {
     filters.value.property_type = null;
   }
   handleFilterChange();
+};
+
+// Funciones para controlar el slider de precios
+const getLeftPosition = () => {
+  const sliderMin = 0;
+  const sliderMax = 300000;
+  const range = sliderMax - sliderMin;
+  if (range <= 0) return 0;
+  
+  let position = ((filters.value.minPrice - sliderMin) / range) * 100;
+  // Asegurar que está dentro de los límites
+  position = Math.max(0, Math.min(position, 100));
+  return position;
+};
+
+const getRightPosition = () => {
+  const sliderMin = 0;
+  const sliderMax = 300000;
+  const range = sliderMax - sliderMin;
+  if (range <= 0) return 100;
+  
+  let position = ((filters.value.maxPrice - sliderMin) / range) * 100;
+  // Asegurar que está dentro de los límites
+  position = Math.max(0, Math.min(position, 100));
+  return position;
+};
+
+const getWidthPosition = () => {
+  return getRightPosition() - getLeftPosition();
+};
+
+// Variables para el control del slider
+const draggingHandle = ref(null);
+
+// Iniciar arrastre
+const startDragging = (handle) => {
+  draggingHandle.value = handle;
+  document.addEventListener('mousemove', handleDrag);
+  document.addEventListener('mouseup', stopDragging);
+  document.addEventListener('touchmove', handleDrag, { passive: false });
+  document.addEventListener('touchend', stopDragging);
+  
+  // Cambiar estilo del cursor durante arrastre
+  document.body.style.cursor = 'grabbing';
+};
+
+// Manejar arrastre
+const handleDrag = (e) => {
+  e.preventDefault();
+  
+  if (!draggingHandle.value) return;
+  
+  const sliderTrack = document.querySelector('.price-range-slider > div');
+  if (!sliderTrack) return;
+  
+  const trackRect = sliderTrack.getBoundingClientRect();
+  const trackWidth = trackRect.width;
+  
+  // Obtener posición X (manejar eventos táctiles y de ratón)
+  let clientX;
+  if (e.type === 'touchmove') {
+    clientX = e.touches[0].clientX;
+  } else {
+    clientX = e.clientX;
+  }
+  
+  // Calcular posición porcentual
+  let percentPosition = (clientX - trackRect.left) / trackWidth;
+  percentPosition = Math.min(Math.max(percentPosition, 0), 1);
+  
+  // Calcular precio según posición
+  const sliderMin = 0;
+  const sliderMax = 300000;
+  const priceRange = sliderMax - sliderMin;
+  let priceValue = Math.round((percentPosition * priceRange + sliderMin) / 500) * 500;
+  
+  // Actualizar precio mínimo o máximo según qué control se está arrastrando
+  if (draggingHandle.value === 'min') {
+    // Asegurar que el precio mínimo no exceda el máximo
+    filters.value.minPrice = Math.min(priceValue, filters.value.maxPrice - 500);
+  } else {
+    // Asegurar que el precio máximo no sea menor que el mínimo
+    filters.value.maxPrice = Math.max(priceValue, filters.value.minPrice + 500);
+  }
+};
+
+// Detener arrastre
+const stopDragging = () => {
+  if (draggingHandle.value) {
+    document.removeEventListener('mousemove', handleDrag);
+    document.removeEventListener('mouseup', stopDragging);
+    document.removeEventListener('touchmove', handleDrag);
+    document.removeEventListener('touchend', stopDragging);
+    
+    // Restaurar estilo del cursor
+    document.body.style.cursor = '';
+    
+    // Aplicar cambios de filtro
+    handleFilterChange();
+    
+    // Resetear estado de arrastre
+    draggingHandle.value = null;
+  }
 };
 
 // Actualizar rango de precios desde el slider
@@ -526,53 +774,28 @@ const updatePriceRange = ({ min, max }) => {
   handleFilterChange();
 };
 
-// Handle filter changes
+// Manejar cambios en los filtros
 const handleFilterChange = () => {
   currentPage.value = 1;
-  
-  // Convert bedrooms filter from "studio" to 0 for API compatibility
-  let apiFilters = { ...filters.value };
-  if (apiFilters.bedrooms === 'studio') {
-    apiFilters.minBedrooms = 0;
-    delete apiFilters.bedrooms;
-  } else if (apiFilters.bedrooms) {
-    apiFilters.minBedrooms = parseInt(apiFilters.bedrooms);
-    delete apiFilters.bedrooms;
-  }
-  
-  // Convert bathrooms filter for API compatibility
-  if (apiFilters.bathrooms) {
-    apiFilters.minBathrooms = parseInt(apiFilters.bathrooms);
-    delete apiFilters.bathrooms;
-  }
-  
-  // Process additional options
-  if (apiFilters.additionalOptions && apiFilters.additionalOptions.length > 0) {
-    apiFilters.verified = apiFilters.additionalOptions.includes('verified');
-    apiFilters.featured = apiFilters.additionalOptions.includes('featured');
-    delete apiFilters.additionalOptions;
-  }
-  
-  propertyStore.setFilters(apiFilters);
   updateQueryParams();
   fetchProperties();
 };
 
-// Handle sort changes
+// Manejar cambios en la ordenación
 const handleSortChange = () => {
   currentPage.value = 1;
   updateQueryParams();
 };
 
-// Update URL query parameters
+// Actualizar los parámetros de la URL
 const updateQueryParams = () => {
-  // Build query object
+  // Construir objeto de query
   const query = {
     sort: sortBy.value,
     page: currentPage.value
   };
   
-  // Add non-empty filters to query
+  // Agregar filtros no vacíos a la query
   Object.entries(filters.value).forEach(([key, value]) => {
     if (value !== null && value !== undefined && value !== '' && 
         !(Array.isArray(value) && value.length === 0) && 
@@ -581,26 +804,116 @@ const updateQueryParams = () => {
     }
   });
   
-  // Update URL without refreshing page
+  // Actualizar URL sin refrescar la página
   router.replace({ query });
 };
 
-// Fetch properties with current filters and pagination
-const fetchProperties = () => {
-  const params = {
-    page: currentPage.value,
-    limit: itemsPerPage.value
-  };
+// Obtener propiedades de la API
+const fetchProperties = async () => {
+  loading.value = true;
+  error.value = null;
   
-  propertyStore.fetchProperties(params);
+  try {
+    // Convertir filtros a formato API
+    const apiFilters = {
+      status: 'for-rent',
+      page: currentPage.value,
+      limit: itemsPerPage.value
+    };
+    
+    // Aplicar property_type
+    if (filters.value.property_type) {
+      apiFilters.property_type = filters.value.property_type;
+    }
+    
+    // Por estas (enviar el precio directamente):
+    if (filters.value.minPrice) {
+      apiFilters.minPrice = filters.value.minPrice;
+    }
+    if (filters.value.maxPrice) {
+      apiFilters.maxPrice = filters.value.maxPrice;
+    }
+    
+    // Aplicar filtros de ubicación
+    if (filters.value.city) {
+      apiFilters.city = filters.value.city;
+    }
+    
+    // Convertir bedrooms de "studio" a 0 para API
+    if (filters.value.bedrooms === 'studio') {
+      apiFilters.minBedrooms = 0;
+    } else if (filters.value.bedrooms) {
+      apiFilters.minBedrooms = parseInt(filters.value.bedrooms);
+    }
+    
+    // Convertir bathrooms para API
+    if (filters.value.bathrooms) {
+      apiFilters.minBathrooms = parseInt(filters.value.bathrooms);
+    }
+    
+    // Aplicar filtros de área
+    if (filters.value.minArea) {
+      apiFilters.minArea = parseInt(filters.value.minArea);
+    }
+    
+    if (filters.value.maxArea) {
+      apiFilters.maxArea = parseInt(filters.value.maxArea);
+    }
+    
+    // Aplicar filtros de amenidades
+    if (filters.value.amenities && filters.value.amenities.length > 0) {
+      apiFilters.amenities = filters.value.amenities;
+    }
+    
+    // Aplicar filtros de mascotas
+    if (filters.value.pets && filters.value.pets.length > 0) {
+      apiFilters.pets = filters.value.pets;
+    }
+    
+    // Aplicar opciones adicionales
+    if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
+      if (filters.value.additionalOptions.includes('verified')) {
+        apiFilters.verified = true;
+      }
+      
+      if (filters.value.additionalOptions.includes('featured')) {
+        apiFilters.featured = true;
+      }
+      
+      if (filters.value.additionalOptions.includes('new')) {
+        apiFilters.isNew = true;
+      }
+    }
+    
+    // Realizar petición a la API
+    const response = await axios.get(`${API_URL}/properties`, { 
+      params: apiFilters 
+    });
+    
+    if (response.data && response.data.success) {
+      properties.value = response.data.data.properties;
+      totalProperties.value = response.data.data.total;
+    } else {
+      error.value = 'No se pudieron cargar las propiedades';
+      properties.value = [];
+      totalProperties.value = 0;
+    }
+  } catch (err) {
+    console.error('Error al obtener propiedades:', err);
+    error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
+    properties.value = [];
+    totalProperties.value = 0;
+  } finally {
+    loading.value = false;
+  }
 };
 
-// Sort properties
+// Ordenar propiedades
 const sortedProperties = computed(() => {
-  let result = [...propertyStore.properties];
+  let result = [...properties.value];
   
   if (sortBy.value === 'newest') {
-    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   } else if (sortBy.value === 'price-low') {
     result.sort((a, b) => a.price - b.price);
   } else if (sortBy.value === 'price-high') {
@@ -610,63 +923,63 @@ const sortedProperties = computed(() => {
   return result;
 });
 
-// Pagination
+// Paginación
 const totalPages = computed(() => {
-  return Math.ceil(propertyStore.totalProperties / itemsPerPage.value);
+  return Math.ceil(totalProperties.value / itemsPerPage.value);
 });
 
 const pageNumbers = computed(() => {
   const pages = [];
   const maxVisiblePages = 5;
   
-  // If there are few pages, show all of them
+  // Si hay pocas páginas, mostramos todas
   if (totalPages.value <= maxVisiblePages) {
     for (let i = 1; i <= totalPages.value; i++) {
       pages.push(i);
     }
   } else {
-    // Always show first page
+    // Siempre mostrar la primera página
     pages.push(1);
     
-    // Calculate range around current page
+    // Calcular rango alrededor de la página actual
     let start = Math.max(2, currentPage.value - Math.floor(maxVisiblePages / 2));
     let end = Math.min(totalPages.value - 1, start + maxVisiblePages - 3);
     
-    // Adjust if we're near the end
+    // Ajustar si estamos cerca del final
     if (end === totalPages.value - 1) {
       start = Math.max(2, end - (maxVisiblePages - 3));
     }
     
-    // Add ellipsis if needed
+    // Agregar elipsis si es necesario
     if (start > 2) {
       pages.push('...');
     }
     
-    // Add pages in range
+    // Agregar páginas en el rango
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
     
-    // Add ellipsis if needed
+    // Agregar elipsis si es necesario
     if (end < totalPages.value - 1) {
       pages.push('...');
     }
     
-    // Always show last page
+    // Siempre mostrar la última página
     pages.push(totalPages.value);
   }
   
   return pages;
 });
 
-// Change page
+// Cambiar página
 const changePage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
     updateQueryParams();
     fetchProperties();
     
-    // Scroll to top of results
+    // Scroll al principio de los resultados
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -674,17 +987,16 @@ const changePage = (page) => {
   }
 };
 
-// Reset all filters
+// Resetear todos los filtros
 const resetFilters = () => {
   selectedPropertyTypes.value = [];
   
   filters.value = { 
     status: 'for-rent', // Siempre en modo alquiler para esta página
     city: '',
-    district: '',
     property_type: null,
-    minPrice: 200,
-    maxPrice: 5000,
+    minPrice: 0,   // Valores ajustados a lempiras
+    maxPrice: 200000, // Valores ajustados a lempiras
     bedrooms: '',
     bathrooms: '',
     minArea: '',
@@ -694,68 +1006,37 @@ const resetFilters = () => {
     additionalOptions: []
   };
   
-  propertyStore.clearFilters();
-  propertyStore.setFilters({ 
-    status: 'for-rent',
-  });
-  
   currentPage.value = 1;
   updateQueryParams();
   fetchProperties();
 };
 
-// Toggle favorite status for a property
-const toggleFavorite = (propertyId) => {
-  propertyStore.toggleFavorite(propertyId);
-};
-
-// Navigate to property detail page
+// Navegar a página de detalles de propiedad
 const navigateToProperty = (propertyId) => {
-  console.log("Navigating to property:", propertyId);
   router.push(`/properties/${propertyId}`);
 };
 
-// Toggle map view
-const toggleMapView = () => {
-  showMap.value = !showMap.value;
-  
-  if (showMap.value) {
-    // Prevent scrolling on body when map is open
-    document.body.style.overflow = 'hidden';
-  } else {
-    // Restore scrolling when map is closed
-    document.body.style.overflow = '';
-  }
-};
-
-// Format price with commas
+// Formatear precio con comas
 const formatPrice = (price) => {
   if (!price) return "0";
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-// Handle escape key to close map
-const handleKeyDown = (e) => {
-  if (e.key === 'Escape' && showMap.value) {
-    toggleMapView();
-  }
-};
-
-// Initialize filters from URL query parameters
+// Inicializar filtros desde parámetros de URL
 const initFromQueryParams = () => {
   const query = route.query;
   
-  // Set sorting from query
+  // Establecer ordenación desde query
   if (query.sort && ['newest', 'price-low', 'price-high'].includes(query.sort)) {
     sortBy.value = query.sort;
   }
   
-  // Set page from query
+  // Establecer página desde query
   if (query.page && !isNaN(parseInt(query.page))) {
     currentPage.value = parseInt(query.page);
   }
   
-  // Set property type from query
+  // Establecer tipo de propiedad desde query
   if (query.property_type) {
     if (typeof query.property_type === 'string') {
       filters.value.property_type = query.property_type;
@@ -766,9 +1047,8 @@ const initFromQueryParams = () => {
     }
   }
   
-  // Set other filters from query
+  // Establecer otros filtros desde query
   if (query.city) filters.value.city = query.city;
-  if (query.district) filters.value.district = query.district;
   
   if (query.minPrice) filters.value.minPrice = parseInt(query.minPrice);
   if (query.maxPrice) filters.value.maxPrice = parseInt(query.maxPrice);
@@ -779,7 +1059,7 @@ const initFromQueryParams = () => {
   if (query.minArea) filters.value.minArea = parseInt(query.minArea);
   if (query.maxArea) filters.value.maxArea = parseInt(query.maxArea);
   
-  // Parse amenities and pets if they are in the URL
+  // Parsear amenidades y mascotas si están en la URL
   if (query.amenities) {
     const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
     filters.value.amenities = amenitiesArray;
@@ -790,7 +1070,7 @@ const initFromQueryParams = () => {
     filters.value.pets = petsArray;
   }
   
-  // Parse additional options
+  // Parsear opciones adicionales
   if (query.verified === 'true') {
     filters.value.additionalOptions.push('verified');
   }
@@ -798,54 +1078,63 @@ const initFromQueryParams = () => {
   if (query.featured === 'true') {
     filters.value.additionalOptions.push('featured');
   }
+  
+  if (query.isNew === 'true') {
+    filters.value.additionalOptions.push('new');
+  }
 };
 
-// Apply color fixes for consistent styling
-const applyTitleColorFix = () => {
+// Aplicar correcciones de color para estilo consistente
+const applyColorFix = () => {
   nextTick(() => {
-    // Fix text colors for titles and headings to ensure they're black
+    // Corregir colores de texto para títulos y encabezados
     document.querySelectorAll('h1, h2, h3.filter-title').forEach(el => {
       el.style.color = '#000000';
     });
     
-    // Ensure property titles are black
+    // Asegurar que los títulos de propiedades sean negros
     document.querySelectorAll('.property-card h3').forEach(el => {
       el.style.color = '#000000';
     });
     
-    // Ensure price text is black
+    // Asegurar que el texto de precios sea negro
     document.querySelectorAll('.property-card .font-bold').forEach(el => {
+      el.style.color = '#000000';
+    });
+    
+    // Asegurar que los inputs tengan texto negro
+    document.querySelectorAll('input[type="number"]').forEach(el => {
       el.style.color = '#000000';
     });
   });
 };
 
-// Fetch properties on mount and initialize from query params if present
-onMounted(() => {
-  // Establecer explícitamente que solo queremos propiedades de alquiler
-  propertyStore.clearFilters();
-  propertyStore.setFilters({ status: 'for-rent' });
+// Inicializar componente
+onMounted(async () => {
+ 
   
-  // Initialize from query parameters
+  // Inicializar desde parámetros de URL
   initFromQueryParams();
   
-  // Fetch properties data
-  fetchProperties();
+  // Obtener datos
+  await Promise.all([
+    fetchProperties(),
+    favoritesStore.fetchFavorites()
+  ]);
   
-  // Apply title color fix for consistent styling
-  applyTitleColorFix();
-  
-  // Listen for Escape key to close map view
-  document.addEventListener('keydown', handleKeyDown);
+  // Aplicar corrección de colores
+  applyColorFix();
 });
 
-// Clean up event listener on unmount
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown);
-});
+// Observar cambios en los parámetros de la URL
+watch(() => route.query, () => {
+  initFromQueryParams();
+  fetchProperties();
+}, { deep: true });
 </script>
+
 <style scoped>
-/* Main container */
+/* Contenedor principal */
 .main-container {
   min-height: 100vh;
   background-color: #ffffff;
@@ -856,10 +1145,10 @@ onUnmounted(() => {
 }
 
 .properties-layout {
-  padding-top: 80px; /* Adjusted to prevent header overlap */
+  padding-top: 80px; /* Ajustado para evitar solapamiento con el header */
 }
 
-/* Sidebar & Filters */
+/* Sidebar y Filtros */
 .filters-column {
   background-color: #ffffff;
   border-radius: 8px;
@@ -879,7 +1168,7 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* Custom input styles */
+/* Estilos personalizados para inputs */
 input[type="checkbox"], input[type="radio"] {
   cursor: pointer;
 }
@@ -894,7 +1183,7 @@ input[type="checkbox"], input[type="radio"] {
   padding-right: 2.5rem;
 }
 
-/* Property cards */
+/* Tarjetas de propiedades */
 .property-card {
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -911,7 +1200,7 @@ input[type="checkbox"], input[type="radio"] {
   font-weight: 600;
 }
 
-/* Spinner animation */
+/* Animación de spinner */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -920,7 +1209,7 @@ input[type="checkbox"], input[type="radio"] {
   animation: spin 1s linear infinite;
 }
 
-/* Primary color */
+/* Color primario */
 .text-primary, .text-blue-500 {
   color: #3b82f6 !important;
 }
@@ -969,7 +1258,7 @@ input[type="checkbox"], input[type="radio"] {
   background-color: #fef2f2 !important;
 }
 
-/* Text color overrides */
+/* Sobrescrituras de color de texto */
 h1, h2, h3, h4, h5, h6 {
   color: #000000 !important;
 }
@@ -986,7 +1275,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #000000 !important;
 }
 
-/* Favorite button - Only visible on hover or if favorited */
+/* Botón favorito - Solo visible en hover o si es favorito */
 .property-image-container .absolute.top-3.right-3 {
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -1040,7 +1329,7 @@ button.hover\:bg-blue-500:hover {
   padding-top: 100px !important; /* Para evitar superposición con la barra de navegación */
 }
 
-/* Fix for small screens */
+/* Correcciones para pantallas pequeñas */
 @media (max-width: 768px) {
   .properties-layout {
     padding-top: 60px;
@@ -1049,5 +1338,45 @@ button.hover\:bg-blue-500:hover {
   .properties-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Slider de precio - asegurar números negros */
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+.price-range-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #ef4444;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
 }
 </style>

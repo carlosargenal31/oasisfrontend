@@ -1,529 +1,1107 @@
 <template>
-  <div class="container mx-auto px-4 py-8 bg-white property-page">
-    <!-- Loading state -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <div class="container mx-auto px-4 py-8 bg-white property-page pt-20">
+    <!-- Estado de carga -->
     <div v-if="isLoading" class="flex justify-center items-center min-h-[600px]">
-      <p class="text-xl text-gray-700">Loading property details...</p>
+      <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-10 h-10 animate-spin"></div>
+      <p class="text-xl text-black ml-4">Cargando detalles de la propiedad...</p>
     </div>
 
-    <!-- Error state -->
-    <div v-else-if="error" class="flex justify-center items-center min-h-[600px]">
-      <p class="text-xl text-red-600">{{ error }}</p>
+    <!-- Estado de error -->
+    <div v-else-if="error" class="flex flex-col justify-center items-center min-h-[600px]">
+      <p class="text-xl text-red-600 mb-4">{{ error }}</p>
+      <button @click="fetchPropertyData" class="bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-900">
+        Intentar de nuevo
+      </button>
     </div>
 
-    <!-- Content when data is loaded -->
+    <!-- Contenido cuando los datos están cargados -->
     <div v-else-if="property">
       <!-- Breadcrumb -->
-      <BreadcrumbNav :property="property" />
+      <div class="breadcrumb flex items-center mb-4 text-sm">
+        <a href="/" class="text-black hover:text-blue-800">Inicio</a>
+        <span class="mx-2 text-black">›</span>
+        <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-black hover:text-blue-800">
+          {{ property.status === 'for-rent' ? 'Propiedades en alquiler' : 'Propiedades en venta' }}
+        </a>
+        <span class="mx-2 text-black">›</span>
+        <span class="text-black">{{ property.title }}</span>
+      </div>
 
-      <!-- Main content layout -->
       <div class="flex flex-col md:flex-row gap-8">
-        <!-- Left column - Images & Main Info -->
+        <!-- Columna izquierda - Imágenes e información principal -->
         <div class="md:w-2/3">
-          <!-- Main image with gallery -->
-          <div class="relative rounded-lg overflow-hidden mb-2">
-            <!-- Main property image -->
+          <!-- Imagen principal con galería -->
+          <div class="relative rounded-lg overflow-hidden mb-4">
+            <!-- Imagen principal de la propiedad -->
             <img 
               :src="propertyImages[activeImageIndex]"
               :alt="property.title" 
               class="w-full h-[400px] object-cover"
             />
             
-            <!-- Navigation arrows -->
+            <!-- Flechas de navegación -->
             <button @click="goToPrevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-              <span class="text-gray-700">←</span>
+              <span class="material-icons text-gray-700">arrow_back</span>
             </button>
             
             <button @click="goToNextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-              <span class="text-gray-700">→</span>
+              <span class="material-icons text-gray-700">arrow_forward</span>
             </button>
           </div>
           
-          <!-- Thumbnails -->
+          <!-- Miniaturas de imágenes debajo de la imagen principal -->
           <div class="flex overflow-x-auto gap-2 mb-6">
             <div
               v-for="(image, index) in propertyImages"
               :key="index"
               @click="setActiveImage(index)"
               class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden"
-              :class="{'border-2 border-blue-500': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
+              :class="{'border-2 border-blue-800': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
             >
-              <img :src="image" :alt="'Thumbnail ' + (index + 1)" class="w-full h-full object-cover" />
-            </div>
-            <div class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-100">
-              <div class="flex flex-col items-center">
-                <span class="text-gray-700 text-lg">▶</span>
-                <span class="text-gray-700 text-xs mt-1">Play video</span>
-              </div>
+              <img :src="image" :alt="'Miniatura ' + (index + 1)" class="w-full h-full object-cover" />
             </div>
           </div>
           
-          <!-- Property Main Info Component -->
-          <PropertyMainInfo :property="property" />
+          <!-- Título y dirección DESPUÉS de las imágenes, como en la referencia -->
+          <h1 class="text-3xl font-bold text-black mb-4">{{ property.title }}</h1>
           
-          <!-- Reviews Section -->
-          <div class="mt-6 mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-2xl font-bold text-black">
-                <i class="fi-star-filled mr-2 text-yellow-400"></i>
-                {{ averageRating }} ({{ reviews.length }} reviews)
-              </h2>
-              <button @click="openReviewModal" class="btn-primary text-white bg-blue-800 hover:bg-blue-900 py-2 px-4 rounded">
-                <i class="fi-edit mr-1"></i>Add review
+          <div class="flex items-center text-black mb-6">
+            <span class="material-icons mr-2">place</span>
+            <p>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+          </div>
+          
+          <!-- Características principales -->
+          <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="flex items-center">
+              <span class="material-icons text-black mr-2">hotel</span>
+              <span class="text-black">{{ property.bedrooms }} Habitaciones</span>
+            </div>
+            <div class="flex items-center">
+              <span class="material-icons text-black mr-2">bathtub</span>
+              <span class="text-black">{{ property.bathrooms }} Baños</span>
+            </div>
+            <div class="flex items-center">
+              <span class="material-icons text-black mr-2">straighten</span>
+              <span class="text-black">{{ property.square_feet }} m²</span>
+            </div>
+          </div>
+          
+          <!-- Descripción de la propiedad -->
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-black mb-3">Descripción</h2>
+            <p class="text-black whitespace-pre-line">{{ property.description }}</p>
+          </div>
+
+          <!-- Sección de anfitrión corregida -->
+<div class="rental-agent bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+  <div class="p-6">
+    <div class="flex flex-col md:flex-row items-start">
+      <div class="w-full md:w-1/3">
+        <img 
+          :src="getHostImage()" 
+          alt="Host Avatar" 
+          class="w-full h-auto rounded"
+        />
+      </div>
+      
+      <div class="w-full md:w-2/3 md:pl-6 mt-4 md:mt-0">
+        <div class="text-orange-500 float-right">
+          <span class="text-2xl">"</span>
+        </div>
+        
+        <!-- Mostrar biografía real cuando está disponible -->
+        <p class="text-black mb-4" v-if="property.host_bio || (hostData && hostData.bio)">
+          {{ property.host_bio || (hostData && hostData.bio) }}
+        </p>
+        <p class="text-black mb-4" v-else>
+          {{ hostName }} es un anfitrión con experiencia en el sector inmobiliario. Consulta sus propiedades disponibles.
+        </p>
+        
+        <h3 class="text-xl font-semibold mb-1">
+          <a href="#" @click.prevent="viewHostProperties()" class="text-blue-800 hover:text-blue-900">
+            {{ hostName }}
+          </a>
+        </h3>
+        
+        <p class="text-black mb-2">{{ hostRole }}</p>
+        
+        <!-- Sección de estrellas mejorada para mostrar medias estrellas -->
+<div class="flex items-center mb-4">
+  <div class="flex">
+    <!-- Iteramos 5 veces para las 5 estrellas -->
+    <template v-for="i in 5" :key="i">
+      <!-- Estrella completa si el rating es al menos i -->
+      <span v-if="hostRating >= i" class="material-icons text-sm text-yellow-400">star</span>
+      
+      <!-- Media estrella si el rating está entre i-0.75 e i-0.25 -->
+      <span v-else-if="hostRating > i-0.75 && hostRating < i-0.25" class="material-icons text-sm text-yellow-400">star_half</span>
+      
+      <!-- Estrella vacía en otros casos -->
+      <span v-else class="material-icons text-sm text-gray-300">star</span>
+    </template>
+  </div>
+  <span class="text-black ml-2">{{ hostReviews }} reseñas</span>
+</div>
+        
+        <div class="flex items-center text-sm text-black mb-3">
+          <span class="material-icons text-blue-800 mr-1">home</span>
+          <span>{{ hostProperties.length || property.host_properties_count || 0 }} propiedades</span>
+        </div>
+        
+        <!-- Corrección enlaces de redes sociales -->
+        <div class="flex space-x-3 mt-2" v-if="hasSocialLinks">
+          <a v-if="getSocialLink('facebook')" :href="`https://${getSocialLink('facebook')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a v-if="getSocialLink('twitter')" :href="`https://${getSocialLink('twitter')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a v-if="getSocialLink('instagram')" :href="`https://${getSocialLink('instagram')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a v-if="getSocialLink('linkedin')" :href="`https://${getSocialLink('linkedin')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a v-if="getSocialLink('pinterest')" :href="`https://${getSocialLink('pinterest')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+            <i class="fab fa-pinterest-p"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+          <!-- Sección de reseñas -->
+          <div class="reviews-section mt-8">
+            <div class="flex items-center mb-4">
+  <span class="text-yellow-400 material-icons mr-2">star</span>
+  <span class="text-2xl font-bold text-black">{{ averageRating }} ({{ reviews.length }} reseñas)</span>
+  <div class="ml-auto">
+    <button @click="openReviewModal" class="bg-blue-800 hover:bg-blue-900 text-white py-2 px-4 rounded flex items-center">
+      <span class="material-icons mr-1 text-white">edit</span>
+      <span class="text-white">Añadir reseña</span>
+    </button>
+  </div>
+</div>
+            
+            <div class="flex justify-between items-center mb-4">
+              <div class="text-black">
+                <span class="font-medium">Ordenar por:</span>
+                <select v-model="sortOption" class="ml-2 p-2 border rounded text-black">
+                  <option value="newest">Más recientes</option>
+                  <option value="oldest">Más antiguas</option>
+                  <option value="highest">Mayor calificación</option>
+                  <option value="lowest">Menor calificación</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Estado de carga -->
+            <div v-if="loadingReviews" class="flex justify-center py-4">
+              <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-8 h-8 animate-spin"></div>
+            </div>
+            
+            <!-- Mensaje sin reseñas -->
+            <div v-else-if="reviews.length === 0" class="text-center py-8">
+              <p class="text-black mb-4">No hay reseñas disponibles para esta propiedad.</p>
+              <button 
+                @click="openReviewModal" 
+                class="bg-blue-800 hover:bg-blue-900 text-white py-2 px-4 rounded"
+              >
+                <span class="material-icons align-middle mr-1">edit</span>Sé el primero en dejar una reseña
               </button>
             </div>
             
-            <!-- Individual reviews -->
-            <div v-for="(review, index) in reviews" :key="index" class="mb-4 pb-4 border-bottom border-b">
-              <div class="flex justify-between mb-3">
-                <div class="flex items-center">
-                  <img class="rounded-full mr-3" :src="review.avatar" width="48" height="48" alt="Reviewer avatar" />
-                  <div>
-                    <h5 class="font-semibold mb-1">{{ review.name }}</h5>
-                    <div class="flex text-yellow-400">
-                      <span v-for="i in 5" :key="i" :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-300'">★</span>
+            <!-- Lista de reseñas -->
+            <div v-else class="space-y-6">
+              <div v-for="(review, index) in sortedReviews" :key="index" class="border-b border-gray-200 pb-6 mb-6 last:border-0">
+                <div class="flex items-start">
+                  <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
+                    <img :src="getReviewerAvatar(review)" :alt="review.reviewer_name" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-2">
+                      <h3 class="text-lg font-medium text-black">{{ review.reviewer_name }}</h3>
+                      <span class="text-black">{{ formatDate(review.created_at) }}</span>
+                    </div>
+                    <div class="flex items-center mb-3">
+                      <div class="flex text-yellow-400">
+                        <span v-for="i in 5" :key="i" class="material-icons text-sm" 
+                              :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-300'">star</span>
+                      </div>
+                    </div>
+                    <p class="text-black mb-3">{{ review.comment }}</p>
+                    <div class="flex items-center">
+                      <button @click="handleLikeReview(review)" class="flex items-center text-black hover:text-blue-800 mr-4">
+                        <span class="material-icons mr-1 text-sm">thumb_up</span>
+                        <span>({{ review.likes || 0 }})</span>
+                      </button>
+                      <button @click="handleDislikeReview(review)" class="flex items-center text-black hover:text-red-500">
+                        <span class="material-icons mr-1 text-sm">thumb_down</span>
+                        <span>({{ review.dislikes || 0 }})</span>
+                      </button>
                     </div>
                   </div>
                 </div>
-                <span class="text-gray-500 text-sm">{{ review.date }}</span>
-              </div>
-              <p class="text-gray-700 mb-3">{{ review.text }}</p>
-              <div class="flex items-center">
-                <button class="like-button flex items-center text-gray-500">
-                  <i class="fi-like mr-1"></i>
-                  <span>({{ review.likes }})</span>
-                </button>
-                <div class="border-end mx-2 h-4 border-l"></div>
-                <button class="dislike-button flex items-center text-gray-500">
-                  <i class="fi-dislike mr-1"></i>
-                  <span>({{ review.dislikes }})</span>
-                </button>
               </div>
             </div>
             
-            <!-- Pagination for reviews -->
-            <div class="flex justify-center mt-4" v-if="reviews.length > 4">
-              <nav class="inline-flex rounded-md shadow-sm" aria-label="Reviews Pagination">
-                <a href="#" class="px-3 py-2 border border-gray-300 bg-white rounded-l-md text-sm">Previous</a>
-                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-blue-800 text-white text-sm">1</a>
-                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">2</a>
-                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">...</a>
-                <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">5</a>
-                <a href="#" class="px-3 py-2 border border-gray-300bg-white rounded-r-md text-sm">Next</a>
-              </nav>
+            <!-- Paginación -->
+            <div class="flex justify-center mt-6" v-if="reviews.length > reviewsPerPage">
+              <div class="flex">
+                <button 
+                  @click="currentPage > 1 && (currentPage--)"
+                  :disabled="currentPage === 1"
+                  class="mx-1 px-3 py-1 rounded"
+                  :class="currentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                >
+                  Anterior
+                </button>
+                
+                <button 
+                  v-for="page in totalPages" 
+                  :key="page" 
+                  @click="currentPage = page"
+                  class="mx-1 px-3 py-1 rounded"
+                  :class="currentPage === page ? 'bg-blue-900 text-white' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                >
+                  {{ page }}
+                </button>
+                
+                <button 
+                  @click="currentPage < totalPages && (currentPage++)"
+                  :disabled="currentPage === totalPages"
+                  class="mx-1 px-3 py-1 rounded"
+                  :class="currentPage === totalPages ? 'bg-gray-200 text-gray-500' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                >
+                  Siguiente
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Right column - Property Details Sidebar -->
+        <!-- Columna derecha - Barra lateral de detalles de la propiedad -->
         <div class="md:w-1/3">
-          <!-- Badges y Botones -->
+          <!-- Insignias y Botones -->
           <div class="flex items-center mb-4">
-            <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Verified</span>
-            <span v-if="property.isNew" class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">New</span>
+            <span v-if="property.isVerified" class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Verificado</span>
+            <span v-if="property.isNew" class="bg-blue-800 text-white px-2 py-1 rounded text-sm font-medium mr-2">Nuevo</span>
+            <span v-if="property.isFeatured" class="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Destacado</span>
             
-            <!-- Favorite & Share buttons -->
+            <!-- Botones de favorito y compartir -->
             <button @click="toggleFavorite" class="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm ml-2">
-              <span :class="{'text-red-500': isFavorite, 'text-gray-600': !isFavorite}">♥</span>
+              <span class="material-icons" :class="isFavorite ? 'text-red-500' : 'text-gray-600'">favorite</span>
             </button>
-            <button class="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm ml-2">
-              <span class="text-gray-600">↗</span>
+            <button @click="shareProperty" class="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm ml-2">
+              <span class="material-icons text-gray-600">share</span>
             </button>
           </div>
           
-          <!-- Monthly rent or Price -->
+          <!-- Precio mensual o precio de venta -->
           <div class="mb-6">
             <h2 class="rent-title text-xl font-bold text-black mb-2">
-              {{ property.status === 'for-rent' ? 'Monthly rent:' : 'Price:' }}
+              {{ property.status === 'for-rent' ? 'Renta mensual:' : 'Precio:' }}
             </h2>
             <p class="rent-price text-3xl font-bold text-black">
-              ${{ formatPrice(property.price) }} 
-              <span v-if="property.status === 'for-rent'" class="text-base font-normal text-gray-700">/month</span>
+              L {{ formatPrice(property.price) }} 
+              <span v-if="property.status === 'for-rent'" class="text-base font-normal text-black">/mes</span>
             </p>
           </div>
           
-          <!-- Property Details Card -->
+          <!-- Detalles de la propiedad -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="details-title text-xl font-bold text-black mb-4">Property Details</h3>
+            <h3 class="details-title text-xl font-bold text-black mb-4">Detalles de la Propiedad</h3>
             <div class="space-y-3">
               <div class="flex justify-between">
-                <span class="text-gray-700">Type:</span>
-                <span class="font-medium text-gray-800">{{ property.property_type || 'apartment' }}</span>
+                <span class="text-black">Tipo:</span>
+                <span class="font-medium text-black">{{ translatePropertyType(property.property_type) }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Area:</span>
-                <span class="font-medium text-gray-800">{{ property.square_feet }} sq.m</span>
+                <span class="text-black">Área:</span>
+                <span class="font-medium text-black">{{ property.square_feet }} m²</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-black">Habitaciones:</span>
+                <span class="font-medium text-black">{{ property.bedrooms }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Built:</span>
-                <span class="font-medium text-gray-800">{{ property.yearBuilt || '2015' }}</span>
+                <span class="text-black">Baños:</span>
+                <span class="font-medium text-black">{{ property.bathrooms }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Bedrooms:</span>
-                <span class="font-medium text-gray-800">{{ property.bedrooms }}</span>
+                <span class="text-black">Estacionamientos:</span>
+                <span class="font-medium text-black">{{ property.parkingSpaces || '0' }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Bathrooms:</span>
-                <span class="font-medium text-gray-800">{{ property.bathrooms }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-700">Parking places:</span>
-                <span class="font-medium text-gray-800">{{ property.parkingSpaces || '2' }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-700">Pets allowed:</span>
-                <span class="font-medium text-gray-800">{{ property.petsAllowed || 'cats only' }}</span>
+                <span class="text-black">Mascotas permitidas:</span>
+                <span class="font-medium text-black">{{ translatePetsAllowed(property.pets_allowed) }}</span>
               </div>
             </div>
           </div>
           
-          <!-- Book a viewing/Contact button -->
-          <button class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded mb-4 transition">
-            {{ property.status === 'for-rent' ? 'Book a viewing' : 'Contact agent' }}
-          </button>
+          <!-- Botón de reserva/contacto -->
+<button @click="navigateToBooking" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-3 px-4 rounded mb-4 transition">
+  {{ property.status === 'for-rent' ? 'Renta Ya' : 'Compra Ya' }}
+</button>
           
-          <!-- FAQ link -->
-          <a href="#" class="flex items-center justify-center text-red-500 hover:text-red-600 mb-6">
-            <span class="mr-2">?</span>
-            Frequently asked questions
+          <!-- Enlace a FAQ -->
+          <a href="#" class="flex items-center justify-center text-blue-800 hover:text-blue-900 mb-6">
+            <span class="material-icons mr-2">help</span>
+            Preguntas frecuentes
           </a>
           
-          <!-- Amenities -->
+          <!-- Comodidades -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="amenities-title text-xl font-bold text-black mb-4">Amenities</h3>
+            <h3 class="amenities-title text-xl font-bold text-black mb-4">Comodidades</h3>
             <div class="grid grid-cols-2 gap-y-3">
-              <div v-for="(amenity, index) in property.amenities || defaultAmenities" :key="index" class="flex items-center">
-                <span class="mr-2 text-gray-600">✓</span>
-                <span class="text-gray-700">{{ amenity }}</span>
-              </div>
-            </div>
-            <button v-if="(property.amenities?.length || defaultAmenities.length) > 8" class="text-red-500 mt-3">
-              Show more
-            </button>
-          </div>
-          
-          <!-- Not included -->
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="not-included-title text-xl font-bold text-black mb-4">Not included {{ property.status === 'for-rent' ? 'in rent' : 'in price' }}</h3>
-            <div class="grid grid-cols-2 gap-y-3">
-              <div v-for="(item, index) in notIncludedItems" :key="index" class="flex items-center">
-                <span class="mr-2 text-gray-600">✓</span>
-                <span class="text-gray-700">{{ item }}</span>
+              <div v-for="(amenity, index) in property.amenities" :key="index" class="flex items-center">
+                <span class="material-icons mr-2 text-blue-800">{{ getAmenityIcon(amenity) }}</span>
+                <span class="text-black">{{ translateAmenity(amenity) }}</span>
               </div>
             </div>
           </div>
           
-          <!-- Map Location -->
+          <!-- Ubicación en mapa -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="location-title text-xl font-bold text-black mb-4">Location</h3>
+            <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
             <div class="relative mb-3">
-              <img :src="getMapImage(property)" alt="Map" class="w-full h-[200px] object-cover rounded-md">
-              <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10">
+              <!-- Mapa interactivo de Leaflet -->
+              <div id="propertyMap" class="w-full h-[200px] rounded-md"></div>
+              
+              <!-- Botón para abrir Google Maps -->
+              <div class="absolute bottom-3 right-3">
                 <a :href="getGoogleMapsUrl(property)" target="_blank" class="bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-900 transition-colors flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  Get directions
+                  <span class="material-icons mr-2">directions</span>
+                  Cómo llegar
                 </a>
               </div>
             </div>
-            <p class="text-center text-gray-700 text-sm mt-2">
+            <!-- Dirección debajo del mapa -->
+            <p class="text-center text-black text-sm mt-2">
               {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
             </p>
           </div>
           
-          <!-- Publication details -->
-          <div class="flex flex-wrap text-sm text-gray-700">
-            <div class="mr-4 pr-4 border-r border-gray-200">Published: <b class="text-gray-800">{{ formatDate(property.createdAt) }}</b></div>
-            <div class="mr-4 pr-4 border-r border-gray-200">Ad number: <b class="text-gray-800">{{ property.id || '681013232' }}</b></div>
-            <div>Views: <b class="text-gray-800">48</b></div>
-          </div>
+          <!-- Detalles de publicación -->
+          <div class="flexflex-wrap text-sm text-black">
+  <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
+  <div class="mr-4 pr-4 border-r border-gray-200">Nº anuncio: <b class="text-black">{{ property.id }}</b></div>
+  <div class="flex items-center">
+    <span class="material-icons mr-1 text-blue-800">visibility</span>
+    Vistas: <b class="text-black ml-1">{{ property.views || viewCount }}</b>
+  </div>
+</div>
         </div>
       </div>
       
-      <!-- Recently Viewed Section - Con propiedades en renta Y venta -->
+      <!-- Sección de Propiedades Similares -->
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="recently-viewed-title text-2xl font-bold text-black">Recently viewed</h2>
-          <a href="/properties" class="text-blue-600 flex items-center">
-            View all <span class="ml-1">→</span>
+          <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
+          <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-blue-800 flex items-center">
+            Ver todas <span class="ml-1">→</span>
           </a>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div v-for="(listing, i) in recentlyViewed" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
+        <div v-if="isLoadingSimilar" class="flex justify-center py-8">
+          <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-8 h-8 animate-spin"></div>
+        </div>
+        
+        <div v-else-if="similarProperties.length === 0" class="text-center py-8 text-black">
+          No se encontraron propiedades similares.
+        </div>
+        
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div v-for="(listing, i) in similarProperties" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
             <div class="relative">
-              <img :src="listing.image || 'https://placehold.co/600x400?text=Property'" alt="Property" class="w-full h-48 object-cover" />
+              <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
               <div class="absolute top-3 left-3">
-                <span class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verified</span>
-                <span v-if="listing.isNew" class="bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">New</span>
-                <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Featured</span>
+                <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
+                <span v-if="listing.isNew" class="bg-blue-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
+                <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
               </div>
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-orange-500' : 'text-green-500'">
-                {{ listing.status === 'for-sale' ? 'FOR SALE' : 'FOR RENT' }}
+              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-blue-800' : 'text-green-500'">
+                {{ listing.status === 'for-sale' ? 'EN VENTA' : 'EN RENTA' }}
               </div>
               <h3 class="font-medium text-black mb-1">
-                {{ listing.title }} | {{ listing.square_feet }} sq.m
+                {{ listing.title }} | {{ listing.square_feet }} m²
               </h3>
-              <p class="text-sm text-gray-700 mb-2">{{ listing.address }}</p>
+              <p class="text-sm text-black mb-2">{{ listing.address }}</p>
               <div class="font-bold text-black mb-2">
-                ${{ formatPrice(listing.price) }}
-                <span v-if="listing.status === 'for-rent'" class="text-sm font-normal text-gray-700">/month</span>
+                L {{ formatPrice(listing.price) }}
+                <span v-if="listing.status === 'for-rent'" class="text-sm font-normal text-black">/mes</span>
               </div>
-              <div class="flex justify-between text-sm text-gray-700">
-                <span>{{ listing.bedrooms }} bed</span>
-                <span>{{ listing.bathrooms }} bath</span>
-                <span>{{ listing.parkingSpaces || '2' }} car</span>
+              <div class="flex justify-between text-sm text-black">
+                <span>{{ listing.bedrooms }} hab</span>
+                <span>{{ listing.bathrooms }} baños</span>
+                <span>{{ listing.parkingSpaces || '0' }} est</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Review Modal (Hidden by default) -->
+      <!-- Modal de Reseñas (Oculto por defecto) -->
       <div v-if="showReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-md p-6">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">Leave a Review</h3>
+            <h3 class="text-xl font-semibold text-black">Dejar una Reseña</h3>
             <button @click="showReviewModal = false" class="text-gray-500 hover:text-gray-700">
               <span class="text-2xl">&times;</span>
             </button>
           </div>
           <form @submit.prevent="submitReview">
             <div class="mb-4">
-              <label class="block text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
-              <input type="text" v-model="newReview.name" class="w-full px-3 py-2 border rounded-md" required>
+              <label class="block text-black mb-2">Nombre <span class="text-red-500">*</span></label>
+              <input type="text" v-model="newReview.reviewer_name" class="w-full px-3 py-2 border rounded-md text-black" required>
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-              <input type="email" v-model="newReview.email" class="w-full px-3 py-2 border rounded-md" required>
+              <label class="block text-black mb-2">Email <span class="text-red-500">*</span></label>
+              <input type="email" v-model="newReview.email" class="w-full px-3 py-2 border rounded-md text-black" required>
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
-              <div class="flex space-x-1">
+              <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
+              <div class="flex space-x-2">
                 <button 
                   type="button"
                   v-for="star in 5"
                   :key="star"
                   @click="newReview.rating = star"
-                  class="text-2xl focus:outline-none"
-                  :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'"
+                  class="text-3xl focus:outline-none"
                 >
-                  ★
+                  <span class="material-icons" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
                 </button>
               </div>
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 mb-2">Review <span class="text-red-500">*</span></label>
-              <textarea v-model="newReview.text" rows="4" class="w-full px-3 py-2 border rounded-md" required></textarea>
+              <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
+              <textarea v-model="newReview.comment" rows="4" class="w-full px-3 py-2 border rounded-md text-black" required></textarea>
             </div>
-            <button type="submit" class="w-full bg-blue-800 text-white font-medium py-2 px-4 rounded">
-              Submit Review
-            </button>
+            <button 
+  type="submit" 
+  class="w-full bg-blue-800 text-white font-medium py-2 px-4 rounded hover:bg-blue-900"
+  :disabled="submittingReview"
+>
+  <span v-if="submittingReview" class="text-white">Enviando...</span>
+  <span v-else class="text-white">Enviar Reseña</span>
+</button>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- Not found state -->
+    <!-- Estado de no encontrado -->
     <div v-else class="flex justify-center items-center min-h-[600px]">
-      <p class="text-xl text-gray-700">Property not found</p>
+      <p class="text-xl text-black">Propiedad no encontrada</p>
     </div>
   </div>
 </template>
 
+
 <script setup>
+// Importaciones
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePropertyStore } from '~/store/property';
-import { useReviewStore } from '~/store/review';
-import BreadcrumbNav from '~/components/BreadcrumbNav.vue';
-import PropertyMainInfo from '~/components/PropertyMainInfo.vue';
+import axios from 'axios';
+import { useReviewStore } from '../store/review';
+import { useFavoritesStore } from '~/store/favorites';
 
-// Initialize stores and router
+// Definir la URL base de la API
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+
+// Inicializar router
 const route = useRoute();
 const router = useRouter();
-const propertyStore = usePropertyStore();
-const reviewStore = useReviewStore();
 const propertyId = route.params.id;
 
-// State variables
+// Inicializar stores
+const reviewStore = useReviewStore();
+const favoritesStore = useFavoritesStore();
+
+// Variables de estado
 const isLoading = ref(true);
 const error = ref(null);
 const property = ref(null);
-const isFavorite = ref(false);
+const similarProperties = ref([]);
+const isLoadingSimilar = ref(false);
 const activeImageIndex = ref(0);
 const showReviewModal = ref(false);
+const submittingReview = ref(false);
+const reviewsPerPage = 5;
+const hostName = ref('');
+const hostRole = ref('');
+const hostReviews = ref(0);
+const hostData = ref(null);
+const hostRating = ref(0);
+const hostProperties = ref([]);
+const loadingReviews = ref(false);
+const currentPage = ref(1);
+const sortOption = ref('newest');
+const viewCount = ref(0);
+const propertyMap = ref(null);
 
-// New review form data
-const newReview = ref({
-  name: '',
-  email: '',
-  rating: 0,
-  text: '',
-  date: '',
-  avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-  likes: 0,
-  dislikes: 0
+// Verificar si una propiedad es favorita
+const isFavorite = computed(() => {
+  return property.value ? favoritesStore.isFavorite(property.value.id) : false;
 });
 
-// Default values
-const defaultAmenities = [
-  'WiFi',
-  'Heating',
-  'Dishwasher',
-  'Parking place',
-  'Air conditioning',
-  'Iron',
-  'TV',
-  'Laundry'
-];
-
-const notIncludedItems = [
-  'Swimming pool',
-  'Restaurant',
-  'Spa lounge',
-  'Bar'
-];
-
-// Reviews for this property
-const reviews = computed(() => {
-  return reviewStore.getReviewsForProperty(parseInt(propertyId));
-});
-
-// Calculate average rating
-const averageRating = computed(() => {
-  if (reviews.value.length === 0) return '0.0';
-  const sum = reviews.value.reduce((acc, review) => acc + review.rating, 0);
-  return (sum / reviews.value.length).toFixed(1);
-});
-
-// Generar imágenes adicionales para cada propiedad
-const getAdditionalImages = (propertyId, mainImage) => {
-  // Base de imágenes según tipo de propiedad (usando el ID para determinar variedad)
-  const propertyTypes = ['apartment', 'house', 'modern', 'luxury', 'villa'];
-  const propertyType = propertyTypes[propertyId % propertyTypes.length];
+// Alternar estado de favorito
+const toggleFavorite = async () => {
+  if (!property.value) return;
   
-  // Usaremos una mezcla de imágenes reales y placeholders
-  const realImages = [
-    mainImage,
-    `https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800&q=80`, // Living room
-    `https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&q=80`, // Kitchen
-    `https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80`, // Bedroom
-    `https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80`, // Bathroom
-    `https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80`  // Exterior
-  ];
-  
-  // Seleccionar un conjunto aleatorio pero determinístico de imágenes
-  return [
-    realImages[0], // Siempre incluir la imagen principal
-    realImages[(propertyId % 5) + 1],
-    realImages[((propertyId + 2) % 5) + 1],
-    realImages[((propertyId + 4) % 5) + 1]
-  ];
+  try {
+    await favoritesStore.toggleFavorite(property.value);
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+  }
 };
 
-// Computed property for property images
+// Datos para nuevo formulario de reseña
+const newReview = ref({
+  property_id: null,
+  reviewer_name: '',
+  email: '',
+  rating: 0,
+  comment: ''
+});
+
+// Obtener reseñas del store
+const reviews = computed(() => {
+  return reviewStore.getReviewsForProperty(propertyId);
+});
+
+// Reseñas ordenadas según el criterio seleccionado
+const sortedReviews = computed(() => {
+  const reviewsList = [...reviews.value];
+  
+  switch (sortOption.value) {
+    case 'newest':
+      return reviewsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    case 'oldest':
+      return reviewsList.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    case 'highest':
+      return reviewsList.sort((a, b) => b.rating - a.rating);
+    case 'lowest':
+      return reviewsList.sort((a, b) => a.rating - b.rating);
+    default:
+      return reviewsList;
+  }
+});
+
+// Calcular calificación promedio
+const averageRating = computed(() => {
+  if (!property.value || !property.value.average_rating) {
+    return reviewStore.getAverageRating(propertyId).toFixed(1);
+  }
+  return parseFloat(property.value.average_rating).toFixed(1);
+});
+
+// Calcular total de páginas
+const totalPages = computed(() => {
+  return Math.ceil(reviews.value.length / reviewsPerPage);
+});
+
+// Reseñas a mostrar según paginación
+const displayedReviews = computed(() => {
+  const start = (currentPage.value - 1) * reviewsPerPage;
+  const end = start + reviewsPerPage;
+  return sortedReviews.value.slice(start, end);
+});
+
+// Obtener imagen de avatar para un revisor
+const getReviewerAvatar = (review) => {
+  // En producción, podrías usar un servicio como Gravatar o avatares basados en iniciales
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_name)}&background=random`;
+};
+
+// Obtener imagen del anfitrión
+const getHostImage = () => {
+  // Si tenemos datos del anfitrión y tiene imagen
+  if (hostData.value && hostData.value.profile_image) {
+    return hostData.value.profile_image;
+  }
+  
+  // Si el anfitrión tiene credenciales de usuario, usamos su imagen de perfil
+  if (property.value && property.value.host_id && property.value.host_profile_image) {
+    return property.value.host_profile_image;
+  }
+  
+  // Generar avatar basado en el nombre del anfitrión
+  if (hostName.value) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(hostName.value)}&background=random`;
+  }
+  
+  // Imagen por defecto como último recurso
+  return 'https://randomuser.me/api/portraits/men/68.jpg';
+};
+
+// Segunda parte: Agregar estas computed properties y funciones a la sección de script
+
+// Propiedad computada para verificar si hay redes sociales
+const hasSocialLinks = computed(() => {
+  if (hostData && hostData.socialLinks) {
+    return Object.values(hostData.socialLinks).some(link => !!link);
+  }
+  // Si la propiedad tiene datos de redes sociales directamente
+  if (property.value) {
+    return !!(
+      property.value.host_social_facebook ||
+      property.value.host_social_twitter ||
+      property.value.host_social_instagram ||
+      property.value.host_social_linkedin ||
+      property.value.host_social_pinterest
+    );
+  }
+  return false;
+});
+
+// Función para obtener enlaces de redes sociales
+const getSocialLink = (socialNetwork) => {
+  // Primero verificar si tenemos datos en hostData
+  if (hostData && hostData.socialLinks && hostData.socialLinks[socialNetwork]) {
+    return hostData.socialLinks[socialNetwork];
+  }
+  
+  // Si no, verificar si tenemos datos en la propiedad
+  if (property.value) {
+    const propKey = `host_social_${socialNetwork}`;
+    if (property.value[propKey]) {
+      return property.value[propKey];
+    }
+  }
+  
+  return null;
+};
+// Tercera parte: La función modificada fetchHostData
+
+// Modificar la función para obtener el token de autenticación
+const getAuthToken = () => {
+  if (process.client) {
+    return localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+  }
+  return '';
+};
+
+// Verificar si el usuario está autenticado
+const isAuthenticated = () => {
+  return !!getAuthToken();
+};
+
+// Cargar datos del propietario
+const fetchHostData = async () => {
+  if (!property.value || !property.value.host_id) return;
+  
+  // Establecer valores por defecto de la propiedad actual
+  hostName.value = property.value.host_name || 'Anfitrión';
+  hostRole.value = property.value.host_role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
+  
+  // Si tenemos ratings o reviews en la propiedad, usarlos
+  if (property.value.host_average_rating) {
+    hostRating.value = parseFloat(property.value.host_average_rating);
+  }
+  
+  if (property.value.host_review_count) {
+    hostReviews.value = property.value.host_review_count;
+  }
+  
+  // Si no estamos autenticados o no hay token, usar método alternativo
+  if (!isAuthenticated()) {
+    console.log('No hay token de autenticación, usando métodos alternativos');
+    await fetchHostPropertiesAndReviews();
+    return;
+  }
+  
+  try {
+    // Realizar la petición para obtener los datos del propietario con autenticación
+    const token = getAuthToken();
+    
+    const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.data && response.data.success) {
+      hostData.value = response.data.data;
+      
+      // Actualizar variables con datos reales
+      hostName.value = `${hostData.value.first_name || ''} ${hostData.value.last_name || ''}`.trim() || hostName.value;
+      hostRole.value = hostData.value.role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
+      
+      // Si hay datos de rating y reseñas del anfitrión (todas sus propiedades), asignarlos
+      if (hostData.value.average_rating) {
+        hostRating.value = parseFloat(hostData.value.average_rating);
+      }
+      
+      if (hostData.value.total_reviews) {
+        hostReviews.value = hostData.value.total_reviews;
+      }
+      
+      // Si hay propiedades, asignarlas
+      if (hostData.value.properties_list && Array.isArray(hostData.value.properties_list)) {
+        hostProperties.value = hostData.value.properties_list;
+      }
+      
+      console.log('Datos del anfitrión cargados:', hostData.value);
+    }
+  } catch (err) {
+    console.error('Error al cargar datos del propietario:', err);
+    
+    // En caso de error de autenticación u otro error, intentar método alternativo
+    await fetchHostPropertiesAndReviews();
+  }
+};
+
+/// Cuarta parte: Función mejorada para obtener propiedades y reseñas
+
+// Función mejorada para obtener propiedades y reseñas del anfitrión
+const fetchHostPropertiesAndReviews = async () => {
+  if (!property.value || !property.value.host_id) return;
+  
+  // Inicializar objeto hostData si no existe
+  if (!hostData.value) {
+    hostData.value = {
+      socialLinks: {}
+    };
+  } else if (!hostData.value.socialLinks) {
+    hostData.value.socialLinks = {};
+  }
+  
+  // Verificar si la propiedad tiene links sociales directamente
+  if (property.value.host_social_facebook) {
+    hostData.value.socialLinks.facebook = property.value.host_social_facebook;
+  }
+  if (property.value.host_social_twitter) {
+    hostData.value.socialLinks.twitter = property.value.host_social_twitter;
+  }
+  if (property.value.host_social_instagram) {
+    hostData.value.socialLinks.instagram = property.value.host_social_instagram;
+  }
+  if (property.value.host_social_linkedin) {
+    hostData.value.socialLinks.linkedin = property.value.host_social_linkedin;
+  }
+  if (property.value.host_social_pinterest) {
+    hostData.value.socialLinks.pinterest = property.value.host_social_pinterest;
+  }
+  
+  // Si ya tenemos bio del anfitrión en la propiedad, usarla
+  if (property.value.host_bio) {
+    hostData.value.bio = property.value.host_bio;
+  }
+  
+  try {
+    // 1. Obtener todas las propiedades del anfitrión
+    const propertiesResponse = await axios.get(`${API_URL}/properties`, {
+      params: { host_id: property.value.host_id, limit: 100 }
+    });
+    
+    if (propertiesResponse.data && propertiesResponse.data.success) {
+      const properties = propertiesResponse.data.data.properties;
+      hostProperties.value = properties || [];
+      
+      // 2. Si tenemos propiedades, obtener todas las reseñas para calcular el rating
+      if (properties && properties.length > 0) {
+        let totalRating = 0;
+        let reviewCount = 0;
+        let totalReviews = 0;
+        
+        // Para cada propiedad, obtener sus reseñas
+        for (const prop of properties) {
+          try {
+            const reviewsResponse = await axios.get(`${API_URL}/reviews`, {
+              params: { property_id: prop.id }
+            });
+            
+            if (reviewsResponse.data && reviewsResponse.data.success) {
+              const reviews = reviewsResponse.data.data.reviews || [];
+              totalReviews += reviews.length;
+              
+              // Sumar ratings para el promedio
+              reviews.forEach(review => {
+                if (review && typeof review.rating === 'number') {
+                  totalRating += review.rating;
+                  reviewCount++;
+                }
+              });
+            }
+          } catch (error) {
+            console.warn(`Error al obtener reseñas para la propiedad ${prop.id}:`, error);
+          }
+        }
+        
+        // Actualizar contadores solo si no tenemos datos previos
+        if (hostReviews.value === 0) {
+          hostReviews.value = totalReviews;
+        }
+        
+        // Calcular y actualizar promedio solo si no tenemos datos previos
+        if (hostRating.value === 0 && reviewCount > 0) {
+          hostRating.value = totalRating / reviewCount;
+        }
+        
+        // Actualizar también en el objeto hostData
+        hostData.value.average_rating = hostRating.value;
+        hostData.value.total_reviews = hostReviews.value;
+        hostData.value.properties_count = properties.length;
+        
+        console.log(`Anfitrión: ${totalReviews} reseñas, rating ${hostRating.value.toFixed(1)} y ${properties.length} propiedades`);
+      }
+    }
+  } catch (error) {
+    console.error('Error al obtener propiedades y reseñas del anfitrión:', error);
+  }
+};
+
+// Ver otras propiedades del anfitrión
+const viewHostProperties = () => {
+  if (!property.value || !property.value.host_id) return;
+  
+  // Navegar a la página de propiedades del anfitrión
+  router.push(`/host/${property.value.host_id}`);
+};
+
+// Obtener imagenes de la base de datos de Oasis
+const getPropertyImage = (imageNumber) => {
+  const imageNum = String(imageNumber).padStart(2, '0');
+  return `https://oasiscontenedor.blob.core.windows.net/property-images/${imageNum}.jpg`;
+};
+
+const navigateToBooking = () => {
+  router.push(`/bookings/${property.value.id}`);
+};
+
+// Obtener una imagen aleatoria entre 1 y 65
+const getRandomPropertyImage = () => {
+  const randomNum = Math.floor(Math.random() * 65) + 1;
+  return getPropertyImage(randomNum);
+};
+
+// Propiedad computada para imágenes de propiedad
 const propertyImages = computed(() => {
-  if (!property.value || !property.value.image) {
+  if (!property.value) {
     return [
-      'https://placehold.co/800x600?text=Property+Image+1',
-      'https://placehold.co/800x600?text=Property+Image+2',
-      'https://placehold.co/800x600?text=Property+Image+3',
-      'https://placehold.co/800x600?text=Property+Image+4'
+      getPropertyImage(1),
+      getPropertyImage(2),
+      getPropertyImage(3),
+      getPropertyImage(4)
     ];
   }
   
-  // Usar imágenes adicionales generadas dinámicamente
-  return getAdditionalImages(property.value.id, property.value.image);
+  // Imágenes disponibles
+  const images = [];
+  
+  // Si la propiedad tiene su propia imagen, la usamos como primera
+  if (property.value.image) {
+    images.push(property.value.image);
+  }
+  
+  // Añadir imágenes adicionales si existen
+  if (property.value.additional_images && Array.isArray(property.value.additional_images)) {
+    images.push(...property.value.additional_images);
+  }
+  
+  // Si no hay suficientes imágenes, añadir imágenes genéricas basadas en el ID
+  while (images.length < 4) {
+    const baseIndex = (images.length % 65) + 1; // Usar módulo para quedarnos en el rango 1-65
+    images.push(getPropertyImage(baseIndex));
+  }
+  
+  return images;
 });
 
-// Get map image based on property address
+// Obtener imagen del mapa basada en las coordenadas de la propiedad
 const getMapImage = (property) => {
-  // En un entorno real, aquí podrías usar Google Maps Static API o similar
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state
-  )}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state
-  )}&key=AIzaSyAepal9ym-eTRFBXfJ-URnDWn7HWmOuJIc`;
-  
-  // Como fallback, usar una imagen estática de mapa
-  // return "https://images.unsplash.com/photo-1569336415962-a4bd9f69c07a?w=800&q=80";
+  // Verificar si la propiedad tiene coordenadas
+  if (property.lat && property.lng) {
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${property.lat},${property.lng}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${property.lat},${property.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`;
+  } else {
+    // Fallback a la dirección como antes si no hay coordenadas
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
+      property.address + ', ' + property.city + ', ' + property.state
+    )}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${encodeURIComponent(
+      property.address + ', ' + property.city + ', ' + property.state
+    )}&key=YOUR_GOOGLE_MAPS_API_KEY`;
+  }
 };
 
-// Get Google Maps URL for directions
+// Obtener URL de Google Maps para direcciones
 const getGoogleMapsUrl = (property) => {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state + ' ' + property.zip_code
-  )}`;
+  if (property.lat && property.lng) {
+    return `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}`;
+  } else {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      property.address + ', ' + property.city + ', ' + property.state + ' ' + property.zip_code
+    )}`;
+  }
 };
 
-// Recently viewed properties - asegurando una mezcla de alquiler y venta
-const recentlyViewed = ref([]);
-
-// Load recently viewed properties (mezclando propiedades en renta y venta)
-const loadRecentlyViewed = () => {
-  // En un sistema real, esto vendría del backend o del historial local
-  let allProperties = [...propertyStore.properties];
+// Función para inicializar el mapa con Leaflet
+const initializeMap = () => {
+  // Verificar si tenemos coordenadas y el elemento del mapa existe
+  if (!property.value || !property.value.lat || !property.value.lng) return;
   
-  // Asegurarnos de que hay propiedades de ambos tipos
-  const rentProperties = allProperties.filter(p => p.status === 'for-rent');
-  const saleProperties = allProperties.filter(p => p.status === 'for-sale');
-  
-  // Si no hay propiedades en venta, mostrar un error en consola
-  if (saleProperties.length === 0) {
-    console.error("No hay propiedades en venta para mostrar en 'Recently viewed'");
+  // Verificar si el mapa ya está inicializado
+  if (propertyMap.value) {
+    propertyMap.value.remove();
+    propertyMap.value = null;
   }
   
-  // Filtramos para excluir la propiedad actual
-  const currentPropertyId = parseInt(propertyId);
-  
-  // Tomar hasta 2 propiedades en renta (diferentes a la actual)
-  const filteredRentProperties = rentProperties
-    .filter(p => p.id !== currentPropertyId)
-    .slice(0, 2);
+  // Asegurarse de que Leaflet está disponible
+  if (typeof window.L !== 'undefined') {
+    // Crear el mapa
+    propertyMap.value = window.L.map('propertyMap').setView(
+      [property.value.lat, property.value.lng], 
+      15
+    );
     
-  // Tomar hasta 2 propiedades en venta (diferentes a la actual)
-  const filteredSaleProperties = saleProperties
-    .filter(p => p.id !== currentPropertyId)
-    .slice(0, 2);
-  
-  // Combinar y limitar a 4 propiedades
-  recentlyViewed.value = [...filteredRentProperties, ...filteredSaleProperties].slice(0, 4);
+    // Añadir capa de OpenStreetMap
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(propertyMap.value);
+    
+    // Añadir marcador en la ubicación de la propiedad
+    window.L.marker([property.value.lat, property.value.lng]).addTo(propertyMap.value);
+  } else {
+    // Si Leaflet no está disponible, cargar los scripts necesarios
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+    document.head.appendChild(link);
+    
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+    script.onload = () => {
+      initializeMap(); // Intentar inicializar de nuevo después de cargar
+    };
+    document.head.appendChild(script);
+  }
 };
 
-// Fetch property data
-const fetchPropertyData = async () => {
-  isLoading.value = true;
-  error.value = null;
+// Funciones para obtener iconos para amenidades
+const getAmenityIcon = (amenity) => {
+  const icons = {
+    'wifi': 'wifi',
+    'aire-acondicionado': 'ac_unit',
+    'piscina': 'pool',
+    'jacuzzi': 'hot_tub',
+    'gimnasio': 'fitness_center',
+    'parking': 'local_parking',
+    'ascensor': 'elevator',
+    'balcon': 'balcony',
+    'terraza': 'deck',
+    'jardin': 'yard',
+    'cocina-equipada': 'kitchen',
+    'lavadora': 'local_laundry_service',
+    'lavavajillas': 'dishwasher',
+    'calefaccion': 'hvac',
+    'chimenea': 'fireplace',
+    'seguridad-24h': 'security',
+    'vigilancia-24h': 'videocam',
+    'alarma': 'notifications_active',
+    'garaje': 'garage',
+    'trastero': 'inventory_2',
+    'amueblado': 'chair',
+    'armarios-empotrados': 'inventory',
+    'barbacoa': 'outdoor_grill',
+    'agua-incluida': 'water_drop',
+    'electricidad-incluida': 'bolt',
+    'fibra-optica': 'wifi_tethering',
+    'piscina-comunitaria': 'pool',
+    'zona-infantil': 'child_care',
+    'suelo-radiante': 'floor',
+    'urbanizacion-privada': 'gated_community'
+  };
   
-  try {
-    // Usar el store para cargar la propiedad específica
-    await propertyStore.fetchProperty(propertyId);
-    
-    // Verificar si se obtuvo la propiedad
-    if (propertyStore.currentProperty) {
-      property.value = propertyStore.currentProperty;
-      
-      // Verificar si está en favoritos
-      isFavorite.value = propertyStore.favorites.includes(parseInt(propertyId));
-      
-      // Cargar propiedades recientes
-      loadRecentlyViewed();
-    } else {
-      error.value = 'Property not found';
+  // Convertir a minúsculas y quitar espacios para facilitar la búsqueda
+  const normalizedAmenity = amenity.toLowerCase().replace(/\s+/g, '-');
+  
+  return icons[normalizedAmenity] || 'check';
+};
+
+// Funciones de traducción
+const translatePropertyType = (type) => {
+  const translations = {
+    'apartment': 'Apartamento',
+    'house': 'Casa',
+    'room': 'Habitación',
+    'office': 'Oficina',
+    'commercial': 'Comercial',
+    'land': 'Terreno',
+    'daily-rental': 'Alquiler diario',
+    'new-building': 'Edificio nuevo',
+    'parking-lot': 'Estacionamiento'
+  };
+  
+  return translations[type] || type;
+};
+
+const translatePetsAllowed = (petsAllowed) => {
+  if (!petsAllowed || petsAllowed.length === 0) return 'No permitidas';
+  
+  if (Array.isArray(petsAllowed)) {
+    if (petsAllowed.includes('cats-allowed') && petsAllowed.includes('dogs-allowed')) {
+      return 'Gatos y perros';
     }
-  } catch (err) {
-    console.error('Error loading property:', err);
-    error.value = propertyStore.error || 'Failed to load property. Please try again later.';
-  } finally {
-    isLoading.value = false;
+    if (petsAllowed.includes('cats-allowed')) {
+      return 'Solo gatos';
+    }
+    if (petsAllowed.includes('dogs-allowed')) {
+      return 'Solo perros';
+    }
   }
+  
+  return 'No permitidas';
 };
 
-// Image gallery functions
+const translateAmenity = (amenity) => {
+  const translations = {
+    'wifi': 'WiFi',
+    'aire-acondicionado': 'Aire acondicionado',
+    'piscina': 'Piscina',
+    'jacuzzi': 'Jacuzzi',
+    'gimnasio': 'Gimnasio',
+    'parking': 'Estacionamiento',
+    'ascensor': 'Ascensor',
+    'balcon': 'Balcón',
+    'terraza': 'Terraza',
+    'jardin': 'Jardín',
+    'cocina-equipada': 'Cocina equipada',
+    'lavadora': 'Lavadora',
+    'lavavajillas': 'Lavavajillas',
+    'calefaccion': 'Calefacción',
+    'chimenea': 'Chimenea',
+    'seguridad-24h': 'Seguridad 24h',
+    'vigilancia-24h': 'Vigilancia 24h',
+    'alarma': 'Alarma',
+    'garaje': 'Garaje',
+    'trastero': 'Trastero',
+    'amueblado': 'Amueblado',
+    'armarios-empotrados': 'Armarios empotrados',
+    'barbacoa': 'Barbacoa',
+    'agua-incluida': 'Agua incluida',
+    'electricidad-incluida': 'Electricidad incluida',
+    'fibra-optica': 'Fibra óptica',
+    'piscina-comunitaria': 'Piscina comunitaria',
+    'zona-infantil': 'Zona infantil',
+    'suelo-radiante': 'Suelo radiante',
+    'urbanizacion-privada': 'Urbanización privada',
+    'vistas-mar': 'Vistas al mar',
+    'vistas-montana': 'Vistas a la montaña',
+    'vistas-panoramicas': 'Vistas panorámicas',
+    'primera-linea-playa': 'Primera línea de playa'
+  };
+  
+  return translations[amenity] || amenity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+// Funciones de galería de imágenes
 const goToPrevImage = () => {
   if (activeImageIndex.value === 0) {
     activeImageIndex.value = propertyImages.value.length - 1;
@@ -544,44 +1122,56 @@ const setActiveImage = (index) => {
   activeImageIndex.value = index;
 };
 
-// Toggle favorite status
-const toggleFavorite = () => {
-  if (property.value) {
-    propertyStore.toggleFavorite(property.value.id);
-    isFavorite.value = propertyStore.favorites.includes(property.value.id);
+// Compartir propiedad
+const shareProperty = () => {
+  if (navigator.share) {
+    navigator.share({
+      title: property.value.title,
+      text: `¡Mira esta propiedad: ${property.value.title}!`,
+      url: window.location.href
+    }).catch(err => {
+      console.error('Error compartiendo:', err);
+    });
+  } else {
+    // Fallback - copiar enlace al portapapeles
+    const dummy = document.createElement('input');
+    document.body.appendChild(dummy);
+    dummy.value = window.location.href;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    
+    alert('Enlace copiado al portapapeles');
   }
 };
 
-// Format price with commas
+// Formatear precio con comas
 const formatPrice = (price) => {
   if (!price) return "0";
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-// Format date
+// Formatear fecha
 const formatDate = (dateString) => {
-  if (!dateString) return "Dec 9, 2020";
+  if (!dateString) return "Sin fecha";
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('es-ES', { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric' 
     });
   } catch (err) {
-    return "Dec 9, 2020";
+    return "Sin fecha";
   }
 };
 
-// Navigate to another property
+// Navegar a otra propiedad
 const navigateToProperty = (id) => {
-  console.log("Navegando a propiedad desde recently viewed:", id);
-  
   // Si estamos en la misma ruta pero con diferente ID, forzar recarga
   if (route.name === route.name && route.params.id !== id.toString()) {
     router.replace(`/properties/${id}`);
     setTimeout(() => {
-      fetchPropertyData();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   } else {
@@ -589,53 +1179,256 @@ const navigateToProperty = (id) => {
   }
 };
 
-// Navegar al perfil del agente
-const viewAgentProfile = () => {
-  // Redirigir a la página del perfil del agente
-  router.push('/agents');
+// Incrementar contador de visitas
+const incrementViewCount = async () => {
+  try {
+    if (!property.value) return;
+    
+    // Verificar si ya hemos visitado esta propiedad en esta sesión
+    const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
+    
+    // Solo enviar la solicitud si no hemos visto la propiedad en esta sesión
+    if (!viewedProperties.includes(parseInt(propertyId))) {
+      try {
+        // Incrementar contador local inmediatamente para una experiencia más fluida
+        viewCount.value = (property.value.views || 0) + 1;
+        
+        // Enviar la solicitud a la API para incrementar el contador
+        await axios.post(`${API_URL}/properties/${propertyId}/view`);
+        
+        // Añadir a las propiedades ya vistas
+        viewedProperties.push(parseInt(propertyId));
+        localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
+      } catch (err) {
+        console.error('Error al registrar vista:', err);
+        // No interrumpir el flujo por este error
+      }
+    }
+  } catch (err) {
+    console.error('Error al incrementar contador de visitas:', err);
+  }
 };
 
-// Review functions
+// Obtener datos de la propiedad
+const fetchPropertyData = async () => {
+  isLoading.value = true;
+  error.value = null;
+  
+  try {
+    // Obtener datos de la propiedad
+    const response = await axios.get(`${API_URL}/properties/${propertyId}`);
+    
+    if (response.data && response.data.success) {
+      property.value = response.data.data;
+      
+      // Configurar nueva reseña
+      newReview.value.property_id = property.value.id;
+      
+      // Cargar datos del anfitrión
+      await fetchHostData();
+      
+      // Cargar reseñas
+      await fetchReviews();
+      
+      // Cargar propiedades similares
+      await fetchSimilarProperties();
+      
+      // Incrementar contador de visitas
+      incrementViewCount();
+      
+      // Inicializar viewCount con el valor de la API
+      viewCount.value = property.value.views || 0;
+      
+      // Inicializar el mapa
+      setTimeout(() => {
+        initializeMap();
+      }, 300);
+    } else {
+      error.value = 'No se pudo cargar la propiedad. Por favor intente de nuevo.';
+    }
+  } catch (err) {
+    console.error('Error cargando la propiedad:', err);
+    error.value = 'No se pudo cargar la propiedad. Por favor intente de nuevo más tarde.';
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Cargar propiedades similares
+const fetchSimilarProperties = async () => {
+  isLoadingSimilar.value = true;
+  
+  try {
+    if (!property.value) return;
+    
+    // Construir parámetros de filtro para propiedades similares
+    const filters = {
+      status: property.value.status,
+      property_type: property.value.property_type,
+      limit: 4
+    };
+    
+    // Opcional: añadir filtros adicionales como rango de precio similar, ciudad, etc.
+    if (property.value.city) {
+      filters.city = property.value.city;
+    }
+    
+    // Armar la URL con los parámetros
+    const queryString = Object.entries(filters)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join('&');
+    
+    const response = await axios.get(`${API_URL}/properties?${queryString}`);
+    
+    if (response.data && response.data.success) {
+      // Filtrar para no incluir la propiedad actual
+      similarProperties.value = response.data.data.properties
+        .filter(p => p.id !== property.value.id)
+        .slice(0, 4);
+    } else {
+      similarProperties.value = [];
+    }
+  } catch (err) {
+    console.error('Error cargando propiedades similares:', err);
+    similarProperties.value = [];
+  } finally {
+    isLoadingSimilar.value = false;
+  }
+};
+
+// Cargar reseñas de la propiedad
+const fetchReviews = async () => {
+  loadingReviews.value = true;
+  
+  try {
+    // Obtener reseñas directamente de la API para evitar problemas con el store
+    const response = await axios.get(`${API_URL}/reviews`, {
+      params: { property_id: parseInt(propertyId) }
+    });
+    
+    if (response.data && response.data.success) {
+      const fetchedReviews = response.data.data.reviews || [];
+      
+      // Actualizar el store con las reseñas obtenidas
+      reviewStore.reviews = [
+        ...reviewStore.reviews.filter(r => r.property_id !== parseInt(propertyId)),
+        ...fetchedReviews
+      ];
+    }
+  } catch (err) {
+    console.error('Error cargando reseñas:', err);
+  } finally {
+    loadingReviews.value = false;
+  }
+};
+
+// Manejar like de reseña
+const handleLikeReview = async (review) => {
+  try {
+    await axios.post(`${API_URL}/reviews/${review.id}/like`);
+    
+    // Actualizar la reseña localmente para mostrar el cambio inmediatamente
+    const updatedReview = { ...review, likes: (review.likes || 0) + 1 };
+    
+    // Actualizar en el store
+    const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+    if (index !== -1) {
+      reviewStore.reviews[index] = updatedReview;
+    }
+  } catch (err) {
+    console.error('Error al dar like a la reseña:', err);
+  }
+};
+
+// Manejar dislike de reseña
+const handleDislikeReview = async (review) => {
+  try {
+    await axios.post(`${API_URL}/reviews/${review.id}/dislike`);
+    
+    // Actualizar la reseña localmente para mostrar el cambio inmediatamente
+    const updatedReview = { ...review, dislikes: (review.dislikes || 0) + 1 };
+    
+    // Actualizar en el store
+    const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+    if (index !== -1) {
+      reviewStore.reviews[index] = updatedReview;
+    }
+  } catch (err) {
+    console.error('Error al dar dislike a la reseña:', err);
+  }
+};
+
+// Funciones de reseñas
 const openReviewModal = () => {
   showReviewModal.value = true;
+  // Asegurarse de que el ID de la propiedad esté establecido
+  newReview.value.property_id = parseInt(propertyId);
 };
 
-const submitReview = () => {
-  const today = new Date();
+// Función arreglada para submitReview
+const submitReview = async () => {
+  // Validación básica
+  if (!newReview.value.reviewer_name || !newReview.value.rating || !newReview.value.comment) {
+    alert('Por favor complete todos los campos requeridos.');
+    return;
+  }
   
-  // Create the review object
-  const review = {
-    propertyId: parseInt(propertyId),
-    name: newReview.value.name,
-    email: newReview.value.email,
-    rating: newReview.value.rating,
-    text: newReview.value.text,
-    date: today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-    avatar: newReview.value.avatar || 'https://randomuser.me/api/portraits/men/1.jpg',
-    likes: 0,
-    dislikes: 0
-  };
+  submittingReview.value = true;
   
-  // Add review to store
-  reviewStore.addReview(review);
-  
-  // Reset form
-  newReview.value = {
-    name: '',
-    email: '',
-    rating: 0,
-    text: '',
-    date: '',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    likes: 0,
-    dislikes: 0
-  };
-  
-  // Close modal
-  showReviewModal.value = false;
+  try {
+    // Preparar los datos correctos para la API
+    const reviewData = {
+      property_id: parseInt(propertyId),
+      reviewer_name: newReview.value.reviewer_name,
+      email: newReview.value.email, // Asegurarse de enviar el email
+      rating: parseInt(newReview.value.rating),
+      comment: newReview.value.comment
+    };
+    
+    console.log('Enviando reseña:', reviewData);
+    
+    // Enviar la reseña a través de la API directamente
+    const response = await axios.post(`${API_URL}/reviews`,reviewData);
+    
+    if (response.data && response.data.success) {
+      // Cerrar modal y limpiar formulario
+      showReviewModal.value = false;
+      newReview.value = {
+        property_id: parseInt(propertyId),
+        reviewer_name: '',
+        email: '',
+        rating: 0,
+        comment: ''
+      };
+      
+      // Recargar reseñas y propiedad para actualizar el rating
+      await fetchReviews();
+      
+      // No recargar toda la propiedad, sólo actualizar el promedio si es necesario
+      if (property.value) {
+        try {
+          const ratingResponse = await axios.get(`${API_URL}/reviews/property/${propertyId}/rating`);
+          if (ratingResponse.data && ratingResponse.data.success) {
+            property.value.average_rating = ratingResponse.data.data.averageRating;
+          }
+        } catch (err) {
+          console.warn('No se pudo actualizar el rating promedio:', err);
+        }
+      }
+      
+      alert('¡Gracias por tu reseña!');
+    } else {
+      throw new Error(response.data?.message || 'Error al crear la reseña');
+    }
+  } catch (err) {
+    console.error('Error al enviar reseña:', err);
+    alert('Error al enviar la reseña. Por favor intente de nuevo más tarde.');
+  } finally {
+    submittingReview.value = false;
+  }
 };
 
-// Watch for changes in the property ID (for navigation between properties)
+// Observar cambios en el ID de la propiedad (para navegación entre propiedades)
 watch(() => route.params.id, (newId, oldId) => {
   if (newId !== oldId) {
     propertyId = newId;
@@ -644,148 +1437,186 @@ watch(() => route.params.id, (newId, oldId) => {
   }
 });
 
-// Apply color fixes for consistent styling
-const applyColorFixes = () => {
-  setTimeout(() => {
-    document.querySelectorAll('.property-title, .rent-title, .details-title, .amenities-title, .not-included-title, .section-title, .recently-viewed-title, .location-title')
-      .forEach(el => {
-        el.style.color = '#000000';
-      });
-    
-    document.querySelectorAll('p, span, div:not(.bg-green-500):not(.bg-blue-500):not(.bg-red-500)')
-      .forEach(el => {
-        if (!el.closest('.bg-green-500') && !el.closest('.bg-blue-500') && !el.closest('.bg-red-500') && 
-            !el.classList.contains('text-white')) {
-          el.style.color = '#333333';
-        }
-      });
-  }, 100);
-};
-
-// Fetch data when component mounts
-onMounted(async () => {
-  // Si es necesario, asegúrate de que el propertyStore tenga propiedades cargadas
-  if (propertyStore.properties.length === 0) {
-    await propertyStore.fetchProperties();
+// Observar cambios en la propiedad para actualizar el mapa
+watch(() => property.value, (newProperty) => {
+  if (newProperty && newProperty.lat && newProperty.lng) {
+    // Dar tiempo para que el DOM se actualice
+    setTimeout(() => {
+      initializeMap();
+    }, 300);
   }
-  
+}, { deep: true });
+
+// Cargar datos cuando el componente se monta
+onMounted(async () => {
   // Cargar los datos de la propiedad específica
   await fetchPropertyData();
   
-  // Aplicar correcciones de color si es necesario
-  applyColorFixes();
+  // Cargar favoritos
+  await favoritesStore.fetchFavorites();
 });
 </script>
 
 <style>
-/* Ensure white background */
-body, html {
-  background-color: #ffffff !important;
-}
-
-/* Forzar colores de texto en elementos clave */
-.property-page h1, 
-.property-page h2, 
-.property-page h3, 
-.property-page h4, 
-.property-page h5, 
-.property-page h6 {
+/* Estilos para texto negro */
+.text-black {
   color: #000000 !important;
 }
 
-.property-page p, 
-.property-page span:not(.bg-green-500 span):not(.bg-blue-500 span):not(.bg-red-500 span):not(.text-white), 
-.property-page div:not(.bg-green-500):not(.bg-blue-500):not(.bg-red-500) {
-  color: #333333;
-}
-
-/* Específico para clases de títulos */
-.property-title, 
-.rent-title, 
-.details-title, 
-.amenities-title, 
-.not-included-title, 
-.section-title, 
-.recently-viewed-title,
-.location-title {
+/* Hacer más visibles las direcciones y descripciones */
+.property-page p,
+.property-page .description,
+.property-page .address,
+.property-page span:not(.material-icons):not(.text-white):not(.text-red-500):not(.text-green-500):not(.text-blue-800):not(.text-yellow-400) {
   color: #000000 !important;
 }
 
-/* Color naranja para "FOR RENT" */
-.text-orange-500 {
-  color: #F97316 !important;
+/* Estilos para el spinner de carga */
+.spinner {
+  animation: spin 1s linear infinite;
 }
 
-/* Color verde brillante para "FOR SALE" */
-.text-green-500 {
-  color: #10b981 !important;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Excepciones para texto blanco en elementos con fondo de color */
-.bg-green-500, 
-.bg-blue-500, 
-.bg-red-500, 
-.text-white, 
-button.bg-red-500 {
-  color: #ffffff !important;
+/* Estilos para las estrellas en reseñas */
+.material-icons {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
 }
 
-/* Gallery */
-.thumbnail:hover {
-  border-color: #0d6efd;
+/* Estilo para botones like/dislike */
+.like-button:hover .material-icons, 
+.dislike-button:hover .material-icons {
+  transform: scale(1.2);
+  transition: transform 0.2s;
 }
 
-/* Buttons */
-button.rounded-full {
-  transition: all 0.2s ease;
+/* Transiciones suaves para imágenes */
+.property-page img {
+  transition: transform 0.3s ease;
 }
 
-button.rounded-full:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+.property-page img:hover {
+  transform: scale(1.02);
 }
 
-/* Call to action */
-.bg-red-500 {
-  transition: background-color 0.2s ease, transform 0.2s ease;
+/* Estilo para el contador de vistas */
+.view-counter {
+  display: flex;
+  align-items: center;
+  color: #000000;
 }
 
-.bg-red-500:hover {
-  background-color: #e53e3e;
-  transform: translateY(-2px);
+.view-counter .material-icons {
+  color: #1e40af; /* blue-800 */
+  font-size: 18px;
+  margin-right: 4px;
 }
 
-/* Cards hover effect */
-.rounded-lg.shadow-sm {
-  transition: all 0.3s ease;
+.view-counter .view-count {
+  font-weight: bold;
+  margin-left: 4px;
 }
 
-.rounded-lg.shadow-sm:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+/* Animación cuando cambia el contador */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
-/* Review styling */
-.like-button, .dislike-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s ease;
+.view-counter .view-count.updated {
+  animation: pulse 0.5s ease-in-out;
 }
 
-.like-button:hover {
-  color: #3b82f6;
+/* Estilos para inputs en formularios */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+  color: #000000 !important;
+  background-color: #ffffff;
 }
 
-.dislike-button:hover {
-  color: #ef4444;
+/* Estilos para etiquetas de formularios */
+label {
+  color: #000000 !important;
 }
 
-.btn-primary {
-  transition: all 0.2s ease;
+/* Destacar elementos importantes */
+.rent-price,
+.details-title,
+.amenities-title,
+.location-title,
+.similar-properties-title {
+  color: #000000 !important;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
+/* Estilos para botones principales */
+.bg-blue-800 {
+  background-color: #1e40af !important;
+}
+
+.bg-blue-900 {
+  background-color: #1e3a8a !important;
+}
+
+.hover\:bg-blue-800:hover {
+  background-color: #1e40af !important;
+}
+
+.hover\:bg-blue-900:hover {
+  background-color: #1e3a8a !important;
+}
+
+.text-blue-800 {
+  color: #1e40af !important;
+}
+
+.hover\:text-blue-800:hover {
+  color: #1e40af !important;
+}
+
+.hover\:text-blue-900:hover {
+  color: #1e3a8a !important;
+}
+
+/* Estilos para miniaturas de imágenes */
+.border-blue-800 {
+  border-color: #1e40af !important;
+}
+
+/* Estilos específicos para el formulario de reseña */
+.modal-form input,
+.modal-form textarea {
+  color: #000000 !important;
+  border: 1px solid #d1d5db;
+}
+
+.modal-form label {
+  font-weight: 500;
+}
+
+/* Estilos para el botón de envío de reseña */
+.submit-button {
+  background-color: #1e40af !important;
+  color: white !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #1e3a8a !important;
+}
+
+.submit-button:disabled {
+  background-color: #93c5fd !important;
+  cursor: not-allowed;
 }
 </style>

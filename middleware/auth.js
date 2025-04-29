@@ -12,7 +12,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
     }
     
     // Verificar si la ruta requiere autenticación
-    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    const requiresAuth = to.meta.requiresAuth || 
+                        (to.meta.middleware && 
+                         (to.meta.middleware === 'auth' || 
+                          (Array.isArray(to.meta.middleware) && to.meta.middleware.includes('auth'))));
+    
+    if (requiresAuth && !authStore.isAuthenticated) {
       // Guardar la URL a la que se intentaba acceder
       return navigateTo({
         path: '/auth/login',
@@ -23,7 +28,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     // Si la ruta es para usuarios no autenticados (como login o register)
     // y el usuario ya está autenticado, redirigir al dashboard
     if (to.meta.guestOnly && authStore.isAuthenticated) {
-      return navigateTo('/dashboard');
+      return navigateTo('/');
     }
   }
 });

@@ -11,8 +11,8 @@
             <p class="text-gray-700 mb-6 px-4">
                 Encuentra la propiedad de tus sueños con nuestra amplia variedad de opciones. Explora propiedades en diferentes ubicaciones y precios, y descubre el hogar ideal para ti.
             </p>
-            <router-link to="/properties?type=sale" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
-              Buscar una casa
+            <router-link to="/properties/sale" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
+              Buscar una propiedad
             </router-link>
           </div>
           
@@ -25,7 +25,7 @@
             <p class="text-gray-700 mb-6 px-4">
                 Publica tu propiedad en nuestra plataforma y llega a miles de compradores interesados. Nuestro sistema te permite gestionar tu anuncio de manera fácil y rápida.
             </p>
-            <router-link to="/contact?service=sell" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
+            <router-link to="/properties/add-property" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
               Publicar anuncio
             </router-link>
           </div>
@@ -39,7 +39,7 @@
             <p class="text-gray-700 mb-6 px-4">
                 Busca alquileres en tu zona de interés y encuentra la mejor opción según tu presupuesto y necesidades. Ofrecemos una gran variedad de propiedades en renta.
             </p>
-            <router-link to="/properties?type=rent" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
+            <router-link to="/properties/rent" class="text-[#1E3A8A] border-2 border-[#1E3A8A] font-semibold rounded-lg px-6 py-3 hover:bg-[#1E3A8A] hover:text-white transition duration-300">
               Buscar alquiler
             </router-link>
           </div>

@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
         '/dashboard',
         '/profile',
         '/bookings',
-        '/properties/add'
+        '/properties/add-property'
         // Añade aquí otras rutas protegidas
       ];
       

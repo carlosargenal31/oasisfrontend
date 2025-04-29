@@ -400,10 +400,10 @@ const resetFilters = () => {
   filters.propertyTypes = [];
   
   if (props.listingType === 'rent') {
-    filters.minPrice = 1100;
+    filters.minPrice = 0;
     filters.maxPrice = 3000;
   } else {
-    filters.minPrice = 90000;
+    filters.minPrice = 0;
     filters.maxPrice = 250000;
   }
   

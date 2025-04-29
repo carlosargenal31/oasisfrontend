@@ -19,7 +19,30 @@ export const useAuthStore = defineStore('auth', {
   
   actions: {
     setUser(user) {
-      this.user = user;
+      if (!user) {
+        this.user = null;
+        return;
+      }
+      
+      // Crear una copia del usuario para evitar modificar el original
+      const userCopy = { ...user };
+      
+      // Si el usuario tiene una imagen de perfil, asegurarse de que se mantenga
+      if (this.user && this.user.profile_image && !userCopy.profile_image) {
+        userCopy.profile_image = this.user.profile_image;
+      }
+      
+      // Actualizar el usuario en el estado
+      this.user = userCopy;
+      
+      // Si estamos en el cliente, actualizar también localStorage
+      if (process.client) {
+        try {
+          localStorage.setItem('user', JSON.stringify(userCopy));
+        } catch (e) {
+          console.error('Error al guardar usuario en localStorage', e);
+        }
+      }
     },
     
     setToken(token, refreshToken = null) {
@@ -62,7 +85,8 @@ export const useAuthStore = defineStore('auth', {
               first_name: userData.first_name,
               last_name: userData.last_name,
               email: userData.email,
-              avatar: 'https://via.placeholder.com/60'
+              // Nota: ya no usamos avatar de placeholder, ahora lo manejamos con el componente
+              profile_image: null
             },
             accessToken: 'mock_access_token_' + Date.now(),
             refreshToken: 'mock_refresh_token_' + Date.now()
@@ -110,7 +134,8 @@ export const useAuthStore = defineStore('auth', {
             first_name: userData.first_name,
             last_name: userData.last_name,
             email: userData.email,
-            avatar: 'https://via.placeholder.com/60'
+            // Nota: ya no usamos avatar de placeholder, ahora lo manejamos con el componente
+            profile_image: null
           };
           
           // Crear tokens mock
@@ -171,7 +196,8 @@ export const useAuthStore = defineStore('auth', {
               first_name: 'John',
               last_name: 'Doe',
               email: credentials.email,
-              avatar: 'https://via.placeholder.com/60'
+              // Usamos un endpoint real para el profile_image
+              profile_image: 'https://oasiscontenedor.blob.core.windows.net/users/01.jpg'
             },
             accessToken: 'mock_access_token_' + Date.now(),
             refreshToken: 'mock_refresh_token_' + Date.now()
@@ -217,13 +243,13 @@ export const useAuthStore = defineStore('auth', {
         if (error.message && error.message.includes('Network Error')) {
           console.log('Network error detected, using mock data for development');
           
-          // Crear usuario mock
+          // Crear usuario mock con imagen de perfil real
           const mockUser = {
             id: 1,
             first_name: 'John',
             last_name: 'Doe',
             email: credentials.email,
-            avatar: 'https://via.placeholder.com/60'
+            profile_image: 'https://oasiscontenedor.blob.core.windows.net/users/01.jpg'
           };
           
           // Crear tokens mock
@@ -319,7 +345,6 @@ export const useAuthStore = defineStore('auth', {
           
           // Actualizar localStorage
           localStorage.setItem('user', JSON.stringify(this.user));
-          
           return { success: true };
         }
         

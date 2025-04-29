@@ -184,8 +184,8 @@ defineExpose({
             </svg>
           </button>
 
-          <h2 class="text-4xl font-bold" style="color: #000000;">Hey there!</h2>
-          <h3 class="text-3xl font-semibold mb-8" style="color: #000000;">Welcome back.</h3>
+          <h2 class="text-4xl font-bold" style="color: #000000;">¡Hola!</h2>
+          <h3 class="text-3xl font-semibold mb-8" style="color: #000000;">Bienvenido de nuevo.</h3>
           
           <div class="flex justify-center mb-8">
             <img src="~/assets/images/signin.svg" alt="Login" class="w-80" 
@@ -193,8 +193,8 @@ defineExpose({
           </div>
           
           <p class="text-center" style="color: #4B5563;">
-            Don't have an account? 
-            <a @click.prevent="openRegisterModal" href="#" class="text-red-500 font-medium hover:underline">Sign up here</a>
+           ¿No tienes una cuenta? 
+            <a @click.prevent="openRegisterModal" href="#" class="text-red-500 font-medium hover:underline">Regístrate aquí</a>
           </p>
         </div>
         
@@ -208,14 +208,14 @@ defineExpose({
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            <span class="text-gray-800 font-medium">Sign in with Google</span>
+            <span class="text-gray-800 font-medium">Iniciar sesión con Google</span>
           </button>
           
           <button class="flex items-center justify-center w-full mb-6 p-3 border border-gray-300 rounded-md hover:bg-gray-50">
             <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M20.007 3H3.993A.993.993 0 003 3.993v16.013c0 .55.444.994.993.994h8.621v-6.972h-2.346v-2.716h2.346V9.31c0-2.325 1.42-3.591 3.494-3.591.993 0 1.847.074 2.096.107v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.716h-2.34V21h4.587a.993.993 0 00.993-.994V3.993A.993.993 0 0020.007 3z" fill="#1877F2"/>
             </svg>
-            <span class="text-gray-800 font-medium">Sign in with Facebook</span>
+            <span class="text-gray-800 font-medium">Iniciar sesión con Facebook</span>
           </button>
           
           <!-- Divisor -->
@@ -228,21 +228,21 @@ defineExpose({
           <!-- Formulario -->
           <form @submit.prevent="handleLogin">
             <div class="mb-4">
-              <label for="email" class="block text-gray-700 mb-2 font-medium">Email address</label>
+              <label for="email" class="block text-gray-700 mb-2 font-medium">Correo electrónico</label>
               <input 
                 type="email" 
                 id="email" 
                 v-model="loginEmail" 
                 class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                placeholder="Enter your email"
+                placeholder="Ingresa el correo electrónico"
                 required
               >
             </div>
             
             <div class="mb-6">
               <div class="flex justify-between items-center mb-2">
-                <label for="password" class="block text-gray-700 font-medium">Password</label>
-                <a href="#" class="text-red-500 text-sm hover:underline">Forgot password?</a>
+                <label for="password" class="block text-gray-700 font-medium">Contraseña</label>
+                <a href="#" class="text-red-500 text-sm hover:underline">¿Olvidaste tu contraseña?</a>
               </div>
               <div class="relative">
                 <input 
@@ -250,7 +250,7 @@ defineExpose({
                   id="password" 
                   v-model="loginPassword" 
                   class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                  placeholder="Enter password"
+                  placeholder="Ingresa la contraseña"
                   required
                 >
                 <button 
@@ -273,7 +273,7 @@ defineExpose({
               type="submit" 
               class="w-full bg-red-500 text-white py-3 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-lg font-medium"
             >
-              Sign in
+            Iniciar sesión
             </button>
           </form>
         </div>
@@ -300,27 +300,28 @@ defineExpose({
             </svg>
           </button>
 
-          <h2 class="text-4xl font-bold" style="color: #000000;">Join Oasis.</h2>
-          <h3 class="text-3xl font-semibold mb-6" style="color: #000000;">Get premium benefits:</h3>
+          <h2 class="text-4xl font-bold" style="color: #000000;">Únete a Oasis.</h2>
+          <h3 class="text-3xl font-semibold mb-6" style="color: #000000;">Obtén beneficios:</h3>
           
           <ul class="space-y-3 mb-8">
             <li class="flex items-start">
               <svg class="w-5 h-5 text-red-500 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              <span class="text-gray-700">Add and promote your listings</span>
+              <span class="text-gray-700">Agrega y vende tus propiedades
+              </span>
             </li>
             <li class="flex items-start">
               <svg class="w-5 h-5 text-red-500 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              <span class="text-gray-700">Easily manage your wishlist</span>
+              <span class="text-gray-700">Administra fácilmente tu lista de deseos</span>
             </li>
             <li class="flex items-start">
               <svg class="w-5 h-5 text-red-500 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              <span class="text-gray-700">Leave reviews</span>
+              <span class="text-gray-700">Deja reseñas</span>
             </li>
           </ul>
           
@@ -330,8 +331,8 @@ defineExpose({
           </div>
           
           <p class="text-center" style="color: #4B5563;">
-            Already have an account? 
-            <a @click.prevent="openLoginModal" href="#" class="text-red-500 font-medium hover:underline">Sign in</a>
+            ¿Ya tienes una cuenta?
+            <a @click.prevent="openLoginModal" href="#" class="text-red-500 font-medium hover:underline">Inicia sesión</a>
           </p>
         </div>
         
@@ -350,20 +351,20 @@ defineExpose({
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            <span class="text-gray-800 font-medium">Sign in with Google</span>
+            <span class="text-gray-800 font-medium">Iniciar sesión con Google</span>
           </button>
           
           <button class="flex items-center justify-center w-full mb-6 p-3 border border-gray-300 rounded-md hover:bg-gray-50">
             <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M20.007 3H3.993A.993.993 0 003 3.993v16.013c0 .55.444.994.993.994h8.621v-6.972h-2.346v-2.716h2.346V9.31c0-2.325 1.42-3.591 3.494-3.591.993 0 1.847.074 2.096.107v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.716h-2.34V21h4.587a.993.993 0 00.993-.994V3.993A.993.993 0 0020.007 3z" fill="#1877F2"/>
             </svg>
-            <span class="text-gray-800 font-medium">Sign in with Facebook</span>
+            <span class="text-gray-800 font-medium">Iniciar sesión con Facebook</span>
           </button>
           
           <!-- Divisor -->
           <div class="flex items-center mb-6">
             <div class="flex-grow h-px bg-gray-300"></div>
-            <span class="px-4 text-gray-600 text-sm">Or</span>
+            <span class="px-4 text-gray-600 text-sm">O</span>
             <div class="flex-grow h-px bg-gray-300"></div>
           </div>
           
@@ -371,44 +372,44 @@ defineExpose({
           <form @submit.prevent="handleRegister">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label for="first-name" class="block text-gray-700 mb-2 font-medium">First name</label>
+                <label for="first-name" class="block text-gray-700 mb-2 font-medium">Nombre</label>
                 <input 
                   type="text" 
                   id="first-name" 
                   v-model="firstName" 
                   class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                  placeholder="Enter first name"
+                  placeholder="Ingresa tu nombre"
                   required
                 >
               </div>
               <div>
-                <label for="last-name" class="block text-gray-700 mb-2 font-medium">Last name</label>
+                <label for="last-name" class="block text-gray-700 mb-2 font-medium">Apellido</label>
                 <input 
                   type="text" 
                   id="last-name" 
                   v-model="lastName" 
                   class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                  placeholder="Enter last name"
+                  placeholder="Ingresa tu apellido"
                   required
                 >
               </div>
             </div>
             
             <div class="mb-4">
-              <label for="register-email" class="block text-gray-700 mb-2 font-medium">Email address</label>
+              <label for="register-email" class="block text-gray-700 mb-2 font-medium">Correo electrónico</label>
               <input 
                 type="email" 
                 id="register-email" 
                 v-model="registerEmail" 
                 class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                placeholder="Enter your email"
+                placeholder="Ingresa tu correo electrónico"
                 required
               >
             </div>
             
             <div class="mb-4">
               <label for="register-password" class="block text-gray-700 mb-2 font-medium">
-                Password <span class="text-sm text-gray-600">min. 8 char</span>
+                Contraseña <span class="text-sm text-gray-600">min. 8 char</span>
               </label>
               <div class="relative">
                 <input 
@@ -416,7 +417,7 @@ defineExpose({
                   id="register-password" 
                   v-model="registerPassword" 
                   class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                  placeholder="Create a password"
+                  placeholder="Crea tu contraseña"
                   required
                   minlength="8"
                 >
@@ -437,14 +438,14 @@ defineExpose({
             </div>
             
             <div class="mb-4">
-              <label for="confirm-password" class="block text-gray-700 mb-2 font-medium">Confirm password</label>
+              <label for="confirm-password" class="block text-gray-700 mb-2 font-medium">Confirma tu contraseña</label>
               <div class="relative">
                 <input 
                   :type="showConfirmPassword ? 'text' : 'password'" 
                   id="confirm-password" 
                   v-model="confirmPassword" 
                   class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 placeholder-gray-700" 
-                  placeholder="Confirm your password"
+                  placeholder="Confirma tu contraseña"
                   required
                 >
                 <button 
@@ -474,9 +475,9 @@ defineExpose({
                   >
                 </div>
                 <label for="terms" class="ml-2 text-sm text-gray-700">
-                  By joining, I agree to the 
-                  <a href="#" class="text-red-500 hover:underline">Terms of use</a> and 
-                  <a href="#" class="text-red-500 hover:underline">Privacy policy</a>
+                  Al unirte, aceptas los
+                  <a href="#" class="text-red-500 hover:underline">Términos de uso</a> y la
+                  <a href="#" class="text-red-500 hover:underline">Política de privacidad</a>
                 </label>
               </div>
             </div>
@@ -493,7 +494,7 @@ defineExpose({
                 </svg>
                 Creating account...
               </span>
-              <span v-else>Sign up</span>
+              <span v-else>Registrarse</span>
             </button>
           </form>
         </div>

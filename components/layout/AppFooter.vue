@@ -8,10 +8,10 @@
           <div class="flex flex-col md:flex-row justify-between">
             <div class="mb-8 md:mb-0 md:mr-12">
               <router-link class="inline-block mb-6" to="/">
-                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">OASIS</h1>
+                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">OASIS - Tu Aliado en Bienes Raíces</h1>
               </router-link>
               <p class="text-gray-600 dark:text-gray-400 mb-6">
-                Your trusted partner in finding the perfect property. We make real estate simple, transparent, and enjoyable.
+                En OASIS, hacemos que encontrar la propiedad perfecta sea una experiencia sencilla, transparente y placentera. Nuestro compromiso es ayudarte a tomar decisiones informadas y seguras en el mundo inmobiliario.
               </p>
               <ul class="space-y-3">
                 <li>
@@ -27,7 +27,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    (555) 123-4567
+                    (504) 3192-3555
                   </a>
                 </li>
               </ul>
@@ -55,43 +55,21 @@
               </div>
             </div>
             <div class="grid grid-cols-2 gap-8">
+              
               <div>
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Quick Links</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Servicios</h4>
                 <ul class="space-y-3">
                   <li>
-                    <router-link to="/" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Home</router-link>
+                    <router-link to="/properties/sale" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Compra de propiedades</router-link>
                   </li>
                   <li>
-                    <router-link to="/properties" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Properties</router-link>
+                    <router-link to="/properties/add-property" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Venta de propiedades</router-link>
                   </li>
                   <li>
-                    <router-link to="/about" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">About Us</router-link>
+                    <router-link to="/properties/rent" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Alquiler de propiedades</router-link>
                   </li>
                   <li>
-                    <router-link to="/contact" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Contact</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/blog" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Blog</router-link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Services</h4>
-                <ul class="space-y-3">
-                  <li>
-                    <router-link to="/services/buying" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Buying Property</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/services/selling" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Selling Property</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/services/renting" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Property Rental</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/services/management" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Property Management</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/services/consultation" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Real Estate Consultation</router-link>
+                    <router-link to="/account/account-info" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Administración de propiedades</router-link>
                   </li>
                 </ul>
               </div>
@@ -100,7 +78,7 @@
         </div>
         <div>
           <div>
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Contact Us</h4>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Contactanos</h4>
             <div class="flex items-start mb-6">
               <div class="flex-shrink-0 mr-3 mt-1">
                 <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,142 +88,31 @@
               </div>
               <div>
                 <p class="text-gray-600 dark:text-gray-400">
-                  123 Main Street, Suite 200<br>
-                  Springfield, ST 12345
+                  Ave. 14 de julio, frente a <br>
+                  Repuestos del Atlantico
                 </p>
               </div>
             </div>
             
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 pt-4">Recent Posts</h4>
+           
             
             <div class="space-y-6">
-              <article class="flex">
-                <router-link to="/blog/single" class="hidden sm:block flex-shrink-0 mr-4">
-                  <img class="w-24 h-20 object-cover rounded-md" src="https://via.placeholder.com/100x80" alt="Blog post" />
-                </router-link>
-                <div>
-                  <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase">Home improvement</span>
-                  <h5 class="text-base font-medium text-gray-800 dark:text-gray-200 mt-1">
-                    <router-link to="/blog/single" class="hover:text-blue-600 dark:hover:text-blue-400">Your Guide to a Smart Apartment Searching</router-link>
-                  </h5>
-                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                    Mi justo, varius vitae cursus ipsum sem massa amet pellentesque. Ipsum enim sit
-                    nulla ridiculus semper nam...
-                  </p>
-                  <div class="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    <span class="flex items-center mr-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Dec 4
-                    </span>
-                    <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      2 comments
-                    </span>
-                  </div>
-                </div>
-              </article>
               
               <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
               
-              <article class="flex">
-                <router-link to="/blog/single" class="hidden sm:block flex-shrink-0 mr-4">
-                  <img class="w-24 h-20 object-cover rounded-md" src="https://via.placeholder.com/100x80" alt="Blog post" />
-                </router-link>
-                <div>
-                  <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase">Tips & advice</span>
-                  <h5 class="text-base font-medium text-gray-800 dark:text-gray-200 mt-1">
-                    <router-link to="/blog/single" class="hover:text-blue-600 dark:hover:text-blue-400">Top 10 Ways to Refresh Your Space</router-link>
-                  </h5>
-                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                    Volutpat, orci, vitae arcu feugiat vestibulum ultricies nisi, aenean eget. Vitae
-                    enim, tellus tempor consequat mi vitae...
-                  </p>
-                  <div class="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    <span class="flex items-center mr-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Nov 23
-                    </span>
-                    <span class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      No comments
-                    </span>
-                  </div>
-                </div>
-              </article>
+              
             </div>
           </div>
         </div>
       </div>
       
-      <!-- App Download Banner-->
-      <div class="bg-gray-900 rounded-xl overflow-hidden">
-        <div class="container mx-auto px-4 py-6">
-          <div class="flex flex-col md:flex-row items-center">
-            <div class="md:w-1/3 mb-6 md:mb-0">
-              <img class="h-60 object-contain mx-auto" src="https://via.placeholder.com/240x300" alt="OASIS mobile app" />
-            </div>
-            <div class="md:w-2/3 text-center md:text-left">
-              <div class="max-w-xl mx-auto md:mx-0">
-                <h3 class="text-2xl font-bold text-white mb-2">Download Our App</h3>
-                <p class="text-gray-300 mb-6">
-                  Find everything you need for buying, selling & renting property in our new
-                  OASIS App!
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center md:justify-start space-y-3 sm:space-y-0 sm:space-x-4">
-                  <a href="#" class="bg-black hover:bg-gray-800 text-white flex items-center px-4 py-2 rounded-lg">
-                    <svg class="w-7 h-7 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17.5227 7.39069V6.26069C17.5227 4.73369 16.2837 3.49469 14.7567 3.49469C13.2297 3.49469 11.9907 4.73369 11.9907 6.26069V7.39069" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M5.5227 7.39069V6.26069C5.5227 4.73369 6.7617 3.49469 8.2887 3.49469C9.8157 3.49469 11.0547 4.73369 11.0547 6.26069V7.39069" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M8.4043 14.1018H8.4143" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M14.4043 14.1018H14.4143" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M11.4001 21.25C16.1591 21.25 20.0171 17.392 20.0171 12.632V12C20.0171 7.24 16.1591 3.382 11.4001 3.382C6.6411 3.382 2.7831 7.24 2.7831 12C2.7831 16.76 6.6411 20.618 11.4001 20.618V21.25Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <div>
-                      <div class="text-xs">Download on the</div>
-                      <div class="font-semibold text-sm">App Store</div>
-                    </div>
-                  </a>
-                  <a href="#" class="bg-black hover:bg-gray-800 text-white flex items-center px-4 py-2 rounded-lg">
-                    <svg class="w-7 h-7 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.0001 21.9994C17.5229 21.9994 22.0001 17.5223 22.0001 11.9994C22.0001 6.47659 17.5229 1.99939 12.0001 1.99939C6.47727 1.99939 2.00006 6.47659 2.00006 11.9994C2.00006 17.5223 6.47727 21.9994 12.0001 21.9994Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M8.00001 11.9995H16" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M12 16.0001V8.00012" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <div>
-                      <div class="text-xs">Download on</div>
-                      <div class="font-semibold text-sm">Google Play</div>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    
       
       <div class="text-center mt-10">
         <p class="text-gray-600 dark:text-gray-400 text-sm">
           &copy; {{ new Date().getFullYear() }} OASIS Real Estate. All rights reserved.
         </p>
-        <div class="flex justify-center space-x-4 mt-3">
-          <router-link to="/privacy" class="text-gray-500 dark:text-gray-400 text-sm hover:text-gray-900 dark:hover:text-white">
-            Privacy Policy
-          </router-link>
-          <router-link to="/terms" class="text-gray-500 dark:text-gray-400 text-sm hover:text-gray-900 dark:hover:text-white">
-            Terms of Service
-          </router-link>
-          <router-link to="/cookies" class="text-gray-500 dark:text-gray-400 text-sm hover:text-gray-900 dark:hover:text-white">
-            Cookie Policy
-          </router-link>
-        </div>
+        
       </div>
     </div>
   </footer>
