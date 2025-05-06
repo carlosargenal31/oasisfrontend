@@ -45,12 +45,12 @@ body, html {
   
   /* Excepciones para texto blanco en elementos con fondo de color */
   .bg-green-500, 
-  .bg-blue-500, 
+  .bg-orange-500, 
   .bg-red-500, 
   .text-white, 
   button.bg-red-500,
   .bg-green-500 span, 
-  .bg-blue-500 span, 
+  .bg-orange-500 span, 
   .bg-red-500 span {
     color: #ffffff !important;
   }
@@ -178,7 +178,7 @@ body, html {
   }
   
   .badge-new {
-    background-color: #3b82f6;
+    background-color: #fd5631;
     color: white;
   }
   
@@ -230,7 +230,7 @@ body, html {
     text-transform: uppercase;
     font-size: 12px;
     font-weight: 600;
-    color: #3b82f6;
+    color: #fd5631;
   }
   
   .card-title {

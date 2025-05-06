@@ -3,7 +3,7 @@
       <!-- Loading state -->
       <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy mx-auto mb-4"></div>
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange mx-auto mb-4"></div>
           <p class="text-lg font-medium text-gray-700">Cargando lista de deseos...</p>
         </div>
       </div>
@@ -12,7 +12,7 @@
       <header class="bg-white border-b border-gray-200 py-4">
         <div class="container mx-auto px-4 flex items-center justify-between">
           <div class="flex items-center">
-            <div class="text-2xl font-bold text-blue-500">OASIS</div>
+            <div class="text-2xl font-bold text-orange-500">OASIS</div>
           </div>
           <div class="flex items-center gap-4">
             <div class="flex items-center">
@@ -27,7 +27,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </div>
-            <button class="bg-navy text-white px-4 py-2 rounded-md flex items-center" @click="redirectToAddProperty">
+            <button class="bg-orange text-white px-4 py-2 rounded-md flex items-center" @click="redirectToAddProperty">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
@@ -40,8 +40,8 @@
   
       <!-- Breadcrumb -->
       <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center text-blue-500 text-sm">
-          <a href="/" class="hover:text-navy">Inicio</a>
+        <div class="flex items-center text-orange-500 text-sm">
+          <a href="/" class="hover:text-orange">Inicio</a>
           <span class="mx-2">/</span>
           <span class="text-gray-800">Lista de Deseos</span>
         </div>
@@ -74,7 +74,7 @@
               <div class="px-4 pb-4">
                 <button 
                   @click="redirectToAddProperty" 
-                  class="w-full bg-navy text-white py-2 rounded flex justify-center items-center"
+                  class="w-full bg-orange text-white py-2 rounded flex justify-center items-center"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="white">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -110,11 +110,11 @@
     </svg>
     <span class="text-black">Mis Compras</span>
   </a>
-                <a href="/account/wishlist" class="flex items-center px-4 py-3 border-l-4 border-navy bg-gray-50">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="/account/wishlist" class="flex items-center px-4 py-3 border-l-4 border-orange bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                  <span class="text-navy font-medium">Lista de Deseos</span>
+                  <span class="text-orange font-medium">Lista de Deseos</span>
                 </a>
                 
                 <a href="/logout" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
@@ -145,7 +145,7 @@
   
             <!-- Loading state -->
             <div v-if="favoritesStore.isLoading" class="flex justify-center py-10">
-              <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy"></div>
+              <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange"></div>
             </div>
   
             <!-- No favorites state -->
@@ -155,7 +155,7 @@
               </svg>
               <h3 class="text-lg font-medium text-gray-900 mb-2">Tu lista de deseos está vacía</h3>
               <p class="text-gray-600 mb-4">Agrega propiedades que te gusten para verlas aquí.</p>
-              <button @click="redirectToSearch" class="bg-navy text-white py-2 px-4 rounded-md hover:bg-navy-dark transition flex items-center mx-auto">
+              <button @click="redirectToSearch" class="bg-orange text-white py-2 px-4 rounded-md hover:bg-orange-dark transition flex items-center mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -189,7 +189,7 @@
                       </span>
                       <span 
                         v-if="property.isNew" 
-                        class="bg-blue-500 text-white text-xs px-2 py-1 rounded inline-block ml-1"
+                        class="bg-orange-500 text-white text-xs px-2 py-1 rounded inline-block ml-1"
                       >
                         Nuevo
                       </span>
@@ -212,7 +212,7 @@
                   <div class="p-4 md:p-6 flex-1">
                     <!-- Property Type Label -->
                     <div class="mb-1 uppercase text-sm font-medium" 
-                      :class="property.status === 'for-rent' ? 'text-blue-500' : 'text-green-500'">
+                      :class="property.status === 'for-rent' ? 'text-orange-500' : 'text-green-500'">
                     {{ property.status === 'for-rent' ? 'EN ALQUILER' : 'EN VENTA' }}
                   </div>
                   
@@ -256,13 +256,13 @@
                   <div class="flex flex-col sm:flex-row justify-between items-center">
                     <button 
                       @click="viewPropertyDetails(property.id)" 
-                      class="bg-navy text-white px-4 py-2 rounded hover:bg-navy-dark transition mb-2 sm:mb-0"
+                      class="bg-orange text-white px-4 py-2 rounded hover:bg-orange-dark transition mb-2 sm:mb-0"
                     >
                       Ver detalles
                     </button>
                     <button 
                       @click="contactAgent(property)" 
-                      class="text-navy hover:text-navy-dark border border-navy rounded px-4 py-2 transition"
+                      class="text-orange hover:text-orange-dark border border-orange rounded px-4 py-2 transition"
                     >
                       Reservar
                     </button>
@@ -465,28 +465,28 @@ onMounted(async () => {
 
 <style scoped>
 /* Custom styles for the wishlist component */
-.bg-navy {
-  background-color: #0a3364;
+.bg-orange {
+  background-color: #fd5631;
 }
 
-.bg-navy-dark {
-  background-color: #072649;
+.bg-orange-dark {
+  background-color: #fd5631;
 }
 
-.hover\:bg-navy-dark:hover {
-  background-color: #072649;
+.hover\:bg-orange-dark:hover {
+  background-color: #fd5631;
 }
 
-.text-navy {
-  color: #0a3364;
+.text-orange {
+  color: #fd5631;
 }
 
-.hover\:text-navy-dark:hover {
-  color: #072649;
+.hover\:text-orange-dark:hover {
+  color: #fd5631;
 }
 
-.border-navy {
-  border-color: #0a3364;
+.border-orange {
+  border-color: #fd5631;
 }
 
 /* Notification styles */
@@ -513,7 +513,7 @@ onMounted(async () => {
 }
 
 .notification-info {
-  background-color: #3B82F6;
+  background-color: #fd5631;
   color: white;
 }
 </style>

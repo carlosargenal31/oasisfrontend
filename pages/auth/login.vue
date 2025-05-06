@@ -25,7 +25,7 @@
           v-model="email" 
           type="email" 
           required 
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
           placeholder="tu@correo.com"
         />
       </div>
@@ -34,7 +34,7 @@
       <div>
         <div class="flex justify-between">
           <label for="password" class="block text-sm font-medium text-black mb-1">Contraseña</label>
-          <a href="/auth/login?forgotPassword=true" class="text-sm text-blue-600 hover:underline">
+          <a href="/auth/login?forgotPassword=true" class="text-sm text-orange-600 hover:underline">
             ¿Olvidaste tu contraseña?
           </a>
         </div>
@@ -43,13 +43,13 @@
           v-model="password" 
           type="password" 
           required 
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
           placeholder="••••••••"
         />
       </div>
       
       <!-- Forgot password form -->
-      <div v-if="showForgotPasswordForm" class="bg-blue-50 p-4 rounded border border-blue-100">
+      <div v-if="showForgotPasswordForm" class="bg-orange-50 p-4 rounded border border-orange-100">
         <h3 class="text-lg font-medium mb-2 text-black">Reestablece tu contraseña</h3>
         <p class="text-sm text-gray-600 mb-3">Ingresa tu correo electrónico y te enviaremos instrucciones para reestablecer tu contraseña.</p>
         
@@ -69,7 +69,7 @@
           <button 
             type="button"
             @click="handleResetPassword" 
-            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none"
+            class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 focus:outline-none"
             :disabled="resetLoading"
           >
             <span v-if="resetLoading">Enviando...</span>
@@ -91,7 +91,7 @@
           id="remember" 
           v-model="rememberMe" 
           type="checkbox" 
-          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
         />
         <label for="remember" class="ml-2 block text-sm text-black">
           Recordarme
@@ -101,7 +101,7 @@
       <!-- Submit Button -->
       <button 
         type="submit" 
-        class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors"
+        class="w-full py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors"
         :disabled="loading"
       >
         <span v-if="loading">
@@ -117,7 +117,7 @@
       <!-- Sign Up Link -->
       <div class="text-center text-sm text-black">
         ¿No tienes una cuenta? 
-        <NuxtLink to="/auth/register" class="text-blue-600 hover:underline font-medium">
+        <NuxtLink to="/auth/register" class="text-orange-600 hover:underline font-medium">
           Regístrate
         </NuxtLink>
       </div>

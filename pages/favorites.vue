@@ -9,7 +9,7 @@
     
     <div v-else-if="favorites.length === 0" class="text-center py-12">
       <p class="text-gray-500 mb-4">You haven't added any properties to your favorites yet.</p>
-      <nuxt-link to="/properties" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+      <nuxt-link to="/properties" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
         Browse Properties
       </nuxt-link>
     </div>

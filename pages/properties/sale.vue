@@ -16,7 +16,7 @@
               En alquiler
             </button>
             <button 
-              class="toggle-btn flex-1 py-3 px-4 text-center active bg-blue-100 text-blue-600 font-medium rounded-r-md"
+              class="toggle-btn flex-1 py-3 px-4 text-center active bg-orange-100 text-orange-600 font-medium rounded-r-md"
             >
               <svg class="inline-block mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" fill="currentColor"/>
@@ -47,7 +47,7 @@
                   :value="type.value" 
                   v-model="selectedPropertyTypes"
                   @change="updatePropertyTypeFilters"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                 >
                 <label :for="type.value" class="ml-2 text-sm text-black">{{ type.label }}</label>
               </div>
@@ -123,8 +123,8 @@
                 :class="[
                   'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
                   filters.bedrooms === option.value 
-                    ? 'border-blue-500 text-white bg-blue-500' 
-                    : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
+                    ? 'border-orange-500 text-white bg-orange-500' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
                 ]"
               >
                 <input 
@@ -149,8 +149,8 @@
                 :class="[
                   'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
                   filters.bathrooms === option.value 
-                    ? 'border-blue-500 text-white bg-blue-500' 
-                    : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
+                    ? 'border-orange-500 text-white bg-orange-500' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
                 ]"
               >
                 <input 
@@ -198,7 +198,7 @@
                   :value="amenity.value" 
                   v-model="filters.amenities"
                   @change="handleFilterChange"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                 >
                 <label :for="amenity.value" class="ml-2 text-sm text-black">{{ amenity.label }}</label>
               </div>
@@ -216,7 +216,7 @@
                   :value="option.value" 
                   v-model="filters.additionalOptions"
                   @change="handleFilterChange"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                 >
                 <label :for="option.value" class="ml-2 text-sm text-black">{{ option.label }}</label>
               </div>
@@ -226,7 +226,7 @@
           <!-- Reset Filters Button -->
           <button 
             @click="resetFilters" 
-            class="reset-button w-full flex items-center justify-center py-3 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+            class="reset-button w-full flex items-center justify-center py-3 px-4 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
           >
             <svg class="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 16c1.671 0 3-1.329 3-3s-1.329-3-3-3-3 1.329-3 3 1.329 3 3 3z M20.817 11.186a8.94 8.94 0 0 0-1.355-3.219 9.053 9.053 0 0 0-2.43-2.43 8.95 8.95 0 0 0-3.219-1.355 9.028 9.028 0 0 0-1.838-.182V2L8 5l3.975 3V6.002c.484-.002.968.044 1.435.14a6.961 6.961 0 0 1 2.502 1.053 7.005 7.005 0 0 1 1.892 1.892A6.967 6.967 0 0 1 19 13a7.032 7.032 0 0 1-.55 2.725 7.11 7.11 0 0 1-.644 1.188 7.2 7.2 0 0 1-.858 1.039 7.028 7.028 0 0 1-3.536 1.907 7.13 7.13 0 0 1-2.822 0 6.961 6.961 0 0 1-2.503-1.054 7.002 7.002 0 0 1-1.89-1.89A6.996 6.996 0 0 1 5 13H3a9.02 9.02 0 0 0 1.539 5.034 9.096 9.096 0 0 0 2.428 2.428A8.95 8.95 0 0 0 12 22a9.09 9.09 0 0 0 1.814-.183 9.014 9.014 0 0 0 3.218-1.355 8.886 8.886 0 0 0 1.331-1.099 9.228 9.228 0 0 0 1.1-1.332A8.952 8.952 0 0 0 21 13a9.09 9.09 0 0 0-.183-1.814z" fill="currentColor"/>
@@ -239,7 +239,7 @@
         <div class="content-column flex-1">
           <!-- Breadcrumb -->
           <div class="breadcrumb flex items-center mb-4 text-sm">
-            <a href="/" class="text-gray-600 hover:text-blue-500">Inicio</a>
+            <a href="/" class="text-gray-600 hover:text-orange-500">Inicio</a>
             <span class="mx-2 text-gray-500">›</span>
             <span class="text-black">Propiedades en venta</span>
           </div>
@@ -270,7 +270,7 @@
           
           <!-- Loading State -->
           <div v-if="loading" class="flex justify-center items-center py-20">
-            <div class="spinner border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+            <div class="spinner border-4 border-gray-200 border-t-orange-500 rounded-full w-10 h-10 animate-spin"></div>
           </div>
           
           <!-- Properties Grid -->
@@ -294,7 +294,7 @@
                 <!-- Badges -->
                 <div class="property-badges absolute top-3 left-3">
                   <span v-if="property.isVerified" class="badge bg-green-500 text-white text-xs font-medium px-2 py-1 rounded block mb-1">Verificado</span>
-                  <span v-if="property.isNew" class="badge bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded block">NUEVO</span>
+                  <span v-if="property.isNew" class="badge bg-orange-500 text-white text-xs font-medium px-2 py-1 rounded block">NUEVO</span>
                 </div>
                 
                 <!-- Favorite Button - Only visible on hover -->
@@ -309,7 +309,7 @@
                     viewBox="0 0 24 24" 
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
-                    :class="isFavorite(property.id) ? 'text-blue-500' : 'text-gray-400'"
+                    :class="isFavorite(property.id) ? 'text-orange-500' : 'text-gray-400'"
                   >
                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/>
                   </svg>
@@ -373,7 +373,7 @@
             <p class="text-gray-600 mb-4">Intente ajustar sus criterios de búsqueda</p>
             <button 
               @click="resetFilters" 
-              class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+              class="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
             >
               Restablecer filtros
             </button>
@@ -381,13 +381,13 @@
           
           <!-- Error State -->
           <div v-else-if="error" class="flex flex-col items-center justify-center py-16">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-blue-500 mb-4" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-orange-500 mb-4" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
             </svg>
-            <p class="text-blue-500 font-medium mb-4">{{ error }}</p>
+            <p class="text-orange-500 font-medium mb-4">{{ error }}</p>
             <button 
               @click="fetchProperties" 
-              class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+              class="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
             >
               Intentar de nuevo
             </button>
@@ -411,7 +411,7 @@
               <button 
                 v-else 
                 class="page-btn border rounded-md w-10 h-10 flex items-center justify-center mx-1" 
-                :class="currentPage === page ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 text-gray-700'"
+                :class="currentPage === page ? 'bg-orange-500 text-white border-orange-500' : 'border-gray-300 text-gray-700'"
                 @click="changePage(page)"
               >
                 {{ page }}
@@ -1124,7 +1124,7 @@ watch(() => route.query, () => {
 }
 
 .toggle-btn.active {
-  color: #3b82f6;
+  color: #fd5631;
 }
 
 .filter-title {
@@ -1174,16 +1174,16 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 /* Color primario */
-.text-primary, .text-blue-500 {
-  color: #3b82f6 !important;
+.text-primary, .text-orange-500 {
+  color: #fd5631 !important;
 }
 
 .text-green-500 {
   color: #10b981 !important;
 }
 
-.bg-primary, .bg-blue-500 {
-  background-color: #3b82f6 !important;
+.bg-primary, .bg-orange-500 {
+  background-color: #fd5631 !important;
 }
 
 .bg-red-500 {
@@ -1194,27 +1194,27 @@ input[type="checkbox"], input[type="radio"] {
   background-color: #fee2e2 !important;
 }
 
-.bg-blue-100 {
+.bg-orange-100 {
   background-color: #dbeafe !important;
 }
 
-.border-primary, .border-blue-500 {
-  border-color: #3b82f6 !important;
+.border-primary, .border-orange-500 {
+  border-color: #fd5631 !important;
 }
 
 .border-red-400 {
   border-color: #f87171 !important;
 }
 
-.hover\:bg-primary:hover, .hover\:bg-blue-500:hover {
-  background-color: #3b82f6 !important;
+.hover\:bg-primary:hover, .hover\:bg-orange-500:hover {
+  background-color: #fd5631 !important;
 }
 
-.hover\:text-primary:hover, .hover\:text-blue-500:hover {
-  color: #3b82f6 !important;
+.hover\:text-primary:hover, .hover\:text-orange-500:hover {
+  color: #fd5631 !important;
 }
 
-.hover\:bg-blue-600:hover {
+.hover\:bg-orange-600:hover {
   background-color: #2563eb !important;
 }
 
@@ -1250,19 +1250,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .property-card:hover .property-image-container .absolute.top-3.right-3,
-.property-image-container .absolute.top-3.right-3 .text-blue-500 {
+.property-image-container .absolute.top-3.right-3 .text-orange-500 {
   opacity: 1;
 }
 
 /* Correcciones para los filtros */
 input[type="checkbox"]:checked {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
+  border-color: #fd5631 !important;
 }
 
 .btn-check:checked + .btn-outline-secondary {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
+  border-color: #fd5631 !important;
   color: white !important;
 }
 
@@ -1277,18 +1277,18 @@ input[type="checkbox"]:checked {
 }
 
 /* Estilos adicionales para botones y campos de formulario */
-button.bg-blue-500, button.border-blue-500, button.text-blue-500 {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
+button.bg-orange-500, button.border-orange-500, button.text-orange-500 {
+  background-color: #fd5631;
+  border-color: #fd5631;
   color: white;
 }
 
-button.text-blue-500 {
-  color: #3b82f6;
+button.text-orange-500 {
+  color: #fd5631;
 }
 
-button.hover\:bg-blue-500:hover {
-  background-color: #3b82f6 !important;
+button.hover\:bg-orange-500:hover {
+  background-color: #fd5631 !important;
   color: white !important;
 }
 

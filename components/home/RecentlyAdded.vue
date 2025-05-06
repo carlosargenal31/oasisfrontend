@@ -146,8 +146,8 @@
 
 /* Estilos para los botones */
 .btn-primary {
-  background-color: #1e3a8a;
-  border-color: #1e3a8a;
+  background-color: #fd5631;
+  border-color: #fd5631;
 }
 
 .btn-primary:hover {
@@ -156,7 +156,7 @@
 }
 
 .btn-link {
-  color: #1e3a8a;
+  color: #fd5631;
 }
 
 /* Estilos para las pestañas */
@@ -165,11 +165,11 @@
 }
 
 .nav-tabs .nav-link.active {
-  color: #1e3a8a;
-  border-color: transparent transparent #1e3a8a;
+  color: #fd5631;
+  border-color: transparent transparent #fd5631;
 }
 
 .nav-tabs .nav-link:hover {
-  border-color: transparent transparent #1e3a8a;
+  border-color: transparent transparent #fd5631;
 }
 </style>

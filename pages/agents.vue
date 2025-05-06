@@ -1,9 +1,9 @@
 <template>
     <div class="container mx-auto px-4 py-8">
       <div class="flex items-center text-sm text-gray-500 mb-4">
-        <a href="/" class="hover:text-blue-500">Home</a>
+        <a href="/" class="hover:text-orange-500">Home</a>
         <span class="mx-2">›</span>
-        <span class="text-blue-500">Agents</span>
+        <span class="text-orange-500">Agents</span>
       </div>
   
       <div class="mb-8">
@@ -24,8 +24,8 @@
               </div>
               <p class="text-sm text-gray-700 mb-4">"I help clients find their dream homes with personalized service and extensive market knowledge."</p>
               <div class="flex space-x-3 mb-4">
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                 <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
               </div>
               <div class="flex space-x-4">
@@ -44,7 +44,7 @@
             <div>
               <span class="text-gray-700">45 reviews</span>
             </div>
-            <a href="/agents/1" class="text-blue-600 hover:text-blue-800">View Profile</a>
+            <a href="/agents/1" class="text-orange-600 hover:text-orange-800">View Profile</a>
           </div>
         </div>
   
@@ -60,8 +60,8 @@
               </div>
               <p class="text-sm text-gray-700 mb-4">"Specializing in luxury properties and investment opportunities with over 10 years of experience in the market."</p>
               <div class="flex space-x-3 mb-4">
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                 <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
               </div>
               <div class="flex space-x-4">
@@ -80,7 +80,7 @@
             <div>
               <span class="text-gray-700">37 reviews</span>
             </div>
-            <a href="/agents/2" class="text-blue-600 hover:text-blue-800">View Profile</a>
+            <a href="/agents/2" class="text-orange-600 hover:text-orange-800">View Profile</a>
           </div>
         </div>
   
@@ -96,8 +96,8 @@
               </div>
               <p class="text-sm text-gray-700 mb-4">"I believe in building relationships with clients and providing exceptional service throughout the buying or selling process."</p>
               <div class="flex space-x-3 mb-4">
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                 <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
               </div>
               <div class="flex space-x-4">
@@ -116,7 +116,7 @@
             <div>
               <span class="text-gray-700">29 reviews</span>
             </div>
-            <a href="/agents/3" class="text-blue-600 hover:text-blue-800">View Profile</a>
+            <a href="/agents/3" class="text-orange-600 hover:text-orange-800">View Profile</a>
           </div>
         </div>
   
@@ -132,8 +132,8 @@
               </div>
               <p class="text-sm text-gray-700 mb-4">"Expert in residential properties with a focus on family homes and investment opportunities in growing neighborhoods."</p>
               <div class="flex space-x-3 mb-4">
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                 <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
               </div>
               <div class="flex space-x-4">
@@ -152,7 +152,7 @@
             <div>
               <span class="text-gray-700">31 reviews</span>
             </div>
-            <a href="/agents/4" class="text-blue-600 hover:text-blue-800">View Profile</a>
+            <a href="/agents/4" class="text-orange-600 hover:text-orange-800">View Profile</a>
           </div>
         </div>
   
@@ -168,8 +168,8 @@
             </div>
             <p class="text-sm text-gray-700 mb-4">"Helping clients find their perfect home or investment property with personalized attention to detail and market insights."</p>
             <div class="flex space-x-3 mb-4">
-              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
               <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
             </div>
             <div class="flex space-x-4">
@@ -188,7 +188,7 @@
           <div>
             <span class="text-gray-700">24 reviews</span>
           </div>
-          <a href="/agents/5" class="text-blue-600 hover:text-blue-800">View Profile</a>
+          <a href="/agents/5" class="text-orange-600 hover:text-orange-800">View Profile</a>
         </div>
       </div>
 
@@ -204,8 +204,8 @@
             </div>
             <p class="text-sm text-gray-700 mb-4">"Specialized in luxury properties and commercial real estate with a track record of successful transactions."</p>
             <div class="flex space-x-3 mb-4">
-              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+              <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
               <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
             </div>
             <div class="flex space-x-4">
@@ -224,7 +224,7 @@
           <div>
             <span class="text-gray-700">33 reviews</span>
           </div>
-          <a href="/agents/6" class="text-blue-600 hover:text-blue-800">View Profile</a>
+          <a href="/agents/6" class="text-orange-600 hover:text-orange-800">View Profile</a>
         </div>
       </div>
     </div>
@@ -233,7 +233,7 @@
     <div class="mt-8 flex justify-center">
       <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
         <a href="#" class="px-3 py-2 border border-gray-300 bg-white rounded-l-md text-sm">Previous</a>
-        <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-blue-800 text-white text-sm">1</a>
+        <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-orange-800 text-white text-sm">1</a>
         <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">2</a>
         <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">3</a>
         <a href="#" class="px-3 py-2 border border-gray-300 bg-white rounded-r-md text-sm">Next</a>

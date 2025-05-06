@@ -2,7 +2,10 @@
   <div class="home-page">
     <Hero />
     <Categories />
-    <Services />
+    <Stay />
+    <Eat />
+    <Events />
+    <Blog />
     
   </div>
 </template>
@@ -10,10 +13,10 @@
 <script setup lang="ts">
 import Hero from '~/components/home/Hero.vue';
 import Categories from '~/components/home/Categories.vue';
-import Services from '~/components/home/Services.vue';
-//import FeaturedProperties from '~/components/home/FeaturedProperties.vue';
-//import RecentlyAdded from '~/components/home/RecentlyAdded.vue';
-//import ConstCalculator from '~/components/home/ConstCalculator.vue';
+import Stay from '~/components/home/Stay.vue';
+import Eat from '~/components/home/Eat.vue';
+import Events from '~/components/home/Events.vue';
+import Blog from '~/components/home/Blog.vue';
 //import Cities from '~/components/home/Cities.vue';
 //import Partners from '~/components/home/Partners.vue';
 //import Agents from '~/components/home/Agents.vue';

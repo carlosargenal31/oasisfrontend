@@ -4,7 +4,7 @@
       
       <!-- Loading State -->
       <div v-if="userStore.loading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
       
       <!-- Error State -->
@@ -48,7 +48,7 @@
               <span v-if="favorite.property?.bathrooms" class="mr-4">{{ favorite.property.bathrooms }} Baths</span>
               <span v-if="favorite.property?.square_feet">{{ favorite.property.square_feet }} sqft</span>
             </div>
-            <NuxtLink :to="`/properties/${favorite.property_id}`" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
+            <NuxtLink :to="`/properties/${favorite.property_id}`" class="text-orange-600 hover:text-orange-800 dark:text-orange-400 font-medium">
               View Details →
             </NuxtLink>
           </div>
@@ -61,7 +61,7 @@
         <p class="text-gray-600 dark:text-gray-400 mb-4">
           You haven't saved any properties yet. Browse properties and click the heart icon to save them.
         </p>
-        <NuxtLink to="/properties" class="text-blue-600 dark:text-blue-400 font-medium">
+        <NuxtLink to="/properties" class="text-orange-600 dark:text-orange-400 font-medium">
           Browse Properties
         </NuxtLink>
       </div>

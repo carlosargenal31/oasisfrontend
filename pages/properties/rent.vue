@@ -1,263 +1,318 @@
 <template>
   <div class="main-container bg-white">
     <div class="properties-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="properties-layout flex flex-col md:flex-row gap-6 pt-20 pb-10">
-        <!-- Left Sidebar with Filters -->
-        <div class="filters-column w-full md:w-72 flex-shrink-0 bg-white pb-6">
-          <!-- Rent/Sale Toggle -->
-          <div class="rent-sale-toggle flex mb-5">
-            <button 
-              class="toggle-btn flex-1 py-3 px-4 text-center active bg-blue-100 text-blue-600 font-medium rounded-l-md"
-            >
-              <svg class="inline-block mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-4h4v-2h-4V7h-2v4H8v2h4z" fill="currentColor"/>
-              </svg>
-              En alquiler
-            </button>
-            <button 
-              @click="navigateToSale"
-              class="toggle-btn flex-1 py-3 px-4 text-center text-gray-500 bg-gray-100 font-medium rounded-r-md"
-            >
-              <svg class="inline-block mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" fill="currentColor"/>
-              </svg>
-              En venta
-            </button>
-          </div>
-          
-          <!-- Location -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Ubicación</h3>
-            <div class="mb-3">
-              <select v-model="filters.city" class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" @change="handleFilterChange">
-                <option value="">Seleccionar ciudad</option>
-                <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
-              </select>
+      <div class="properties-layout flex flex-col md:flex-row gap-6 pt-32 pb-10">
+        <!-- Left Sidebar with Filters and Categories -->
+        <div class="filters-column w-full md:w-72 flex-shrink-0 bg-white pb-6 mt-16">
+          <!-- Search Bar -->
+          <div class="search-container mb-6">
+            <div class="relative flex items-center">
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                v-model="searchQuery"
+                @keyup.enter="handleSearch"
+              >
+              <span class="absolute left-3 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+              </span>
+              <button 
+                class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
+                @click="handleSearch"
+              >
+                Search
+              </button>
             </div>
           </div>
           
-          <!-- Property Type -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de propiedad</h3>
-            <div class="property-types overflow-y-auto max-h-48">
-              <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
-                <input 
-                  type="checkbox" 
-                  :id="type.value" 
-                  :value="type.value" 
-                  v-model="selectedPropertyTypes"
-                  @change="updatePropertyTypeFilters"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-                >
-                <label :for="type.value" class="ml-2 text-sm text-black">{{ type.label }}</label>
+          <!-- Tabs for toggling between Categories and Filters -->
+          <div class="tabs flex mb-6 border-b">
+            <button 
+              class="tab-btn flex-1 py-3 text-center font-medium"
+              :class="activeTab === 'categories' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
+              @click="activeTab = 'categories'"
+            >
+              <span class="flex items-center justify-center">
+                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                </svg>
+                Categories
+              </span>
+            </button>
+            <button 
+              class="tab-btn flex-1 py-3 text-center font-medium"
+              :class="activeTab === 'filters' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
+              @click="activeTab = 'filters'"
+            >
+              <span class="flex items-center justify-center">
+                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Filters
+              </span>
+            </button>
+          </div>
+          
+          <!-- Categories View -->
+          <div v-if="activeTab === 'categories'" class="categories-view">
+            <div class="grid grid-cols-2 gap-4">
+              <div 
+                v-for="category in categories" 
+                :key="category.id" 
+                class="category-card flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition"
+                @click="selectCategory(category.id)"
+              >
+                <div :class="['icon-circle w-12 h-12 rounded-full flex items-center justify-center mb-2', category.color]" v-html="category.icon"></div>
+                <span class="text-sm text-center font-medium text-gray-800">{{ category.name }}</span>
               </div>
             </div>
           </div>
           
-          <!-- Price Range Component -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Precio por mes</h3>
-            <div class="price-range-slider mb-4 relative">
-              <div class="relative w-full h-1 bg-gray-200 rounded-full my-6">
-                <!-- Barra de rango de precio -->
-                <div 
-                  class="absolute h-1 bg-red-500 rounded-full"
-                  :style="{
-                    left: getLeftPosition() + '%',
-                    width: getWidthPosition() + '%'
-                  }"
-                ></div>
-                
-                <!-- Control deslizante mínimo -->
-                <div 
-                  class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
-                  :style="{ left: getLeftPosition() + '%' }"
-                  @mousedown="startDragging('min')"
-                  @touchstart="startDragging('min')"
-                ></div>
-                
-                <!-- Control deslizante máximo -->
-                <div 
-                  class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
-                  :style="{ left: getRightPosition() + '%' }"
-                  @mousedown="startDragging('max')"
-                  @touchstart="startDragging('max')"
-                ></div>
+          <!-- Filters View -->
+          <div v-else class="filters-view">
+            
+            
+            <!-- Location -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Ubicación</h3>
+              <div class="mb-3">
+                <select 
+                  v-model="filters.city" 
+                  class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" 
+                  @change="handleFilterChange"
+                >
+                  <option value="">Seleccionar ciudad</option>
+                  <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
+                </select>
               </div>
             </div>
             
-            <div class="flex items-center mt-4">
-              <div class="w-50 pe-2 flex-1">
-                <div class="input-group flex items-center border border-gray-300 rounded-md">
-                  <span class="pl-3 text-gray-500">L</span>
+            <!-- Property Type -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de propiedad</h3>
+              <div class="property-types overflow-y-auto max-h-48">
+                <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
                   <input 
-                    type="number" 
-                    v-model.number="filters.minPrice" 
-                    @change="handleFilterChange"
-                    class="w-full p-2 border-none focus:ring-0 text-black font-medium"
+                    type="checkbox" 
+                    :id="type.value" 
+                    :value="type.value" 
+                    v-model="selectedPropertyTypes"
+                    @change="updatePropertyTypeFilters"
+                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                   >
-                </div>
-              </div>
-              <div class="text-muted mx-2">—</div>
-              <div class="w-50 ps-2 flex-1">
-                <div class="input-group flex items-center border border-gray-300 rounded-md">
-                  <span class="pl-3 text-gray-500">L</span>
-                  <input 
-                    type="number" 
-                    v-model.number="filters.maxPrice" 
-                    @change="handleFilterChange"
-                    class="w-full p-2 border-none focus:ring-0 text-black font-medium"
-                  >
+                  <label :for="type.value" class="ml-2 text-sm text-black">{{ type.label }}</label>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Bedrooms -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Habitaciones</h3>
-            <div class="flex space-x-2">
-              <label 
-                v-for="option in bedOptions" 
-                :key="option.value"
-                :class="[
-                  'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                  filters.bedrooms === option.value 
-                    ? 'border-blue-500 text-white bg-blue-500' 
-                    : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
-                ]"
-              >
-                <input 
-                  type="radio" 
-                  :value="option.value" 
-                  v-model="filters.bedrooms"
-                  @change="handleFilterChange"
-                  class="sr-only"
-                >
-                {{ option.label }}
-              </label>
-            </div>
-          </div>
-          
-          <!-- Bathrooms -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Baños</h3>
-            <div class="flex space-x-2">
-              <label 
-                v-for="option in bathOptions" 
-                :key="option.value"
-                :class="[
-                  'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                  filters.bathrooms === option.value 
-                    ? 'border-blue-500 text-white bg-blue-500' 
-                    : 'border-gray-300 text-gray-700 bg-white hover:border-blue-500'
-                ]"
-              >
-                <input 
-                  type="radio" 
-                  :value="option.value" 
-                  v-model="filters.bathrooms"
-                  @change="handleFilterChange"
-                  class="sr-only"
-                >
-                {{ option.label }}
-              </label>
-            </div>
-          </div>
-          
-          <!-- Square Meters -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Metros cuadrados</h3>
-            <div class="flex items-center">
-              <input 
-                type="number" 
-                v-model="filters.minArea" 
-                @change="handleFilterChange"
-                placeholder="Mín"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
-              >
-              <span class="mx-3 text-gray-500">—</span>
-              <input 
-                type="number" 
-                v-model="filters.maxArea" 
-                @change="handleFilterChange"
-                placeholder="Máx"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
-              >
-            </div>
-          </div>
-          
-          <!-- Amenities -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Comodidades</h3>
-            <div class="amenities-list overflow-y-auto max-h-48">
-              <div v-for="amenity in amenities" :key="amenity.value" class="checkbox-item flex items-center mb-2">
-                <input 
-                  type="checkbox" 
-                  :id="amenity.value" 
-                  :value="amenity.value" 
-                  v-model="filters.amenities"
-                  @change="handleFilterChange"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-                >
-                <label :for="amenity.value" class="ml-2 text-sm text-black">{{ amenity.label }}</label>
+            
+            <!-- Price Range Component -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Precio por mes</h3>
+              <div class="price-range-slider mb-4 relative">
+                <div class="relative w-full h-1 bg-gray-200 rounded-full my-6">
+                  <!-- Barra de rango de precio -->
+                  <div 
+                    class="absolute h-1 bg-red-500 rounded-full"
+                    :style="{
+                      left: getLeftPosition() + '%',
+                      width: getWidthPosition() + '%'
+                    }"
+                  ></div>
+                  
+                  <!-- Control deslizante mínimo -->
+                  <div 
+                    class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
+                    :style="{ left: getLeftPosition() + '%' }"
+                    @mousedown="startDragging('min')"
+                    @touchstart="startDragging('min')"
+                  ></div>
+                  
+                  <!-- Control deslizante máximo -->
+                  <div 
+                    class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
+                    :style="{ left: getRightPosition() + '%' }"
+                    @mousedown="startDragging('max')"
+                    @touchstart="startDragging('max')"
+                  ></div>
+                </div>
+              </div>
+              
+              <div class="flex items-center mt-4">
+                <div class="w-50 pe-2 flex-1">
+                  <div class="input-group flex items-center border border-gray-300 rounded-md">
+                    <span class="pl-3 text-gray-500">L</span>
+                    <input 
+                      type="number" 
+                      v-model.number="filters.minPrice" 
+                      @change="handleFilterChange"
+                      class="w-full p-2 border-none focus:ring-0 text-black font-medium"
+                    >
+                  </div>
+                </div>
+                <div class="text-muted mx-2">—</div>
+                <div class="w-50 ps-2 flex-1">
+                  <div class="input-group flex items-center border border-gray-300 rounded-md">
+                    <span class="pl-3 text-gray-500">L</span>
+                    <input 
+                      type="number" 
+                      v-model.number="filters.maxPrice" 
+                      @change="handleFilterChange"
+                      class="w-full p-2 border-none focus:ring-0 text-black font-medium"
+                    >
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Pets -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Mascotas</h3>
-            <div class="pets-list">
-              <div v-for="pet in petOptions" :key="pet.value" class="checkbox-item flex items-center mb-2">
-                <input 
-                  type="checkbox" 
-                  :id="pet.value" 
-                  :value="pet.value" 
-                  v-model="filters.pets"
-                  @change="handleFilterChange"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+            
+            <!-- Bedrooms -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Habitaciones</h3>
+              <div class="flex space-x-2">
+                <label 
+                  v-for="option in bedOptions" 
+                  :key="option.value"
+                  :class="[
+                    'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
+                    filters.bedrooms === option.value 
+                      ? 'border-orange-500 text-white bg-orange-500' 
+                      : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
+                  ]"
                 >
-                <label :for="pet.value" class="ml-2 text-sm text-black">{{ pet.label }}</label>
+                  <input 
+                    type="radio" 
+                    :value="option.value" 
+                    v-model="filters.bedrooms"
+                    @change="handleFilterChange"
+                    class="sr-only"
+                  >
+                  {{ option.label }}
+                </label>
               </div>
             </div>
-          </div>
-          
-          <!-- Additional Options -->
-          <div class="filter-section mb-5">
-            <h3 class="filter-title text-base font-medium text-black mb-3">Opciones adicionales</h3>
-            <div class="options-list">
-              <div v-for="option in additionalOptions" :key="option.value" class="checkbox-item flex items-center mb-2">
-                <input 
-                  type="checkbox" 
-                  :id="option.value" 
-                  :value="option.value" 
-                  v-model="filters.additionalOptions"
-                  @change="handleFilterChange"
-                  class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+            
+            <!-- Bathrooms -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Baños</h3>
+              <div class="flex space-x-2">
+                <label 
+                  v-for="option in bathOptions" 
+                  :key="option.value"
+                  :class="[
+                    'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
+                    filters.bathrooms === option.value 
+                      ? 'border-orange-500 text-white bg-orange-500' 
+                      : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
+                  ]"
                 >
-                <label :for="option.value" class="ml-2 text-sm text-black">{{ option.label }}</label>
+                  <input 
+                    type="radio" 
+                    :value="option.value" 
+                    v-model="filters.bathrooms"
+                    @change="handleFilterChange"
+                    class="sr-only"
+                  >
+                  {{ option.label }}
+                </label>
               </div>
             </div>
+            
+            <!-- Square Meters -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Metros cuadrados</h3>
+              <div class="flex items-center">
+                <input 
+                  type="number" 
+                  v-model="filters.minArea" 
+                  @change="handleFilterChange"
+                  placeholder="Mín"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
+                >
+                <span class="mx-3 text-gray-500">—</span>
+                <input 
+                  type="number" 
+                  v-model="filters.maxArea" 
+                  @change="handleFilterChange"
+                  placeholder="Máx"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
+                >
+              </div>
+            </div>
+            
+            <!-- Amenities -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Comodidades</h3>
+              <div class="amenities-list overflow-y-auto max-h-48">
+                <div v-for="amenity in amenities" :key="amenity.value" class="checkbox-item flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    :id="amenity.value" 
+                    :value="amenity.value" 
+                    v-model="filters.amenities"
+                    @change="handleFilterChange"
+                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  >
+                  <label :for="amenity.value" class="ml-2 text-sm text-black">{{ amenity.label }}</label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pets -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Mascotas</h3>
+              <div class="pets-list">
+                <div v-for="pet in petOptions" :key="pet.value" class="checkbox-item flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    :id="pet.value" 
+                    :value="pet.value" 
+                    v-model="filters.pets"
+                    @change="handleFilterChange"
+                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  >
+                  <label :for="pet.value" class="ml-2 text-sm text-black">{{ pet.label }}</label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Additional Options -->
+            <div class="filter-section mb-5">
+              <h3 class="filter-title text-base font-medium text-black mb-3">Opciones adicionales</h3>
+              <div class="options-list">
+                <div v-for="option in additionalOptions" :key="option.value" class="checkbox-item flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    :id="option.value" 
+                    :value="option.value" 
+                    v-model="filters.additionalOptions"
+                    @change="handleFilterChange"
+                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  >
+                  <label :for="option.value" class="ml-2 text-sm text-black">{{ option.label }}</label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Reset Filters Button -->
+            <button 
+              @click="resetFilters" 
+              class="reset-button w-full flex items-center justify-center py-3 px-4 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
+            >
+              <svg class="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 16c1.671 0 3-1.329 3-3s-1.329-3-3-3-3 1.329-3 3 1.329 3 3 3z M20.817 11.186a8.94 8.94 0 0 0-1.355-3.219 9.053 9.053 0 0 0-2.43-2.43 8.95 8.95 0 0 0-3.219-1.355 9.028 9.028 0 0 0-1.838-.182V2L8 5l3.975 3V6.002c.484-.002.968.044 1.435.14a6.961 6.961 0 0 1 2.502 1.053 7.005 7.005 0 0 1 1.892 1.892A6.967 6.967 0 0 1 19 13a7.032 7.032 0 0 1-.55 2.725 7.11 7.11 0 0 1-.644 1.188 7.2 7.2 0 0 1-.858 1.039 7.028 7.028 0 0 1-3.536 1.907 7.13 7.13 0 0 1-2.822 0 6.961 6.961 0 0 1-2.503-1.054 7.002 7.002 0 0 1-1.89-1.89A6.996 6.996 0 0 1 5 13H3a9.02 9.02 0 0 0 1.539 5.034 9.096 9.096 0 0 0 2.428 2.428A8.95 8.95 0 0 0 12 22a9.09 9.09 0 0 0 1.814-.183 9.014 9.014 0 0 0 3.218-1.355 8.886 8.886 0 0 0 1.331-1.099 9.228 9.228 0 0 0 1.1-1.332A8.952 8.952 0 0 0 21 13a9.09 9.09 0 0 0-.183-1.814z" fill="currentColor"/>
+              </svg>
+              Restablecer filtros
+            </button>
           </div>
-          
-          <!-- Reset Filters Button -->
-          <button 
-            @click="resetFilters" 
-            class="reset-button w-full flex items-center justify-center py-3 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-          >
-            <svg class="mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 16c1.671 0 3-1.329 3-3s-1.329-3-3-3-3 1.329-3 3 1.329 3 3 3z M20.817 11.186a8.94 8.94 0 0 0-1.355-3.219 9.053 9.053 0 0 0-2.43-2.43 8.95 8.95 0 0 0-3.219-1.355 9.028 9.028 0 0 0-1.838-.182V2L8 5l3.975 3V6.002c.484-.002.968.044 1.435.14a6.961 6.961 0 0 1 2.502 1.053 7.005 7.005 0 0 1 1.892 1.892A6.967 6.967 0 0 1 19 13a7.032 7.032 0 0 1-.55 2.725 7.11 7.11 0 0 1-.644 1.188 7.2 7.2 0 0 1-.858 1.039 7.028 7.028 0 0 1-3.536 1.907 7.13 7.13 0 0 1-2.822 0 6.961 6.961 0 0 1-2.503-1.054 7.002 7.002 0 0 1-1.89-1.89A6.996 6.996 0 0 1 5 13H3a9.02 9.02 0 0 0 1.539 5.034 9.096 9.096 0 0 0 2.428 2.428A8.95 8.95 0 0 0 12 22a9.09 9.09 0 0 0 1.814-.183 9.014 9.014 0 0 0 3.218-1.355 8.886 8.886 0 0 0 1.331-1.099 9.228 9.228 0 0 0 1.1-1.332A8.952 8.952 0 0 0 21 13a9.09 9.09 0 0 0-.183-1.814z" fill="currentColor"/>
-            </svg>
-            Restablecer filtros
-          </button>
         </div>
 
         <!-- Main Content Area -->
         <div class="content-column flex-1">
           <!-- Breadcrumb -->
           <div class="breadcrumb flex items-center mb-4 text-sm">
-            <a href="/" class="text-gray-600 hover:text-blue-500">Inicio</a>
+            <a href="/" class="text-gray-600 hover:text-orange-500">Inicio</a>
             <span class="mx-2 text-gray-500">›</span>
             <span class="text-black">Propiedades en alquiler</span>
           </div>
@@ -288,7 +343,7 @@
           
           <!-- Loading State -->
           <div v-if="loading" class="flex justify-center items-center py-20">
-            <div class="spinner border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+            <div class="spinner border-4 border-gray-200 border-t-orange-500 rounded-full w-10 h-10 animate-spin"></div>
           </div>
           
           <!-- Properties Grid -->
@@ -312,7 +367,7 @@
                 <!-- Badges -->
                 <div class="property-badges absolute top-3 left-3">
                   <span v-if="property.isVerified" class="badge bg-green-500 text-white text-xs font-medium px-2 py-1 rounded block mb-1">Verificado</span>
-                  <span v-if="property.isNew" class="badge bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded block">NUEVO</span>
+                  <span v-if="property.isNew" class="badge bg-orange-500 text-white text-xs font-medium px-2 py-1 rounded block">NUEVO</span>
                 </div>
                 
                 <!-- Favorite Button - Only visible on hover -->
@@ -327,7 +382,7 @@
                     viewBox="0 0 24 24" 
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
-                    :class="isFavorite(property.id) ? 'text-blue-500' : 'text-gray-400'"
+                    :class="isFavorite(property.id) ? 'text-orange-500' : 'text-gray-400'"
                   >
                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/>
                   </svg>
@@ -392,7 +447,7 @@
             <p class="text-gray-600 mb-4">Intente ajustar sus criterios de búsqueda</p>
             <button 
               @click="resetFilters" 
-              class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+              class="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
             >
               Restablecer filtros
             </button>
@@ -400,13 +455,13 @@
           
           <!-- Error State -->
           <div v-else-if="error" class="flex flex-col items-center justify-center py-16">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-blue-500 mb-4" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-orange-500 mb-4" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
             </svg>
-            <p class="text-blue-500 font-medium mb-4">{{ error }}</p>
+            <p class="text-orange-500 font-medium mb-4">{{ error }}</p>
             <button 
               @click="fetchProperties" 
-              class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+              class="bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition"
             >
               Intentar de nuevo
             </button>
@@ -430,7 +485,7 @@
               <button 
                 v-else 
                 class="page-btn border rounded-md w-10 h-10 flex items-center justify-center mx-1" 
-                :class="currentPage === page ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 text-gray-700'"
+                :class="currentPage === page ? 'bg-orange-500 text-white border-orange-500' : 'border-gray-300 text-gray-700'"
                 @click="changePage(page)"
               >
                 {{ page }}
@@ -454,683 +509,830 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '~/store/user';
 import { useFavoritesStore } from '~/store/favorites';
 import axios from 'axios';
 
-// Router y ruta actual
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
-const favoritesStore = useFavoritesStore();
+export default {
+  name: 'PropertyFinder',
+  
+  setup() {
+    // Router y ruta actual
+    const router = useRouter();
+    const route = useRoute();
+    const userStore = useUserStore();
+    const favoritesStore = useFavoritesStore();
 
-// Estado de las propiedades y filtros
-const properties = ref([]);
-const totalProperties = ref(0);
-const loading = ref(true);
-const error = ref(null);
-const hoveredPropertyId = ref(null);
-const selectedPropertyTypes = ref([]);
-
-// Paginación
-const currentPage = ref(1);
-const itemsPerPage = ref(9);
-const sortBy = ref('newest');
-
-// Datos disponibles para selección - Lista actualizada y dinámica
-const availableCities = ref([
-  'Tegucigalpa',
-  'Roatán',
-  'San Pedro Sula',
-  'La Ceiba',
-  'Valle de Ángeles',
-  'Comayagüela',
-  'Puerto Cortés',
-  'Copán Ruinas',
-  'Comayagua',
-  'Tela'
-]);
-
-// Opciones de habitaciones
-const bedOptions = [
-  { value: 'studio', label: 'Estudio' },
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4+', label: '4+' }
-];
-
-// Opciones de baños
-const bathOptions = [
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4', label: '4' }
-];
-
-// Property Types
-const propertyTypes = [
-  { value: 'house', label: 'Casa' },
-  { value: 'apartment', label: 'Apartamento' },
-  { value: 'room', label: 'Habitación' },
-  { value: 'office', label: 'Oficina' },
-  { value: 'commercial', label: 'Comercial' },
-  { value: 'land', label: 'Terreno' },
-  { value: 'daily-rental', label: 'Alquiler diario' },
-  { value: 'new-building', label: 'Edificio nuevo' },
-  { value: 'parking-lot', label: 'Estacionamiento' }
-];
-
-// Amenities options - Todas las comodidades solicitadas
-const amenities = [
-  { value: 'aerotermia', label: 'Aerotermia' },
-  { value: 'agua-incluida', label: 'Agua incluida' },
-  { value: 'aire-acondicionado', label: 'Aire acondicionado' },
-  { value: 'alarma', label: 'Alarma' },
-  { value: 'almacen', label: 'Almacén' },
-  { value: 'alta-rentabilidad', label: 'Alta rentabilidad' },
-  { value: 'amueblado', label: 'Amueblado' },
-  { value: 'armarios-empotrados', label: 'Armarios empotrados' },
-  { value: 'ascensor', label: 'Ascensor' },
-  { value: 'balcon', label: 'Balcón' },
-  { value: 'barbacoa', label: 'Barbacoa' },
-  { value: 'calefaccion', label: 'Calefacción' },
-  { value: 'chimenea', label: 'Chimenea' },
-  { value: 'cocina-equipada', label: 'Cocina equipada' },
-  { value: 'doble-altura', label: 'Doble altura' },
-  { value: 'domotica', label: 'Domótica' },
-  { value: 'edificable', label: 'Edificable' },
-  { value: 'eficiencia-energetica-a', label: 'Eficiencia energética A' },
-  { value: 'electricidad-incluida', label: 'Electricidad incluida' },
-  { value: 'escaparate', label: 'Escaparate' },
-  { value: 'esquina', label: 'Esquina' },
-  { value: 'falso-techo', label: 'Falso techo' },
-  { value: 'fibra-optica', label: 'Fibra óptica' },
-  { value: 'facil-maniobra', label: 'Fácil maniobra' },
-  { value: 'garaje', label: 'Garaje' },
-  { value: 'gimnasio', label: 'Gimnasio' },
-  { value: 'jacuzzi', label: 'Jacuzzi' },
-  { value: 'jardines', label: 'Jardines' },
-  { value: 'jardin', label: 'Jardín' },
-  { value: 'lavadora', label: 'Lavadora' },
-  { value: 'lavavajillas', label: 'Lavavajillas' },
-  { value: 'licencia-actividad', label: 'Licencia actividad' },
-  { value: 'locales-comerciales', label: 'Locales comerciales' },
-  { value: 'parking', label: 'Parking' },
-  { value: 'persiana-metalica', label: 'Persiana metálica' },
-  { value: 'piscina', label: 'Piscina' },
-  { value: 'piscina-comunitaria', label: 'Piscina comunitaria' },
-  { value: 'primera-linea-playa', label: 'Primera línea playa' },
-  { value: 'puerta-automatica', label: 'Puerta automática' },
-  { value: 'recepcion', label: 'Recepción' },
-  { value: 'reformado', label: 'Reformado' },
-  { value: 'ropa-cama', label: 'Ropa cama' },
-  { value: 'salas-reuniones', label: 'Salas reuniones' },
-  { value: 'salida-humos', label: 'Salida humos' },
-  { value: 'seguridad-24h', label: 'Seguridad 24h' },
-  { value: 'servicios-conectados', label: 'Servicios conectados' },
-  { value: 'suelo-radiante', label: 'Suelo radiante' },
-  { value: 'suelo-tecnico', label: 'Suelo técnico' },
-  { value: 'suministros-independientes', label: 'Suministros independientes' },
-  { value: 'terraza', label: 'Terraza' },
-  { value: 'totalmente-alquilado', label: 'Totalmente alquilado' },
-  { value: 'trastero', label: 'Trastero' },
-  { value: 'ubicacion-prime', label: 'Ubicación prime' },
-  { value: 'urbanizacion-privada', label: 'Urbanización privada' },
-  { value: 'urbanizado', label: 'Urbanizado' },
-  { value: 'vigilancia-24h', label: 'Vigilancia 24h' },
-  { value: 'vistas-mar', label: 'Vistas mar' },
-  { value: 'vistas-montana', label: 'Vistas montaña' },
-  { value: 'vistas-panoramicas', label: 'Vistas panorámicas' },
-  { value: 'wifi', label: 'WiFi' },
-  { value: 'zona-infantil', label: 'Zona infantil' }
-];
-
-// Pet options
-const petOptions = [
-  { value: 'cats-allowed', label: 'Se permiten gatos' },
-  { value: 'dogs-allowed', label: 'Se permiten perros' }
-];
-
-// Additional options
-const additionalOptions = [
-  { value: 'verified', label: 'Verificado' },
-  { value: 'featured', label: 'Destacado' },
-  { value: 'new', label: 'Nuevo' }
-];
-
-// Filtros
-const filters = ref({
-  city: '',
-  property_type: null,
-  minPrice: 0,   // Ajustados a lempiras (aprox. $200 USD)
-  maxPrice: 200000, // Ajustados a lempiras (aprox. $5,000 USD)
-  bedrooms: '',
-  bathrooms: '',
-  minArea: '',
-  maxArea: '',
-  amenities: [],
-  pets: [],
-  additionalOptions: [],
-  status: 'for-rent' // Siempre en modo alquiler para esta página
-});
-
-// API URL
-const API_URL = process.env.API_URL || 'http://localhost:3000/api';
-
-
-
-// Navegación a la página de propiedades en venta
-const navigateToSale = () => {
-  router.push('/properties/sale');
-};
-
-// Verificar si una propiedad es favorita
-const isFavorite = (propertyId) => {
-  return favoritesStore.isFavorite(propertyId);
-};
-
-// Alternar estado de favorito
-const toggleFavorite = async (propertyId) => {
-  try {
-    // Buscar la propiedad completa por ID
-    const property = properties.value.find(p => p.id === propertyId);
+    // Estado de búsqueda
+    const searchQuery = ref('');
     
-    if (property) {
-      // Usar el objeto completo de la propiedad si está disponible
-      await favoritesStore.toggleFavorite(property);
-    } else {
-      // Usar solo el ID si no se encuentra la propiedad
-      await favoritesStore.toggleFavorite(propertyId);
-    }
-  } catch (error) {
-    console.error('Error toggling favorite:', error);
-  }
-};
-
-// Actualizar los tipos de propiedad seleccionados
-const updatePropertyTypeFilters = () => {
-  if (selectedPropertyTypes.value.length === 1) {
-    filters.value.property_type = selectedPropertyTypes.value[0];
-  } else if (selectedPropertyTypes.value.length > 1) {
-    // Manejo de múltiples tipos seleccionados
-    filters.value.property_type = selectedPropertyTypes.value;
-  } else {
-    filters.value.property_type = null;
-  }
-  handleFilterChange();
-};
-
-// Funciones para controlar el slider de precios
-const getLeftPosition = () => {
-  const sliderMin = 0;
-  const sliderMax = 300000;
-  const range = sliderMax - sliderMin;
-  if (range <= 0) return 0;
-  
-  let position = ((filters.value.minPrice - sliderMin) / range) * 100;
-  // Asegurar que está dentro de los límites
-  position = Math.max(0, Math.min(position, 100));
-  return position;
-};
-
-const getRightPosition = () => {
-  const sliderMin = 0;
-  const sliderMax = 300000;
-  const range = sliderMax - sliderMin;
-  if (range <= 0) return 100;
-  
-  let position = ((filters.value.maxPrice - sliderMin) / range) * 100;
-  // Asegurar que está dentro de los límites
-  position = Math.max(0, Math.min(position, 100));
-  return position;
-};
-
-const getWidthPosition = () => {
-  return getRightPosition() - getLeftPosition();
-};
-
-// Variables para el control del slider
-const draggingHandle = ref(null);
-
-// Iniciar arrastre
-const startDragging = (handle) => {
-  draggingHandle.value = handle;
-  document.addEventListener('mousemove', handleDrag);
-  document.addEventListener('mouseup', stopDragging);
-  document.addEventListener('touchmove', handleDrag, { passive: false });
-  document.addEventListener('touchend', stopDragging);
-  
-  // Cambiar estilo del cursor durante arrastre
-  document.body.style.cursor = 'grabbing';
-};
-
-// Manejar arrastre
-const handleDrag = (e) => {
-  e.preventDefault();
-  
-  if (!draggingHandle.value) return;
-  
-  const sliderTrack = document.querySelector('.price-range-slider > div');
-  if (!sliderTrack) return;
-  
-  const trackRect = sliderTrack.getBoundingClientRect();
-  const trackWidth = trackRect.width;
-  
-  // Obtener posición X (manejar eventos táctiles y de ratón)
-  let clientX;
-  if (e.type === 'touchmove') {
-    clientX = e.touches[0].clientX;
-  } else {
-    clientX = e.clientX;
-  }
-  
-  // Calcular posición porcentual
-  let percentPosition = (clientX - trackRect.left) / trackWidth;
-  percentPosition = Math.min(Math.max(percentPosition, 0), 1);
-  
-  // Calcular precio según posición
-  const sliderMin = 0;
-  const sliderMax = 300000;
-  const priceRange = sliderMax - sliderMin;
-  let priceValue = Math.round((percentPosition * priceRange + sliderMin) / 500) * 500;
-  
-  // Actualizar precio mínimo o máximo según qué control se está arrastrando
-  if (draggingHandle.value === 'min') {
-    // Asegurar que el precio mínimo no exceda el máximo
-    filters.value.minPrice = Math.min(priceValue, filters.value.maxPrice - 500);
-  } else {
-    // Asegurar que el precio máximo no sea menor que el mínimo
-    filters.value.maxPrice = Math.max(priceValue, filters.value.minPrice + 500);
-  }
-};
-
-// Detener arrastre
-const stopDragging = () => {
-  if (draggingHandle.value) {
-    document.removeEventListener('mousemove', handleDrag);
-    document.removeEventListener('mouseup', stopDragging);
-    document.removeEventListener('touchmove', handleDrag);
-    document.removeEventListener('touchend', stopDragging);
+    // Estado de modo de vista
+    const activeTab = ref('categories');
     
-    // Restaurar estilo del cursor
-    document.body.style.cursor = '';
-    
-    // Aplicar cambios de filtro
-    handleFilterChange();
-    
-    // Resetear estado de arrastre
-    draggingHandle.value = null;
-  }
-};
+    // Estado de las propiedades y filtros
+    const properties = ref([]);
+    const totalProperties = ref(0);
+    const loading = ref(true);
+    const error = ref(null);
+    const hoveredPropertyId = ref(null);
+    const selectedPropertyTypes = ref([]);
 
-// Actualizar rango de precios desde el slider
-const updatePriceRange = ({ min, max }) => {
-  filters.value.minPrice = min;
-  filters.value.maxPrice = max;
-  handleFilterChange();
-};
+    // Paginación
+    const currentPage = ref(1);
+    const itemsPerPage = ref(9);
+    const sortBy = ref('newest');
 
-// Manejar cambios en los filtros
-const handleFilterChange = () => {
-  currentPage.value = 1;
-  updateQueryParams();
-  fetchProperties();
-};
+    // Datos disponibles para selección - Lista actualizada y dinámica
+    const availableCities = ref([
+      'Tegucigalpa',
+      'Roatán',
+      'San Pedro Sula',
+      'La Ceiba',
+      'Valle de Ángeles',
+      'Comayagüela',
+      'Puerto Cortés',
+      'Copán Ruinas',
+      'Comayagua',
+      'Tela'
+    ]);
 
-// Manejar cambios en la ordenación
-const handleSortChange = () => {
-  currentPage.value = 1;
-  updateQueryParams();
-};
+    // Opciones de habitaciones
+    const bedOptions = [
+      { value: 'studio', label: 'Estudio' },
+      { value: '1', label: '1' },
+      { value: '2', label: '2' },
+      { value: '3', label: '3' },
+      { value: '4+', label: '4+' }
+    ];
 
-// Actualizar los parámetros de la URL
-const updateQueryParams = () => {
-  // Construir objeto de query
-  const query = {
-    sort: sortBy.value,
-    page: currentPage.value
-  };
-  
-  // Agregar filtros no vacíos a la query
-  Object.entries(filters.value).forEach(([key, value]) => {
-    if (value !== null && value !== undefined && value !== '' && 
-        !(Array.isArray(value) && value.length === 0) && 
-        key !== 'status') { // No necesitamos pasar status a la URL para esta página
-      query[key] = value;
-    }
-  });
-  
-  // Actualizar URL sin refrescar la página
-  router.replace({ query });
-};
+    // Opciones de baños
+    const bathOptions = [
+      { value: '1', label: '1' },
+      { value: '2', label: '2' },
+      { value: '3', label: '3' },
+      { value: '4', label: '4' }
+    ];
 
-// Obtener propiedades de la API
-const fetchProperties = async () => {
-  loading.value = true;
-  error.value = null;
-  
-  try {
-    // Convertir filtros a formato API
-    const apiFilters = {
-      status: 'for-rent',
-      page: currentPage.value,
-      limit: itemsPerPage.value
+    // Property Types
+    const propertyTypes = [
+      { value: 'house', label: 'Casa' },
+      { value: 'apartment', label: 'Apartamento' },
+      { value: 'room', label: 'Habitación' },
+      { value: 'office', label: 'Oficina' },
+      { value: 'commercial', label: 'Comercial' },
+      { value: 'land', label: 'Terreno' },
+      { value: 'daily-rental', label: 'Alquiler diario' },
+      { value: 'new-building', label: 'Edificio nuevo' },
+      { value: 'parking-lot', label: 'Estacionamiento' }
+    ];
+
+    // Amenities options - Todas las comodidades solicitadas
+    const amenities = [
+      { value: 'aerotermia', label: 'Aerotermia' },
+      { value: 'agua-incluida', label: 'Agua incluida' },
+      { value: 'aire-acondicionado', label: 'Aire acondicionado' },
+      { value: 'alarma', label: 'Alarma' },
+      { value: 'almacen', label: 'Almacén' },
+      { value: 'alta-rentabilidad', label: 'Alta rentabilidad' },
+      { value: 'amueblado', label: 'Amueblado' },
+      { value: 'armarios-empotrados', label: 'Armarios empotrados' },
+      { value: 'ascensor', label: 'Ascensor' },
+      { value: 'balcon', label: 'Balcón' },
+      { value: 'barbacoa', label: 'Barbacoa' },
+      { value: 'calefaccion', label: 'Calefacción' },
+      { value: 'chimenea', label: 'Chimenea' },
+      { value: 'cocina-equipada', label: 'Cocina equipada' },
+      { value: 'doble-altura', label: 'Doble altura' },
+      { value: 'domotica', label: 'Domótica' },
+      { value: 'edificable', label: 'Edificable' },
+      { value: 'eficiencia-energetica-a', label: 'Eficiencia energética A' },
+      { value: 'electricidad-incluida', label: 'Electricidad incluida' },
+      { value: 'escaparate', label: 'Escaparate' },
+      { value: 'esquina', label: 'Esquina' },
+      { value: 'falso-techo', label: 'Falso techo' },
+      { value: 'fibra-optica', label: 'Fibra óptica' },
+      { value: 'facil-maniobra', label: 'Fácil maniobra' },
+      { value: 'garaje', label: 'Garaje' },
+      { value: 'gimnasio', label: 'Gimnasio' },
+      { value: 'jacuzzi', label: 'Jacuzzi' },
+      { value: 'jardines', label: 'Jardines' },
+      { value: 'jardin', label: 'Jardín' },
+      { value: 'lavadora', label: 'Lavadora' },
+      { value: 'lavavajillas', label: 'Lavavajillas' },
+      { value: 'licencia-actividad', label: 'Licencia actividad' },
+      { value: 'locales-comerciales', label: 'Locales comerciales' },
+      { value: 'parking', label: 'Parking' },
+      { value: 'persiana-metalica', label: 'Persiana metálica' },
+      { value: 'piscina', label: 'Piscina' },
+      { value: 'piscina-comunitaria', label: 'Piscina comunitaria' },
+      { value: 'primera-linea-playa', label: 'Primera línea playa' },
+      { value: 'puerta-automatica', label: 'Puerta automática' },
+      { value: 'recepcion', label: 'Recepción' },
+      { value: 'reformado', label: 'Reformado' },
+      { value: 'ropa-cama', label: 'Ropa cama' },
+      { value: 'salas-reuniones', label: 'Salas reuniones' },
+      { value: 'salida-humos', label: 'Salida humos' },
+      { value: 'seguridad-24h', label: 'Seguridad 24h' },
+      { value: 'servicios-conectados', label: 'Servicios conectados' },
+      { value: 'suelo-radiante', label: 'Suelo radiante' },
+      { value: 'suelo-tecnico', label: 'Suelo técnico' },
+      { value: 'suministros-independientes', label: 'Suministros independientes' },
+      { value: 'terraza', label: 'Terraza' },
+      { value: 'totalmente-alquilado', label: 'Totalmente alquilado' },
+      { value: 'trastero', label: 'Trastero' },
+      { value: 'ubicacion-prime', label: 'Ubicación prime' },
+      { value: 'urbanizacion-privada', label: 'Urbanización privada' },
+      { value: 'urbanizado', label: 'Urbanizado' },
+      { value: 'vigilancia-24h', label: 'Vigilancia 24h' },
+      { value: 'vistas-mar', label: 'Vistas mar' },
+      { value: 'vistas-montana', label: 'Vistas montaña' },
+      { value: 'vistas-panoramicas', label: 'Vistas panorámicas' },
+      { value: 'wifi', label: 'WiFi' },
+      { value: 'zona-infantil', label: 'Zona infantil' }
+    ];
+
+    // Pet options
+    const petOptions = [
+      { value: 'cats-allowed', label: 'Se permiten gatos' },
+      { value: 'dogs-allowed', label: 'Se permiten perros' }
+    ];
+
+    // Additional options
+    const additionalOptions = [
+      { value: 'verified', label: 'Verificado' },
+      { value: 'featured', label: 'Destacado' },
+      { value: 'new', label: 'Nuevo' }
+    ];
+
+    // Filtros
+    const filters = ref({
+      city: '',
+      property_type: null,
+      minPrice: 0,   // Ajustados a lempiras (aprox. $200 USD)
+      maxPrice: 200000, // Ajustados a lempiras (aprox. $5,000 USD)
+      bedrooms: '',
+      bathrooms: '',
+      minArea: '',
+      maxArea: '',
+      amenities: [],
+      pets: [],
+      additionalOptions: [],
+      status: 'for-rent' // Siempre en modo alquiler para esta página
+    });
+
+    // Categorías
+    const categories = ref([
+      { 
+        id: 'accommodation',
+        name: 'Alojamiento',
+        color: 'bg-blue-100 text-blue-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'fitness',
+        name: 'Fitness & Deporte',
+        color: 'bg-red-100 text-red-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14 4.14 5.57 2 7.71 3.43 9.14 2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22 14.86 20.57z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'food',
+        name: 'Comida & Bebida',
+        color: 'bg-yellow-100 text-yellow-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'nightlife',
+        name: 'Vida Nocturna',
+        color: 'bg-indigo-100 text-indigo-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 8v2h-4V8H8v8h2v-2h4v2h2V8h-2zm-4 4v-2h4v2h-4z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'shopping',
+        name: 'Compras',
+        color: 'bg-red-100 text-red-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 6V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6h-6zm-6-2h4v2h-4V4zm10 15H4V8h16v11zM9 18l7.5-5L9 9z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'medicine',
+        name: 'Medicina',
+        color: 'bg-blue-100 text-blue-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z" fill="currentColor"/></svg>'
+      },
+      { 
+        id: 'art',
+        name: 'Arte & Historia',
+        color: 'bg-green-100 text-green-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2zm-4.17-6c.37 0 .67.26.74.62.41 2.22 2.28 2.98 3.64 2.87.43-.02.79.32.79.75 0 .4-.32.73-.72.75-2.13.13-4.62-1.09-5.19-4.12-.08-.45.28-.87.74-.87z" fill="currentColor"/></svg>'
+      },
+      {
+        id: 'beauty',
+        name: 'Belleza',
+        color: 'bg-yellow-100 text-yellow-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-10h2V7h-2v3zm0 4h2v-2h-2v2z" fill="currentColor"/></svg>'
+      },
+      {
+        id: 'entertainment',
+        name: 'Entretenimiento',
+        color: 'bg-red-100 text-red-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z" fill="currentColor"/></svg>'
+      },
+      {
+        id: 'auto',
+        name: 'Servicio Auto',
+        color: 'bg-blue-100 text-blue-600',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" fill="currentColor"/></svg>'
+      }
+    ]);
+
+    // API URL
+    const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+
+    // Manejar la búsqueda
+    const handleSearch = () => {
+      if (searchQuery.value.trim()) {
+        // Actualizar filtros o realizar búsqueda específica
+        console.log('Buscando:', searchQuery.value);
+        // Implementar lógica de búsqueda aquí
+        fetchProperties();
+      }
     };
-    
-    // Aplicar property_type
-    if (filters.value.property_type) {
-      apiFilters.property_type = filters.value.property_type;
-    }
-    
-    // Por estas (enviar el precio directamente):
-    if (filters.value.minPrice) {
-      apiFilters.minPrice = filters.value.minPrice;
-    }
-    if (filters.value.maxPrice) {
-      apiFilters.maxPrice = filters.value.maxPrice;
-    }
-    
-    // Aplicar filtros de ubicación
-    if (filters.value.city) {
-      apiFilters.city = filters.value.city;
-    }
-    
-    // Convertir bedrooms de "studio" a 0 para API
-    if (filters.value.bedrooms === 'studio') {
-      apiFilters.minBedrooms = 0;
-    } else if (filters.value.bedrooms) {
-      apiFilters.minBedrooms = parseInt(filters.value.bedrooms);
-    }
-    
-    // Convertir bathrooms para API
-    if (filters.value.bathrooms) {
-      apiFilters.minBathrooms = parseInt(filters.value.bathrooms);
-    }
-    
-    // Aplicar filtros de área
-    if (filters.value.minArea) {
-      apiFilters.minArea = parseInt(filters.value.minArea);
-    }
-    
-    if (filters.value.maxArea) {
-      apiFilters.maxArea = parseInt(filters.value.maxArea);
-    }
-    
-    // Aplicar filtros de amenidades
-    if (filters.value.amenities && filters.value.amenities.length > 0) {
-      apiFilters.amenities = filters.value.amenities;
-    }
-    
-    // Aplicar filtros de mascotas
-    if (filters.value.pets && filters.value.pets.length > 0) {
-      apiFilters.pets = filters.value.pets;
-    }
-    
-    // Aplicar opciones adicionales
-    if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
-      if (filters.value.additionalOptions.includes('verified')) {
-        apiFilters.verified = true;
+
+    // Navegación a la página de propiedades en venta
+    const navigateToSale = () => {
+      router.push('/properties/sale');
+    };
+
+    // Verificar si una propiedad es favorita
+    const isFavorite = (propertyId) => {
+      return favoritesStore.isFavorite(propertyId);
+    };
+
+    // Alternar estado de favorito
+    const toggleFavorite = async (propertyId) => {
+      try {
+        // Buscar la propiedad completa por ID
+        const property = properties.value.find(p => p.id === propertyId);
+        
+        if (property) {
+          // Usar el objeto completo de la propiedad si está disponible
+          await favoritesStore.toggleFavorite(property);
+        } else {
+          // Usar solo el ID si no se encuentra la propiedad
+          await favoritesStore.toggleFavorite(propertyId);
+        }
+      } catch (error) {
+        console.error('Error toggling favorite:', error);
+      }
+    };
+
+    // Seleccionar categoría
+    const selectCategory = (categoryId) => {
+      console.log('Categoría seleccionada:', categoryId);
+      // Implementar lógica para filtrar por categoría
+      router.push(`/category/${categoryId}`);
+    };
+
+    // Actualizar los tipos de propiedad seleccionados
+    const updatePropertyTypeFilters = () => {
+      if (selectedPropertyTypes.value.length === 1) {
+        filters.value.property_type = selectedPropertyTypes.value[0];
+      } else if (selectedPropertyTypes.value.length > 1) {
+        // Manejo de múltiples tipos seleccionados
+        filters.value.property_type = selectedPropertyTypes.value;
+      } else {
+        filters.value.property_type = null;
+      }
+      handleFilterChange();
+    };
+
+    // Funciones para controlar el slider de precios
+    const getLeftPosition = () => {
+      const sliderMin = 0;
+      const sliderMax = 300000;
+      const range = sliderMax - sliderMin;
+      if (range <= 0) return 0;
+      
+      let position = ((filters.value.minPrice - sliderMin) / range) * 100;
+      // Asegurar que está dentro de los límites
+      position = Math.max(0, Math.min(position, 100));
+      return position;
+    };
+
+    const getRightPosition = () => {
+      const sliderMin = 0;
+      const sliderMax = 300000;
+      const range = sliderMax - sliderMin;
+      if (range <= 0) return 100;
+      
+      let position = ((filters.value.maxPrice - sliderMin) / range) * 100;
+      // Asegurar que está dentro de los límites
+      position = Math.max(0, Math.min(position, 100));
+      return position;
+    };
+
+    const getWidthPosition = () => {
+      return getRightPosition() - getLeftPosition();
+    };
+
+    // Variables para el control del slider
+    const draggingHandle = ref(null);
+
+    // Iniciar arrastre
+    const startDragging = (handle) => {
+      draggingHandle.value = handle;
+      document.addEventListener('mousemove', handleDrag);
+      document.addEventListener('mouseup', stopDragging);
+      document.addEventListener('touchmove', handleDrag, { passive: false });
+      document.addEventListener('touchend', stopDragging);
+      
+      // Cambiar estilo del cursor durante arrastre
+      document.body.style.cursor = 'grabbing';
+    };
+
+    // Manejar arrastre
+    const handleDrag = (e) => {
+      e.preventDefault();
+      
+      if (!draggingHandle.value) return;
+      
+      const sliderTrack = document.querySelector('.price-range-slider > div');
+      if (!sliderTrack) return;
+      
+      const trackRect = sliderTrack.getBoundingClientRect();
+      const trackWidth = trackRect.width;
+      
+      // Obtener posición X (manejar eventos táctiles y de ratón)
+      let clientX;
+      if (e.type === 'touchmove') {
+        clientX = e.touches[0].clientX;
+      } else {
+        clientX = e.clientX;
       }
       
-      if (filters.value.additionalOptions.includes('featured')) {
-        apiFilters.featured = true;
+      // Calcular posición porcentual
+      let percentPosition = (clientX - trackRect.left) / trackWidth;
+      percentPosition = Math.min(Math.max(percentPosition, 0), 1);
+      
+      // Calcular precio según posición
+      const sliderMin = 0;
+      const sliderMax = 300000;
+      const priceRange = sliderMax - sliderMin;
+      let priceValue = Math.round((percentPosition * priceRange + sliderMin) / 500) * 500;
+      
+      // Actualizar precio mínimo o máximo según qué control se está arrastrando
+      if (draggingHandle.value === 'min') {
+        // Asegurar que el precio mínimo no exceda el máximo
+        filters.value.minPrice = Math.min(priceValue, filters.value.maxPrice - 500);
+      } else {
+        // Asegurar que el precio máximo no sea menor que el mínimo
+        filters.value.maxPrice = Math.max(priceValue, filters.value.minPrice + 500);
+      }
+    };
+
+    // Detener arrastre
+    const stopDragging = () => {
+      if (draggingHandle.value) {
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', stopDragging);
+        document.removeEventListener('touchmove', handleDrag);
+        document.removeEventListener('touchend', stopDragging);
+        
+        // Restaurar estilo del cursor
+        document.body.style.cursor = '';
+        
+        // Aplicar cambios de filtro
+        handleFilterChange();
+        
+        // Resetear estado de arrastre
+        draggingHandle.value = null;
+      }
+    };
+
+    // Actualizar rango de precios desde el slider
+    const updatePriceRange = ({ min, max }) => {
+      filters.value.minPrice = min;
+      filters.value.maxPrice = max;
+      handleFilterChange();
+    };
+
+    // Manejar cambios en los filtros
+    const handleFilterChange = () => {
+      currentPage.value = 1;
+      updateQueryParams();
+      fetchProperties();
+    };
+
+    // Manejar cambios en la ordenación
+    const handleSortChange = () => {
+      currentPage.value = 1;
+      updateQueryParams();
+    };
+
+    // Actualizar los parámetros de la URL
+    const updateQueryParams = () => {
+      // Construir objeto de query
+      const query = {
+        sort: sortBy.value,
+        page: currentPage.value
+      };
+      
+      // Agregar filtros no vacíos a la query
+      Object.entries(filters.value).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '' && 
+            !(Array.isArray(value) && value.length === 0) && 
+            key !== 'status') { // No necesitamos pasar status a la URL para esta página
+          query[key] = value;
+        }
+      });
+      
+      // Actualizar URL sin refrescar la página
+      router.replace({ query });
+    };
+
+    // Obtener propiedades de la API
+    const fetchProperties = async () => {
+      loading.value = true;
+      error.value = null;
+      
+      try {
+        // Convertir filtros a formato API
+        const apiFilters = {
+          status: 'for-rent',
+          page: currentPage.value,
+          limit: itemsPerPage.value,
+          q: searchQuery.value // Agregar parámetro de búsqueda
+        };
+        
+        // Aplicar property_type
+        if (filters.value.property_type) {
+          apiFilters.property_type = filters.value.property_type;
+        }
+        
+        // Por estas (enviar el precio directamente):
+        if (filters.value.minPrice) {
+          apiFilters.minPrice = filters.value.minPrice;
+        }
+        if (filters.value.maxPrice) {
+          apiFilters.maxPrice = filters.value.maxPrice;
+        }
+        
+        // Aplicar filtros de ubicación
+        if (filters.value.city) {
+          apiFilters.city = filters.value.city;
+        }
+        
+        // Convertir bedrooms de "studio" a 0 para API
+        if (filters.value.bedrooms === 'studio') {
+          apiFilters.minBedrooms = 0;
+        } else if (filters.value.bedrooms) {
+          apiFilters.minBedrooms = parseInt(filters.value.bedrooms);
+        }
+        
+        // Convertir bathrooms para API
+        if (filters.value.bathrooms) {
+          apiFilters.minBathrooms = parseInt(filters.value.bathrooms);
+        }
+        
+        // Aplicar filtros de área
+        if (filters.value.minArea) {
+          apiFilters.minArea = parseInt(filters.value.minArea);
+        }
+        
+        if (filters.value.maxArea) {
+          apiFilters.maxArea = parseInt(filters.value.maxArea);
+        }
+        
+        // Aplicar filtros de amenidades
+        if (filters.value.amenities && filters.value.amenities.length > 0) {
+          apiFilters.amenities = filters.value.amenities;
+        }
+        
+        // Aplicar filtros de mascotas
+        if (filters.value.pets && filters.value.pets.length > 0) {
+          apiFilters.pets = filters.value.pets;
+        }
+        
+        // Aplicar opciones adicionales
+        if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
+          if (filters.value.additionalOptions.includes('verified')) {
+            apiFilters.verified = true;
+          }
+          
+          if (filters.value.additionalOptions.includes('featured')) {
+            apiFilters.featured = true;
+          }
+          
+          if (filters.value.additionalOptions.includes('new')) {
+            apiFilters.isNew = true;
+          }
+        }
+        
+        // Realizar petición a la API
+        const response = await axios.get(`${API_URL}/properties`, { 
+          params: apiFilters 
+        });
+        
+        if (response.data && response.data.success) {
+          properties.value = response.data.data.properties;
+          totalProperties.value = response.data.data.total;
+        } else {
+          error.value = 'No se pudieron cargar las propiedades';
+          properties.value = [];
+          totalProperties.value = 0;
+        }
+      } catch (err) {
+        console.error('Error al obtener propiedades:', err);
+        error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
+        properties.value = [];
+        totalProperties.value = 0;
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    // Ordenar propiedades
+    const sortedProperties = computed(() => {
+      let result = [...properties.value];
+      
+      if (sortBy.value === 'newest') {
+        result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (sortBy.value === 'price-low') {
+        result.sort((a, b) => a.price - b.price);
+      } else if (sortBy.value === 'price-high') {
+        result.sort((a, b) => b.price - a.price);
       }
       
-      if (filters.value.additionalOptions.includes('new')) {
-        apiFilters.isNew = true;
+      return result;
+    });
+
+    // Paginación
+    const totalPages = computed(() => {
+      return Math.ceil(totalProperties.value / itemsPerPage.value);
+    });
+
+    const pageNumbers = computed(() => {
+      const pages = [];
+      const maxVisiblePages = 5;
+      
+      // Si hay pocas páginas, mostramos todas
+      if (totalPages.value <= maxVisiblePages) {
+        for (let i = 1; i <= totalPages.value; i++) {
+          pages.push(i);
+        }
+      } else {
+        // Siempre mostrar la primera página
+        pages.push(1);
+        
+        // Calcular rango alrededor de la página actual
+        let start = Math.max(2, currentPage.value - Math.floor(maxVisiblePages / 2));
+        let end = Math.min(totalPages.value - 1, start + maxVisiblePages - 3);
+        
+        // Ajustar si estamos cerca del final
+        if (end === totalPages.value - 1) {
+          start = Math.max(2, end - (maxVisiblePages - 3));
+        }
+        
+        // Agregar elipsis si es necesario
+        if (start > 2) {
+          pages.push('...');
+        }
+        
+        // Agregar páginas en el rango
+        for (let i = start; i <= end; i++) {
+          pages.push(i);
+        }
+        
+        // Agregar elipsis si es necesario
+        if (end < totalPages.value - 1) {
+          pages.push('...');
+        }
+        
+        // Siempre mostrar la última página
+        pages.push(totalPages.value);
       }
-    }
-    
-    // Realizar petición a la API
-    const response = await axios.get(`${API_URL}/properties`, { 
-      params: apiFilters 
+      
+      return pages;
     });
-    
-    if (response.data && response.data.success) {
-      properties.value = response.data.data.properties;
-      totalProperties.value = response.data.data.total;
-    } else {
-      error.value = 'No se pudieron cargar las propiedades';
-      properties.value = [];
-      totalProperties.value = 0;
-    }
-  } catch (err) {
-    console.error('Error al obtener propiedades:', err);
-    error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
-    properties.value = [];
-    totalProperties.value = 0;
-  } finally {
-    loading.value = false;
-  }
-};
 
-// Ordenar propiedades
-const sortedProperties = computed(() => {
-  let result = [...properties.value];
-  
-  if (sortBy.value === 'newest') {
-    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  } else if (sortBy.value === 'price-low') {
-    result.sort((a, b) => a.price - b.price);
-  } else if (sortBy.value === 'price-high') {
-    result.sort((a, b) => b.price - a.price);
-  }
-  
-  return result;
-});
+    // Cambiar página
+    const changePage = (page) => {
+      if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+        updateQueryParams();
+        fetchProperties();
+        
+        // Scroll al principio de los resultados
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    };
 
-// Paginación
-const totalPages = computed(() => {
-  return Math.ceil(totalProperties.value / itemsPerPage.value);
-});
+    // Resetear todos los filtros
+    const resetFilters = () => {
+      searchQuery.value = '';
+      selectedPropertyTypes.value = [];
+      
+      filters.value = { 
+        status: 'for-rent', // Siempre en modo alquiler para esta página
+        city: '',
+        property_type: null,
+        minPrice: 0,   // Valores ajustados a lempiras
+        maxPrice: 200000, // Valores ajustados a lempiras
+        bedrooms: '',
+        bathrooms: '',
+        minArea: '',
+        maxArea: '',
+        amenities: [],
+        pets: [],
+        additionalOptions: []
+      };
+      
+      currentPage.value = 1;
+      updateQueryParams();
+      fetchProperties();
+    };
 
-const pageNumbers = computed(() => {
-  const pages = [];
-  const maxVisiblePages = 5;
-  
-  // Si hay pocas páginas, mostramos todas
-  if (totalPages.value <= maxVisiblePages) {
-    for (let i = 1; i <= totalPages.value; i++) {
-      pages.push(i);
-    }
-  } else {
-    // Siempre mostrar la primera página
-    pages.push(1);
-    
-    // Calcular rango alrededor de la página actual
-    let start = Math.max(2, currentPage.value - Math.floor(maxVisiblePages / 2));
-    let end = Math.min(totalPages.value - 1, start + maxVisiblePages - 3);
-    
-    // Ajustar si estamos cerca del final
-    if (end === totalPages.value - 1) {
-      start = Math.max(2, end - (maxVisiblePages - 3));
-    }
-    
-    // Agregar elipsis si es necesario
-    if (start > 2) {
-      pages.push('...');
-    }
-    
-    // Agregar páginas en el rango
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    
-    // Agregar elipsis si es necesario
-    if (end < totalPages.value - 1) {
-      pages.push('...');
-    }
-    
-    // Siempre mostrar la última página
-    pages.push(totalPages.value);
-  }
-  
-  return pages;
-});
+    // Navegar a página de detalles de propiedad
+    const navigateToProperty = (propertyId) => {
+      router.push(`/properties/${propertyId}`);
+    };
 
-// Cambiar página
-const changePage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    updateQueryParams();
-    fetchProperties();
-    
-    // Scroll al principio de los resultados
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+    // Formatear precio con comas
+    const formatPrice = (price) => {
+      if (!price) return "0";
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    // Inicializar filtros desde parámetros de URL
+    const initFromQueryParams = () => {
+      const query = route.query;
+      
+      // Establecer búsqueda desde query
+      if (query.q) {
+        searchQuery.value = query.q;
+      }
+      
+      // Establecer ordenación desde query
+      if (query.sort && ['newest', 'price-low', 'price-high'].includes(query.sort)) {
+        sortBy.value = query.sort;
+      }
+      
+      // Establecer página desde query
+      if (query.page && !isNaN(parseInt(query.page))) {
+        currentPage.value = parseInt(query.page);
+      }
+      
+      // Establecer tipo de propiedad desde query
+      if (query.property_type) {
+        if (typeof query.property_type === 'string') {
+          filters.value.property_type = query.property_type;
+          selectedPropertyTypes.value = [query.property_type];
+        } else if (Array.isArray(query.property_type)) {
+          filters.value.property_type = query.property_type;
+          selectedPropertyTypes.value = query.property_type;
+        }
+      }
+      
+      // Establecer otros filtros desde query
+      if (query.city) filters.value.city = query.city;
+      
+      if (query.minPrice) filters.value.minPrice = parseInt(query.minPrice);
+      if (query.maxPrice) filters.value.maxPrice = parseInt(query.maxPrice);
+      
+      if (query.bedrooms) filters.value.bedrooms = query.bedrooms;
+      if (query.bathrooms) filters.value.bathrooms = query.bathrooms;
+      
+      if (query.minArea) filters.value.minArea = parseInt(query.minArea);
+      if (query.maxArea) filters.value.maxArea = parseInt(query.maxArea);
+      
+      // Parsear amenidades y mascotas si están en la URL
+      if (query.amenities) {
+        const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
+        filters.value.amenities = amenitiesArray;
+      }
+      
+      if (query.pets) {
+        const petsArray = Array.isArray(query.pets) ? query.pets : [query.pets];
+        filters.value.pets = petsArray;
+      }
+      
+      // Parsear opciones adicionales
+      if (query.verified === 'true') {
+        filters.value.additionalOptions.push('verified');
+      }
+      
+      if (query.featured === 'true') {
+        filters.value.additionalOptions.push('featured');
+      }
+      
+      if (query.isNew === 'true') {
+        filters.value.additionalOptions.push('new');
+      }
+    };
+
+    // Aplicar correcciones de color para estilo consistente
+    const applyColorFix = () => {
+      nextTick(() => {
+        // Corregir colores de texto para títulos y encabezados
+        document.querySelectorAll('h1, h2, h3.filter-title').forEach(el => {
+          el.style.color = '#000000';
+        });
+        
+        // Asegurar que los títulos de propiedades sean negros
+        document.querySelectorAll('.property-card h3').forEach(el => {
+          el.style.color = '#000000';
+        });
+        
+        // Asegurar que el texto de precios sea negro
+        document.querySelectorAll('.property-card .font-bold').forEach(el => {
+          el.style.color = '#000000';
+        });
+        
+        // Asegurar que los inputs tengan texto negro
+        document.querySelectorAll('input[type="number"]').forEach(el => {
+          el.style.color = '#000000';
+        });
+      });
+    };
+
+    // Inicializar componente
+    onMounted(async () => {
+      // Inicializar desde parámetros de URL
+      initFromQueryParams();
+      
+      // Obtener datos
+      await Promise.all([
+        fetchProperties(),
+        favoritesStore.fetchFavorites()
+      ]);
+      
+      // Aplicar corrección de colores
+      applyColorFix();
     });
+
+    // Observar cambios en los parámetros de la URL
+    watch(() => route.query, () => {
+      initFromQueryParams();
+      fetchProperties();
+    }, { deep: true });
+
+    return {
+      // Estados
+      activeTab,
+      searchQuery,
+      properties,
+      totalProperties,
+      loading,
+      error,
+      hoveredPropertyId,
+      selectedPropertyTypes,
+      currentPage,
+      sortBy,
+      filters,
+      draggingHandle,
+      
+      // Datos
+      availableCities,
+      bedOptions,
+      bathOptions,
+      propertyTypes,
+      amenities,
+      petOptions,
+      additionalOptions,
+      categories,
+      
+      // Computados
+      sortedProperties,
+      totalPages,
+      pageNumbers,
+      
+      // Métodos
+      handleSearch,
+      navigateToSale,
+      isFavorite,
+      toggleFavorite,
+      updatePropertyTypeFilters,
+      getLeftPosition,
+      getRightPosition,
+      getWidthPosition,
+      startDragging,
+      handleDrag,
+      stopDragging,
+      handleFilterChange,
+      handleSortChange,
+      changePage,
+      resetFilters,
+      selectCategory,
+      navigateToProperty,
+      formatPrice
+    };
   }
 };
-
-// Resetear todos los filtros
-const resetFilters = () => {
-  selectedPropertyTypes.value = [];
-  
-  filters.value = { 
-    status: 'for-rent', // Siempre en modo alquiler para esta página
-    city: '',
-    property_type: null,
-    minPrice: 0,   // Valores ajustados a lempiras
-    maxPrice: 200000, // Valores ajustados a lempiras
-    bedrooms: '',
-    bathrooms: '',
-    minArea: '',
-    maxArea: '',
-    amenities: [],
-    pets: [],
-    additionalOptions: []
-  };
-  
-  currentPage.value = 1;
-  updateQueryParams();
-  fetchProperties();
-};
-
-// Navegar a página de detalles de propiedad
-const navigateToProperty = (propertyId) => {
-  router.push(`/properties/${propertyId}`);
-};
-
-// Formatear precio con comas
-const formatPrice = (price) => {
-  if (!price) return "0";
-  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-
-// Inicializar filtros desde parámetros de URL
-const initFromQueryParams = () => {
-  const query = route.query;
-  
-  // Establecer ordenación desde query
-  if (query.sort && ['newest', 'price-low', 'price-high'].includes(query.sort)) {
-    sortBy.value = query.sort;
-  }
-  
-  // Establecer página desde query
-  if (query.page && !isNaN(parseInt(query.page))) {
-    currentPage.value = parseInt(query.page);
-  }
-  
-  // Establecer tipo de propiedad desde query
-  if (query.property_type) {
-    if (typeof query.property_type === 'string') {
-      filters.value.property_type = query.property_type;
-      selectedPropertyTypes.value = [query.property_type];
-    } else if (Array.isArray(query.property_type)) {
-      filters.value.property_type = query.property_type;
-      selectedPropertyTypes.value = query.property_type;
-    }
-  }
-  
-  // Establecer otros filtros desde query
-  if (query.city) filters.value.city = query.city;
-  
-  if (query.minPrice) filters.value.minPrice = parseInt(query.minPrice);
-  if (query.maxPrice) filters.value.maxPrice = parseInt(query.maxPrice);
-  
-  if (query.bedrooms) filters.value.bedrooms = query.bedrooms;
-  if (query.bathrooms) filters.value.bathrooms = query.bathrooms;
-  
-  if (query.minArea) filters.value.minArea = parseInt(query.minArea);
-  if (query.maxArea) filters.value.maxArea = parseInt(query.maxArea);
-  
-  // Parsear amenidades y mascotas si están en la URL
-  if (query.amenities) {
-    const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
-    filters.value.amenities = amenitiesArray;
-  }
-  
-  if (query.pets) {
-    const petsArray = Array.isArray(query.pets) ? query.pets : [query.pets];
-    filters.value.pets = petsArray;
-  }
-  
-  // Parsear opciones adicionales
-  if (query.verified === 'true') {
-    filters.value.additionalOptions.push('verified');
-  }
-  
-  if (query.featured === 'true') {
-    filters.value.additionalOptions.push('featured');
-  }
-  
-  if (query.isNew === 'true') {
-    filters.value.additionalOptions.push('new');
-  }
-};
-
-// Aplicar correcciones de color para estilo consistente
-const applyColorFix = () => {
-  nextTick(() => {
-    // Corregir colores de texto para títulos y encabezados
-    document.querySelectorAll('h1, h2, h3.filter-title').forEach(el => {
-      el.style.color = '#000000';
-    });
-    
-    // Asegurar que los títulos de propiedades sean negros
-    document.querySelectorAll('.property-card h3').forEach(el => {
-      el.style.color = '#000000';
-    });
-    
-    // Asegurar que el texto de precios sea negro
-    document.querySelectorAll('.property-card .font-bold').forEach(el => {
-      el.style.color = '#000000';
-    });
-    
-    // Asegurar que los inputs tengan texto negro
-    document.querySelectorAll('input[type="number"]').forEach(el => {
-      el.style.color = '#000000';
-    });
-  });
-};
-
-// Inicializar componente
-onMounted(async () => {
- 
-  
-  // Inicializar desde parámetros de URL
-  initFromQueryParams();
-  
-  // Obtener datos
-  await Promise.all([
-    fetchProperties(),
-    favoritesStore.fetchFavorites()
-  ]);
-  
-  // Aplicar corrección de colores
-  applyColorFix();
-});
-
-// Observar cambios en los parámetros de la URL
-watch(() => route.query, () => {
-  initFromQueryParams();
-  fetchProperties();
-}, { deep: true });
 </script>
 
 <style scoped>
@@ -1145,13 +1347,32 @@ watch(() => route.query, () => {
 }
 
 .properties-layout {
-  padding-top: 80px; /* Ajustado para evitar solapamiento con el header */
+  padding-top: 32px; /* Ajustado para evitar solapamiento con el header */
 }
 
 /* Sidebar y Filtros */
 .filters-column {
   background-color: #ffffff;
   border-radius: 8px;
+  margin-top: 64px; /* Agregado para dar espacio al header */
+}
+
+/* Search container */
+.search-container input {
+  transition: all 0.2s ease;
+}
+
+.search-container input:focus {
+  box-shadow: 0 0 0 3px rgba(253, 86, 49, 0.3);
+}
+
+.search-container button {
+  background-color: #fd5631;
+  transition: all 0.2s ease;
+}
+
+.search-container button:hover {
+  background-color: #e04a29;
 }
 
 .toggle-btn {
@@ -1160,7 +1381,7 @@ watch(() => route.query, () => {
 }
 
 .toggle-btn.active {
-  color: #3b82f6;
+  color: #fd5631;
 }
 
 .filter-title {
@@ -1210,52 +1431,56 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 /* Color primario */
-.text-primary, .text-blue-500 {
-  color: #3b82f6 !important;
+.text-primary, .text-orange-500 {
+  color: #fd5631 !important;
 }
 
 .text-red-500 {
   color: #f56565 !important;
 }
 
-.bg-primary, .bg-blue-500 {
-  background-color: #3b82f6 !important;
+.bg-primary, .bg-orange-500 {
+  background-color: #fd5631 !important;
 }
 
 .bg-red-500 {
-  background-color: #f56565 !important;
+  background-color: #fd5631 !important;
 }
 
 .bg-red-100 {
-  background-color: #fee2e2 !important;
+  background-color: #fff1ee !important;
 }
 
-.bg-blue-100 {
-  background-color: #dbeafe !important;
+.bg-orange-100 {
+  background-color: #fff1ee !important;
 }
 
-.border-primary, .border-blue-500 {
-  border-color: #3b82f6 !important;
+.border-primary, .border-orange-500 {
+  border-color: #fd5631 !important;
 }
 
-.border-red-400 {
-  border-color: #f87171 !important;
+.border-red-500 {
+  border-color: #fd5631 !important;
 }
 
-.hover\:bg-primary:hover, .hover\:bg-blue-500:hover {
-  background-color: #3b82f6 !important;
+.hover\:bg-primary:hover, .hover\:bg-orange-500:hover {
+  background-color: #fd5631 !important;
 }
 
-.hover\:text-primary:hover, .hover\:text-blue-500:hover {
-  color: #3b82f6 !important;
+.hover\:text-primary:hover, .hover\:text-orange-500:hover {
+  color: #fd5631 !important;
 }
 
-.hover\:bg-blue-600:hover {
-  background-color: #2563eb !important;
+.hover\:bg-orange-600:hover {
+  background-color: #e04a29 !important;
 }
 
-.hover\:bg-red-50:hover {
-  background-color: #fef2f2 !important;
+.hover\:bg-red-600:hover {
+  background-color: #e04a29 !important;
+}
+
+.hover\:border-orange-500:hover {
+  border-color: #fd5631 !important;
 }
 
 /* Sobrescrituras de color de texto */
@@ -1282,19 +1507,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .property-card:hover .property-image-container .absolute.top-3.right-3,
-.property-image-container .absolute.top-3.right-3 .text-blue-500 {
+.property-image-container .absolute.top-3.right-3 .text-orange-500 {
   opacity: 1;
 }
 
 /* Correcciones para los filtros */
 input[type="checkbox"]:checked {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
+  border-color: #fd5631 !important;
 }
 
 .btn-check:checked + .btn-outline-secondary {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
+  border-color: #fd5631 !important;
   color: white !important;
 }
 
@@ -1309,24 +1534,19 @@ input[type="checkbox"]:checked {
 }
 
 /* Estilos adicionales para botones y campos de formulario */
-button.bg-blue-500, button.border-blue-500, button.text-blue-500 {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
+button.bg-orange-500, button.border-orange-500, button.text-orange-500 {
+  background-color: #fd5631;
+  border-color: #fd5631;
   color: white;
 }
 
-button.text-blue-500 {
-  color: #3b82f6;
+button.text-orange-500 {
+  color: #fd5631;
 }
 
-button.hover\:bg-blue-500:hover {
-  background-color: #3b82f6 !important;
+button.hover\:bg-orange-500:hover {
+  background-color: #fd5631 !important;
   color: white !important;
-}
-
-/* Ajuste de padding adicional para el contenido */
-.properties-layout {
-  padding-top: 100px !important; /* Para evitar superposición con la barra de navegación */
 }
 
 /* Correcciones para pantallas pequeñas */
@@ -1355,19 +1575,11 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
-  -moz-appearance: textfield;
-  -webkit-appearance: textfield;
-  appearance: textfield;
-  color: #000000 !important;
-  font-weight: 500;
-}
-
 .price-range-slider input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background: #ef4444;
+  background: #fd5631;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -1378,5 +1590,56 @@ input[type="number"] {
 
 .cursor-grabbing {
   cursor: grabbing;
+}
+
+/* Estilos para categorías */
+.categories-view {
+  padding-top: 4px;
+}
+
+.category-card {
+  transition: all 0.2s ease;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.category-card:hover .icon-circle {
+  transform: scale(1.05);
+}
+
+/* Tabs para alternar entre Categorías y Filtros */
+.tabs {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-btn {
+  flex: 1;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.text-orange-500, .tab-btn.text-red-500 {
+  color: #fd5631 !important;
+  border-bottom: 2px solid #fd5631;
 }
 </style>

@@ -3,7 +3,7 @@
     <!-- Estado de carga -->
     <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy mx-auto mb-4"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange mx-auto mb-4"></div>
         <p class="text-lg font-medium text-gray-700">Cargando compras...</p>
       </div>
     </div>
@@ -12,7 +12,7 @@
     <header class="bg-white border-b border-gray-200 py-4">
       <div class="container mx-auto px-4 flex items-center justify-between">
         <div class="flex items-center">
-          <div class="text-2xl font-bold text-blue-500">OASIS</div>
+          <div class="text-2xl font-bold text-orange-500">OASIS</div>
         </div>
         <div class="flex items-center gap-4">
           <div class="flex items-center">
@@ -27,7 +27,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-          <button class="bg-navy text-white px-4 py-2 rounded-md flex items-center" @click="redirectToAddProperty">
+          <button class="bg-orange text-white px-4 py-2 rounded-md flex items-center" @click="redirectToAddProperty">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -40,8 +40,8 @@
 
     <!-- Navegación de migas de pan -->
     <div class="container mx-auto px-4 py-4">
-      <div class="flex items-center text-blue-500 text-sm">
-        <a href="/" class="hover:text-navy">Inicio</a>
+      <div class="flex items-center text-orange-500 text-sm">
+        <a href="/" class="hover:text-orange">Inicio</a>
         <span class="mx-2">/</span>
         <span class="text-gray-800">Mis Compras</span>
       </div>
@@ -74,7 +74,7 @@
             <div class="px-4 pb-4">
               <button 
                 @click="redirectToAddProperty" 
-                class="w-full bg-navy text-white py-2 rounded flex justify-center items-center"
+                class="w-full bg-orange text-white py-2 rounded flex justify-center items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="white">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -106,11 +106,11 @@
                 <span class="text-black">Mis Reservas</span>
               </a>
               
-              <a href="/account/purchases" class="flex items-center px-4 py-3 border-l-4 border-navy bg-gray-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <a href="/account/purchases" class="flex items-center px-4 py-3 border-l-4 border-orange bg-gray-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span class="text-navy font-medium">Mis Compras</span>
+                <span class="text-orange font-medium">Mis Compras</span>
               </a>
               
               <a href="/account/wishlist" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
@@ -155,9 +155,9 @@
                 <button 
                   @click="activeTab = 'pending'" 
                   class="px-4 py-2 border-b-2 font-medium text-sm leading-5 focus:outline-none mr-8"
-                  :class="activeTab === 'pending' ? 'border-navy text-navy' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                  :class="activeTab === 'pending' ? 'border-orange text-orange' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'pending' ? 'text-navy' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'pending' ? 'text-orange' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   Pendientes
@@ -165,9 +165,9 @@
                 <button 
                   @click="activeTab = 'completed'" 
                   class="px-4 py-2 border-b-2 font-medium text-sm leading-5 focus:outline-none mr-8"
-                  :class="activeTab === 'completed' ? 'border-navy text-navy' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                  :class="activeTab === 'completed' ? 'border-orange text-orange' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'completed' ? 'text-navy' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'completed' ? 'text-orange' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Finalizadas
@@ -175,9 +175,9 @@
                 <button 
                   @click="activeTab = 'cancelled'" 
                   class="px-4 py-2 border-b-2 font-medium text-sm leading-5 focus:outline-none"
-                  :class="activeTab === 'cancelled' ? 'border-navy text-navy' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                  :class="activeTab === 'cancelled' ? 'border-orange text-orange' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'cancelled' ? 'text-navy' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" :class="activeTab === 'cancelled' ? 'text-orange' : 'text-gray-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Canceladas
@@ -188,7 +188,7 @@
 
           <!-- Loading state -->
           <div v-if="isLoadingPurchases" class="flex justify-center py-10">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange"></div>
           </div>
 
           <!-- No purchases state -->
@@ -198,7 +198,7 @@
             </svg>
             <h3 class="text-lg font-medium text-gray-900 mb-2">No hay compras {{ tabText }}</h3>
             <p class="text-gray-600 mb-4">Realice una compra de propiedad para que aparezca aquí.</p>
-            <button @click="redirectToSearch" class="bg-navy text-white py-2 px-4 rounded-md hover:bg-navy-dark transition flex items-center mx-auto">
+            <button @click="redirectToSearch" class="bg-orange text-white py-2 px-4 rounded-md hover:bg-orange-dark transition flex items-center mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -225,7 +225,7 @@
                 <div class="absolute top-2 left-2">
                   <span 
                     v-if="isPending(purchase)" 
-                    class="bg-blue-500 text-white text-xs px-2 py-1 rounded mb-1 inline-block"
+                    class="bg-orange-500 text-white text-xs px-2 py-1 rounded mb-1 inline-block"
                   >
                     Pendiente
                   </span>
@@ -309,7 +309,7 @@
                 
                 <h3 
                   @click="navigateToPropertyDetails(purchase.property_id)" 
-                  class="text-lg font-semibold text-black mb-1 cursor-pointer hover:text-blue-800"
+                  class="text-lg font-semibold text-black mb-1 cursor-pointer hover:text-orange-800"
                 >
                   {{ purchase.property?.title || 'Propiedad' }}
                 </h3>
@@ -451,7 +451,7 @@
     <div v-if="showContractModalId" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
         <div class="flex justify-between items-start mb-4">
-          <h3 class="text-xl font-bold text-navy">Escritura de Propiedad</h3>
+          <h3 class="text-xl font-bold text-orange">Escritura de Propiedad</h3>
           <button @click="showContractModalId = null" class="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -487,7 +487,7 @@
           
           <!-- Sección de detalles de propiedad -->
           <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="mb-2 font-medium text-navy">Detalles de la Propiedad:</div>
+            <div class="mb-2 font-medium text-orange">Detalles de la Propiedad:</div>
             <div class="flex justify-between mb-2">
               <span class="text-gray-600">Dirección:</span>
               <span class="font-medium">{{ contractPurchase.property?.address || 'No disponible' }}</span>
@@ -511,7 +511,7 @@
         </div>
 
         <div class="flex justify-end space-x-3">
-          <button @click="downloadContract" class="px-4 py-2 bg-navy text-white rounded hover:bg-blue-800 transition">
+          <button @click="downloadContract" class="px-4 py-2 bg-orange text-white rounded hover:bg-orange-800 transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -524,7 +524,7 @@
     <!-- Toast de notificación -->
     <div v-if="notification.show" 
       class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 flex items-start max-w-sm transition-all duration-300"
-      :class="{'bg-green-50': notification.type === 'success', 'bg-red-50': notification.type === 'error', 'bg-blue-50': notification.type === 'info'}"
+      :class="{'bg-green-50': notification.type === 'success', 'bg-red-50': notification.type === 'error', 'bg-orange-50': notification.type === 'info'}"
     >
       <div v-if="notification.type === 'success'" class="text-green-500 mr-3">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -536,7 +536,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      <div v-if="notification.type === 'info'" class="text-blue-500 mr-3">
+      <div v-if="notification.type === 'info'" class="text-orange-500 mr-3">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -546,7 +546,7 @@
           :class="{
             'text-green-800': notification.type === 'success', 
             'text-red-800': notification.type === 'error',
-            'text-blue-800': notification.type === 'info'
+            'text-orange-800': notification.type === 'info'
           }"
         >
           {{ notification.title }}
@@ -683,7 +683,7 @@ const getStatusClass = (purchase) => {
   } else if (purchase.status === 'completed') {
     return 'text-green-600';
   } else if (purchase.status === 'confirmed') {
-    return 'text-blue-600';
+    return 'text-orange-600';
   } else {
     return 'text-orange-600';
   }
@@ -1059,7 +1059,7 @@ const downloadContract = async () => {
             margin-bottom: 30px;
           }
           .header h1 {
-            color: #0a3364;
+            color: #fd5631;
             font-size: 24px;
             margin-bottom: 10px;
           }
@@ -1077,7 +1077,7 @@ const downloadContract = async () => {
           .section-title {
             font-size: 18px;
             font-weight: bold;
-            color: #0a3364;
+            color: #fd5631;
             margin: 20px 0 10px 0;
             padding-bottom: 5px;
             border-bottom: 1px solid #ddd;
@@ -1502,43 +1502,43 @@ onBeforeUnmount(() => {
 
 <style>
 /* Colores personalizados */
-.bg-navy {
-  background-color: #0a3364;
+.bg-orange {
+  background-color: #fd5631;
 }
 
-.bg-navy-dark {
-  background-color: #072649;
+.bg-orange-dark {
+  background-color: #fd5631;
 }
 
-.text-navy {
-  color: #0a3364;
+.text-orange {
+  color: #fd5631;
 }
 
-.border-navy {
-  border-color: #0a3364;
+.border-orange {
+  border-color: #fd5631;
 }
 
-.hover\:bg-navy:hover {
-  background-color: #0a3364;
+.hover\:bg-orange:hover {
+  background-color: #fd5631;
 }
 
-.hover\:bg-navy-dark:hover {
-  background-color: #072649;
+.hover\:bg-orange-dark:hover {
+  background-color: #fd5631;
 }
 
-.hover\:text-navy:hover {
-  color: #0a3364;
+.hover\:text-orange:hover {
+  color: #fd5631;
 }
 
 /* Estilos de enfoque */
-.focus\:ring-navy:focus {
-  --tw-ring-color: #0a3364;
+.focus\:ring-orange:focus {
+  --tw-ring-color: #fd5631;
   --tw-ring-opacity: 0.5;
   box-shadow: 0 0 0 3px rgba(10, 51, 100, 0.5);
 }
 
-.focus\:border-navy:focus {
-  border-color: #0a3364;
+.focus\:border-orange:focus {
+  border-color: #fd5631;
 }
 
 /* Animación del spinner */

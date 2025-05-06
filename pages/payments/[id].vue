@@ -2,14 +2,14 @@
   <div class="container mx-auto px-4 py-8 bg-white payment-page pt-20">
     <!-- Estado de carga -->
     <div v-if="isLoading" class="flex justify-center items-center min-h-[400px]">
-      <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-10 h-10 animate-spin"></div>
+      <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-10 h-10 animate-spin"></div>
       <p class="text-xl text-black ml-4">Cargando información del pago...</p>
     </div>
 
     <!-- Estado de error -->
     <div v-else-if="error" class="flex flex-col justify-center items-center min-h-[400px]">
       <p class="text-xl text-red-600 mb-4">{{ error }}</p>
-      <button @click="fetchBookingData" class="bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-900">
+      <button @click="fetchBookingData" class="bg-orange-800 text-white py-2 px-4 rounded hover:bg-orange-900">
         Intentar de nuevo
       </button>
     </div>
@@ -18,13 +18,13 @@
     <div v-else-if="booking" class="payment-content">
       <!-- Breadcrumb -->
       <div class="breadcrumb flex items-center mb-4 text-sm">
-        <a href="/" class="text-black hover:text-blue-800">Inicio</a>
+        <a href="/" class="text-black hover:text-orange-800">Inicio</a>
         <span class="mx-2 text-black">›</span>
-        <a :href="`/properties/${booking.property_id}`" class="text-black hover:text-blue-800">
+        <a :href="`/properties/${booking.property_id}`" class="text-black hover:text-orange-800">
           {{ propertyTitle || 'Propiedad' }}
         </a>
         <span class="mx-2 text-black">›</span>
-        <a :href="`/bookings/${booking.id}`" class="text-black hover:text-blue-800">{{ isPurchase ? 'Compra' : 'Reserva' }}</a>
+        <a :href="`/bookings/${booking.id}`" class="text-black hover:text-orange-800">{{ isPurchase ? 'Compra' : 'Reserva' }}</a>
         <span class="mx-2 text-black">›</span>
         <span class="text-black">Pago</span>
       </div>
@@ -48,9 +48,9 @@
                     :key="method.id"
                     @click="selectPaymentMethod(method.id)"
                     class="border rounded-md p-4 flex items-center cursor-pointer"
-                    :class="{'border-blue-800 bg-blue-50': paymentData.payment_method === method.id, 'border-gray-300': paymentData.payment_method !== method.id}"
+                    :class="{'border-orange-800 bg-orange-50': paymentData.payment_method === method.id, 'border-gray-300': paymentData.payment_method !== method.id}"
                   >
-                    <span class="material-icons text-2xl mr-3" :class="{'text-blue-800': paymentData.payment_method === method.id}">
+                    <span class="material-icons text-2xl mr-3" :class="{'text-orange-800': paymentData.payment_method === method.id}">
                       {{ method.icon }}
                     </span>
                     <span class="text-black">{{ method.name }}</span>
@@ -124,7 +124,7 @@
                   <ol class="list-decimal pl-5 text-black">
                     <li class="mb-1">Realice la transferencia por el monto total.</li>
                     <li class="mb-1">Guarde el comprobante de transferencia.</li>
-                    <li class="mb-1">Envíe una copia del comprobante a: <a href="mailto:pagos@oasisrealestate.com" class="text-blue-800 hover:underline">pagos@oasisrealestate.com</a></li>
+                    <li class="mb-1">Envíe una copia del comprobante a: <a href="mailto:pagos@oasisrealestate.com" class="text-orange-800 hover:underline">pagos@oasisrealestate.com</a></li>
                   </ol>
                 </div>
 
@@ -215,7 +215,7 @@
               <!-- Botón de procesamiento -->
               <button 
                 type="submit"
-                class="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded hover:bg-blue-900 transition mt-4"
+                class="w-full bg-orange-800 text-white font-medium py-3 px-4 rounded hover:bg-orange-900 transition mt-4"
                 :disabled="isProcessing"
               >
                 <span v-if="isProcessing">
@@ -244,7 +244,7 @@
                 <p class="text-black mb-2">{{ isPurchase ? 'Compra' : 'Reserva' }} #{{ bookingId }}</p>
                 
                 <div class="mt-3 flex items-center">
-                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {{ booking.status || 'Pendiente' }}
                   </span>
                 </div>
@@ -311,7 +311,7 @@
                 <button 
                   @click="returnToProperty" 
                   type="button"
-                  class="text-blue-800 hover:underline"
+                  class="text-orange-800 hover:underline"
                   :disabled="isProcessing"
                 >
                   Ver detalles de la propiedad
@@ -326,7 +326,7 @@
     <!-- Si no hay datos de reserva mostrar mensaje de error -->
     <div v-else class="text-center py-10">
       <p class="text-xl text-black mb-4">No se encontró información de la {{ isPurchase ? 'compra' : 'reserva' }}</p>
-      <a href="/properties" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2 px-4 rounded inline-block">
+      <a href="/properties" class="bg-orange-800 hover:bg-orange-900 text-white font-medium py-2 px-4 rounded inline-block">
         Ver propiedades disponibles
       </a>
     </div>
@@ -364,7 +364,7 @@
         <div class="flex flex-col space-y-2">
           <button 
             @click="goToMyBookings" 
-            class="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded hover:bg-blue-900 transition"
+            class="w-full bg-orange-800 text-white font-medium py-3 px-4 rounded hover:bg-orange-900 transition"
           >
             Ver mis {{ isPurchase ? 'compras' : 'reservas' }}
           </button>
@@ -911,24 +911,24 @@ onMounted(() => {
 }
   
 /* Estilos para botones principales */
-.bg-blue-800 {
-  background-color: #1e40af !important;
+.bg-orange-800 {
+  background-color: #fd5631 !important;
 }
   
-.bg-blue-900 {
-  background-color: #1e3a8a !important;
+.bg-orange-900 {
+  background-color: #fd5631 !important;
 }
   
-.hover\:bg-blue-800:hover {
-  background-color: #1e40af !important;
+.hover\:bg-orange-800:hover {
+  background-color: #fd5631 !important;
 }
   
-.hover\:bg-blue-900:hover {
-  background-color: #1e3a8a !important;
+.hover\:bg-orange-900:hover {
+  background-color: #fd5631 !important;
 }
   
-.text-blue-800 {
-  color: #1e40af !important;
+.text-orange-800 {
+  color: #fd5631 !important;
 }
   
 .hover\:underline:hover {

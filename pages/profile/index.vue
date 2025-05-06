@@ -4,7 +4,7 @@
       
       <!-- Loading State -->
       <div v-if="userStore.loading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
       
       <!-- Profile Content -->
@@ -15,7 +15,7 @@
             <div class="p-6">
               <!-- User Avatar -->
               <div class="flex flex-col items-center mb-6">
-                <div class="w-32 h-32 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 text-4xl font-bold mb-4">
+                <div class="w-32 h-32 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-400 text-4xl font-bold mb-4">
                   {{ userInitials }}
                 </div>
                 <h2 class="text-xl font-bold">{{ fullName }}</h2>
@@ -38,7 +38,7 @@
               <button 
                 @click="activeTab = 'profile'" 
                 class="w-full text-left px-4 py-3 rounded-lg mb-2"
-                :class="activeTab === 'profile' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
+                :class="activeTab === 'profile' ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
               >
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@
               <button 
                 @click="activeTab = 'security'" 
                 class="w-full text-left px-4 py-3 rounded-lg mb-2"
-                :class="activeTab === 'security' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
+                :class="activeTab === 'security' ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
               >
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +64,7 @@
               <button 
                 @click="activeTab = 'preferences'" 
                 class="w-full text-left px-4 py-3 rounded-lg mb-2"
-                :class="activeTab === 'preferences' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
+                :class="activeTab === 'preferences' ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'"
               >
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,7 +115,7 @@
                       id="firstName" 
                       v-model="form.firstName" 
                       type="text" 
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                   <div>
@@ -126,7 +126,7 @@
                       id="lastName" 
                       v-model="form.lastName" 
                       type="text" 
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                 </div>
@@ -140,7 +140,7 @@
                     id="email" 
                     v-model="form.email" 
                     type="email" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 
@@ -153,7 +153,7 @@
                     id="phone" 
                     v-model="form.phone" 
                     type="tel" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 
@@ -161,7 +161,7 @@
                 <div class="flex justify-end">
                   <button 
                     type="submit" 
-                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
+                    class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg"
                     :disabled="isUpdating"
                   >
                     <span v-if="isUpdating">Saving...</span>
@@ -204,7 +204,7 @@
                     id="currentPassword" 
                     v-model="passwordForm.currentPassword" 
                     type="password" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     required
                   />
                 </div>
@@ -218,7 +218,7 @@
                     id="newPassword" 
                     v-model="passwordForm.newPassword" 
                     type="password" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     required
                     minlength="8"
                   />
@@ -236,7 +236,7 @@
                     id="confirmPassword" 
                     v-model="passwordForm.confirmPassword" 
                     type="password" 
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     required
                   />
                 </div>
@@ -245,7 +245,7 @@
                 <div class="flex justify-end">
                   <button 
                     type="submit" 
-                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
+                    class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg"
                     :disabled="isChangingPassword || !isPasswordFormValid"
                   >
                     <span v-if="isChangingPassword">Updating...</span>
@@ -273,7 +273,7 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" v-model="preferences.emailNotifications" class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
                     </label>
                   </div>
                   
@@ -286,7 +286,7 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" v-model="preferences.smsNotifications" class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
                     </label>
                   </div>
                   
@@ -299,7 +299,7 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" v-model="preferences.marketingEmails" class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 dark:peer-focus:ring-orange-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
                     </label>
                   </div>
                 </div>
@@ -317,7 +317,7 @@
                     <select 
                       id="language" 
                       v-model="preferences.language" 
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                       <option value="en">English</option>
                       <option value="es">Spanish</option>
@@ -333,7 +333,7 @@
                     <select 
                       id="currency" 
                       v-model="preferences.currency" 
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
@@ -348,7 +348,7 @@
               <div class="flex justify-end">
                 <button 
                   @click="savePreferences" 
-                  class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
+                  class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg"
                   :disabled="isSavingPreferences"
                 >
                   <span v-if="isSavingPreferences">Saving...</span>

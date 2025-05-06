@@ -21,7 +21,7 @@
             v-model="firstName" 
             type="text" 
             required 
-            class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+            class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
             placeholder="Juan"
           />
         </div>
@@ -32,7 +32,7 @@
             v-model="lastName" 
             type="text" 
             required 
-            class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+            class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
             placeholder="Pérez"
           />
         </div>
@@ -46,7 +46,7 @@
           v-model="email" 
           type="email" 
           required 
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
           placeholder="tu@correo.com"
         />
       </div>
@@ -60,7 +60,7 @@
           type="password" 
           required
           minlength="8"
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
           placeholder="••••••••"
         />
         <p class="mt-1 text-xs text-gray-500">
@@ -78,7 +78,7 @@
           v-model="confirmPassword" 
           type="password" 
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 text-black bg-white"
           placeholder="••••••••"
         />
       </div>
@@ -91,17 +91,17 @@
             v-model="agreeToTerms" 
             type="checkbox" 
             required
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
           />
         </div>
         <div class="ml-3 text-sm">
           <label for="terms" class="text-black">
             Acepto los
-            <NuxtLink to="/terms" class="text-blue-600 hover:underline">
+            <NuxtLink to="/terms" class="text-orange-600 hover:underline">
               Términos de servicio
             </NuxtLink>
             y la
-            <NuxtLink to="/privacy" class="text-blue-600 hover:underline">
+            <NuxtLink to="/privacy" class="text-orange-600 hover:underline">
               Política de privacidad
             </NuxtLink>
           </label>
@@ -111,7 +111,7 @@
       <!-- Submit Button -->
       <button 
         type="submit" 
-        class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors"
+        class="w-full py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors"
         :disabled="loading || password !== confirmPassword || !agreeToTerms"
       >
         <span v-if="loading">
@@ -127,7 +127,7 @@
       <!-- Sign In Link -->
       <div class="text-center text-sm text-black">
         ¿Ya tienes una cuenta? 
-        <NuxtLink to="/auth/login" class="text-blue-600 hover:underline font-medium">
+        <NuxtLink to="/auth/login" class="text-orange-600 hover:underline font-medium">
           Iniciar sesión
         </NuxtLink>
       </div>
