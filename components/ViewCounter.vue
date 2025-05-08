@@ -48,7 +48,7 @@
   }
   
   .material-icons {
-    color: #1e40af; /* blue-800 */
+    color: #fd5631; /* orange-800 */
     font-size: 18px;
     margin-right: 4px;
   }

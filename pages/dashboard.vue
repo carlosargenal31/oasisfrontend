@@ -17,8 +17,8 @@
             </div>
           </template>
           <template #action>
-            <NuxtLink to="/bookings" class="text-blue-600 dark:text-blue-400 font-medium hover:underline">
-              View All Bookings →
+            <NuxtLink to="/bookings" class="text-orange-600 dark:text-orange-400 font-medium hover:underline">
+              Ver todo Bookings →
             </NuxtLink>
           </template>
         </DashboardCard>
@@ -32,7 +32,7 @@
             </div>
           </template>
           <template #action>
-            <NuxtLink to="/favorites" class="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            <NuxtLink to="/favorites" class="text-orange-600 dark:text-orange-400 font-medium hover:underline">
               View Favorites →
             </NuxtLink>
           </template>
@@ -47,7 +47,7 @@
             </div>
           </template>
           <template #action>
-            <NuxtLink to="/messages" class="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            <NuxtLink to="/messages" class="text-orange-600 dark:text-orange-400 font-medium hover:underline">
               View Messages →
             </NuxtLink>
           </template>
@@ -61,7 +61,7 @@
           
           <!-- Loading state -->
           <div v-if="loading" class="py-8 flex justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
           </div>
           
           <!-- Activities list -->
@@ -92,7 +92,7 @@
                   </div>
                   <p class="text-gray-600 dark:text-gray-400 mt-1">{{ activity.description }}</p>
                   <div v-if="activity.link" class="mt-2">
-                    <NuxtLink :to="activity.link.url" class="text-blue-600 dark:text-blue-400 text-sm hover:underline">
+                    <NuxtLink :to="activity.link.url" class="text-orange-600 dark:text-orange-400 text-sm hover:underline">
                       {{ activity.link.text }}
                     </NuxtLink>
                   </div>
@@ -117,7 +117,7 @@
               @click="navigateTo('/properties')" 
               class="p-4 flex items-center justify-center gap-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <span>Search Properties</span>
@@ -127,7 +127,7 @@
               @click="navigateTo('/profile')" 
               class="p-4 flex items-center justify-center gap-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               <span>Edit Profile</span>
@@ -137,7 +137,7 @@
               @click="navigateTo('/contact')" 
               class="p-4 flex items-center justify-center gap-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               <span>Contact Support</span>
@@ -230,7 +230,7 @@
   const getActivityIconClasses = (type) => {
     switch (type) {
       case 'booking':
-        return 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400';
+        return 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400';
       case 'message':
         return 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400';
       default:

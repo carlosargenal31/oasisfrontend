@@ -2,14 +2,14 @@
   <div class="container mx-auto px-4 py-8 bg-white booking-page pt-20">
     <!-- Estado de carga -->
     <div v-if="isLoading" class="flex justify-center items-center min-h-[400px]">
-      <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-10 h-10 animate-spin"></div>
+      <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-10 h-10 animate-spin"></div>
       <p class="text-xl text-black ml-4">Cargando información de la propiedad...</p>
     </div>
 
     <!-- Estado de error -->
     <div v-else-if="error" class="flex flex-col justify-center items-center min-h-[400px]">
       <p class="text-xl text-red-600 mb-4">{{ error }}</p>
-      <button @click="fetchPropertyData" class="bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-900">
+      <button @click="fetchPropertyData" class="bg-orange-800 text-white py-2 px-4 rounded hover:bg-orange-900">
         Intentar de nuevo
       </button>
     </div>
@@ -18,9 +18,9 @@
     <div v-else-if="property" class="booking-content">
       <!-- Breadcrumb -->
       <div class="breadcrumb flex items-center mb-4 text-sm">
-        <a href="/" class="text-black hover:text-blue-800">Inicio</a>
+        <a href="/" class="text-black hover:text-orange-800">Inicio</a>
         <span class="mx-2 text-black">›</span>
-        <a :href="`/properties/${property.id}`" class="text-black hover:text-blue-800">{{ property.title }}</a>
+        <a :href="`/properties/${property.id}`" class="text-black hover:text-orange-800">{{ property.title }}</a>
         <span class="mx-2 text-black">›</span>
         <span class="text-black">{{ isPropertyForSale ? 'Compra' : 'Reserva' }}</span>
       </div>
@@ -118,15 +118,15 @@
                     required
                   >
                   <label for="terms" class="text-black">
-                    Acepto los <a href="#" class="text-blue-800 hover:underline">términos y condiciones</a> y la 
-                    <a href="#" class="text-blue-800 hover:underline">política de privacidad</a>.
+                    Acepto los <a href="#" class="text-orange-800 hover:underline">términos y condiciones</a> y la 
+                    <a href="#" class="text-orange-800 hover:underline">política de privacidad</a>.
                   </label>
                 </div>
 
                 <!-- Botón para continuar al pago para compra -->
                 <button 
                   type="submit" 
-                  class="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded hover:bg-blue-900 transition"
+                  class="w-full bg-orange-800 text-white font-medium py-3 px-4 rounded hover:bg-orange-900 transition"
                   :disabled="isSubmitting"
                 >
                   <span v-if="isSubmitting">
@@ -207,7 +207,7 @@
                   </div>
                 </div>
 
-                <div v-if="durationText" class="p-3 bg-blue-50 rounded-md mb-6 text-black">
+                <div v-if="durationText" class="p-3 bg-orange-50 rounded-md mb-6 text-black">
                   <span class="font-medium">Duración del contrato:</span> {{ durationText }}
                 </div>
 
@@ -230,15 +230,15 @@
                     required
                   >
                   <label for="terms" class="text-black">
-                    Acepto los <a href="#" class="text-blue-800 hover:underline">términos y condiciones</a> y la 
-                    <a href="#" class="text-blue-800 hover:underline">política de privacidad</a>.
+                    Acepto los <a href="#" class="text-orange-800 hover:underline">términos y condiciones</a> y la 
+                    <a href="#" class="text-orange-800 hover:underline">política de privacidad</a>.
                   </label>
                 </div>
 
                 <!-- Botón para continuar al pago -->
                 <button 
                   type="submit" 
-                  class="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded hover:bg-blue-900 transition"
+                  class="w-full bg-orange-800 text-white font-medium py-3 px-4 rounded hover:bg-orange-900 transition"
                   :disabled="isSubmitting"
                 >
                   <span v-if="isSubmitting">
@@ -355,7 +355,7 @@
     <!-- Si no hay ID de propiedad mostrar mensaje para seleccionar una propiedad -->
     <div v-else class="text-center py-10">
       <p class="text-xl text-black mb-4">Por favor, seleccione una propiedad para realizar una reserva</p>
-      <a href="/properties/rent" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2 px-4 rounded inline-block">
+      <a href="/properties/rent" class="bg-orange-800 hover:bg-orange-900 text-white font-medium py-2 px-4 rounded inline-block">
         Ver propiedades disponibles
       </a>
     </div>
@@ -371,7 +371,7 @@
         
         <button 
           @click="showErrorModal = false" 
-          class="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded hover:bg-blue-900 transition"
+          class="w-full bg-orange-800 text-white font-medium py-3 px-4 rounded hover:bg-orange-900 transition"
         >
           Entendido
         </button>
@@ -1128,24 +1128,24 @@ onMounted(() => {
 }
 
 /* Estilos para botones principales */
-.bg-blue-800 {
-  background-color: #1e40af !important;
+.bg-orange-800 {
+  background-color: #fd5631 !important;
 }
 
-.bg-blue-900 {
-  background-color: #1e3a8a !important;
+.bg-orange-900 {
+  background-color: #fd5631 !important;
 }
 
-.hover\:bg-blue-800:hover {
-  background-color: #1e40af !important;
+.hover\:bg-orange-800:hover {
+  background-color: #fd5631 !important;
 }
 
-.hover\:bg-blue-900:hover {
-  background-color: #1e3a8a !important;
+.hover\:bg-orange-900:hover {
+  background-color: #fd5631 !important;
 }
 
-.text-blue-800 {
-  color: #1e40af !important;
+.text-orange-800 {
+  color: #fd5631 !important;
 }
 
 .hover\:underline:hover {

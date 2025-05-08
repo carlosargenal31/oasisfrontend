@@ -16,7 +16,7 @@
         <!-- Mobile progress bar -->
         <div class="d-lg-none pt-3 mb-2">{{ progress }}% contenido completado</div>
         <div class="progress d-lg-none mb-4" style="height: 0.25rem">
-          <div class="progress-bar bg-blue" role="progressbar" :style="`width: ${progress}%`" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar bg-orange" role="progressbar" :style="`width: ${progress}%`" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
         <!-- Alert messages -->
@@ -38,7 +38,7 @@
           <!-- Basic info -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="basic-info">
             <h2 class="h4 mb-4">
-              <i class="fi-info-circle text-blue fs-5 mt-n1 me-2"></i>Información Básica
+              <i class="fi-info-circle text-orange fs-5 mt-n1 me-2"></i>Información Básica
             </h2>
             <div class="mb-3">
               <label class="form-label" for="ap-title">Título <span class="text-danger">*</span></label>
@@ -92,7 +92,7 @@
           
           <!-- Location -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="location">
-            <h2 class="h4 mb-4"><i class="fi-map-pin text-blue fs-5 mt-n1 me-2"></i>Ubicación</h2>
+            <h2 class="h4 mb-4"><i class="fi-map-pin text-orange fs-5 mt-n1 me-2"></i>Ubicación</h2>
             <div class="row">
               <div class="col-sm-6 mb-3">
                 <label class="form-label" for="ap-country">País / Región <span class="text-danger">*</span></label>
@@ -163,7 +163,7 @@
           <!-- Property details -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="details">
             <h2 class="h4 mb-4">
-              <i class="fi-edit text-blue fs-5 mt-n1 me-2"></i>Detalles de la Propiedad
+              <i class="fi-edit text-orange fs-5 mt-n1 me-2"></i>Detalles de la Propiedad
             </h2>
             <div class="mb-4" style="max-width: 25rem">
               <label class="form-label" for="ap-area">Área Total (m²)</label>
@@ -283,7 +283,7 @@
           
           <!-- Price -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="price">
-            <h2 class="h4 mb-4"><i class="fi-cash text-blue fs-5 mt-n1 me-2"></i>Precio</h2>
+            <h2 class="h4 mb-4"><i class="fi-cash text-orange fs-5 mt-n1 me-2"></i>Precio</h2>
             <label class="form-label" for="ap-price">Precio <span class="text-danger">*</span></label>
             <div class="d-sm-flex">
               <select class="form-select w-25 me-2 mb-2" v-model="currencyType">
@@ -311,7 +311,7 @@
           <!-- Photos / video -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="photos">
             <h2 class="h4 mb-4">
-              <i class="fi-image text-blue fs-5 mt-n1 me-2"></i>Fotos
+              <i class="fi-image text-orange fs-5 mt-n1 me-2"></i>Fotos
             </h2>
             <div class="alert alert-info mb-4" role="alert">
               <div class="d-flex">
@@ -348,7 +348,7 @@
           
           <!-- Contacts -->
           <section class="card card-body border-0 shadow-sm p-4 mb-4" id="contacts">
-            <h2 class="h4 mb-4"><i class="fi-phone text-blue fs-5 mt-n1 me-2"></i>Contactos</h2>
+            <h2 class="h4 mb-4"><i class="fi-phone text-orange fs-5 mt-n1 me-2"></i>Contactos</h2>
             <div class="row">
               <div class="col-sm-6 mb-3">
                 <label class="form-label" for="ap-fn">Nombre <span class="text-danger">*</span></label>
@@ -424,31 +424,31 @@
         <div class="sticky-top pt-5">
           <h6 class="pt-5 mt-3 mb-2">{{ progress }}% contenido completado</h6>
           <div class="progress mb-4" style="height: 0.25rem">
-            <div class="progress-bar bg-blue" role="progressbar" :style="`width: ${progress}%`" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar bg-orange" role="progressbar" :style="`width: ${progress}%`" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
           <ul class="list-unstyled">
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': formData.title, 'text-muted': !formData.title}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': formData.title, 'text-muted': !formData.title}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#basic-info">Información Básica</a>
             </li>
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': formData.address && formData.city, 'text-muted': !formData.address || !formData.city}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': formData.address && formData.city, 'text-muted': !formData.address || !formData.city}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#location">Ubicación</a>
             </li>
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': formData.bedrooms >= 0, 'text-muted': formData.bedrooms === undefined}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': formData.bedrooms >= 0, 'text-muted': formData.bedrooms === undefined}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#details">Detalles de la Propiedad</a>
             </li>
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': formData.price, 'text-muted': !formData.price}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': formData.price, 'text-muted': !formData.price}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#price">Precio</a>
             </li>
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': selectedFiles.length > 0, 'text-muted': selectedFiles.length === 0}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': selectedFiles.length > 0, 'text-muted': selectedFiles.length === 0}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#photos">Fotos</a>
             </li>
             <li class="d-flex align-items-center">
-              <i :class="['fi-check me-2', {'text-blue': contactInfo.firstName && contactInfo.email, 'text-muted': !contactInfo.firstName || !contactInfo.email}]"></i>
+              <i :class="['fi-check me-2', {'text-orange': contactInfo.firstName && contactInfo.email, 'text-muted': !contactInfo.firstName || !contactInfo.email}]"></i>
               <a class="nav-link fw-normal ps-1 p-0" href="#contacts">Contactos</a>
             </li>
           </ul>
@@ -637,34 +637,34 @@ const response = await axios.post('/api/properties', propertyFormData, {
 <style>
 /* Reemplazar naranja por azul en todos los elementos */
 .bg-warning {
-  background-color: #3b82f6 !important; /* Azul */
+  background-color: #fd5631 !important; /* Azul */
 }
 
 .text-primary {
-  color: #3b82f6 !important; /* Azul */
+  color: #fd5631 !important; /* Azul */
 }
 
 .btn-primary {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
+  border-color: #fd5631 !important;
 }
 
 .btn-outline-primary {
-  color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+  color: #fd5631 !important;
+  border-color: #fd5631 !important;
 }
 
 .btn-outline-primary:hover {
-  background-color: #3b82f6 !important;
+  background-color: #fd5631 !important;
   color: white !important;
 }
 
-.text-blue {
-  color: #3b82f6 !important;
+.text-orange {
+  color: #fd5631 !important;
 }
 
-.bg-blue {
-  background-color: #3b82f6 !important;
+.bg-orange {
+  background-color: #fd5631 !important;
 }
 
 /* Estilo para la zona de subida de archivos */
@@ -684,7 +684,7 @@ const response = await axios.post('/api/properties', propertyFormData, {
 }
 
 .file-drop-area:hover {
-  border-color: #3b82f6;
+  border-color: #fd5631;
 }
 
 .file-drop-icon {

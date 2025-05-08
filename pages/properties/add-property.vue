@@ -3,11 +3,11 @@
     <!-- Breadcrumb navigation -->
     <div class="container pt-4 px-6">
       <div class="flex items-center text-sm">
-        <router-link to="/" class="text-gray-500 hover:text-blue-800">Home</router-link>
+        <router-link to="/" class="text-gray-500 hover:text-orange-800">Home</router-link>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-        <span class="text-blue-800">Añadir Propiedad</span>
+        <span class="text-orange-800">Añadir Propiedad</span>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
               <span class="text-sm font-medium text-gray-700">{{ progress }}% contenido completado</span>
             </div>
             <div class="h-2 bg-gray-200 rounded-full">
-              <div class="h-2 bg-blue-800 rounded-full" :style="`width: ${progress}%`"></div>
+              <div class="h-2 bg-orange-800 rounded-full" :style="`width: ${progress}%`"></div>
             </div>
           </div>
 
@@ -58,8 +58,8 @@
             <!-- Basic Info -->
             <section class="mb-8" id="basic-info">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -75,7 +75,7 @@
                     type="text" 
                     id="title" 
                     v-model="formData.title" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                     placeholder="Título para tu propiedad"
                     required
                   />
@@ -90,7 +90,7 @@
                     <select 
                       id="category" 
                       v-model="formData.status" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       required
                     >
                       <option value="" disabled>Elegir categoría</option>
@@ -106,7 +106,7 @@
                     <select 
                       id="property-type" 
                       v-model="formData.property_type" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       required
                     >
                       <option value="" disabled>Elegir tipo de propiedad</option>
@@ -132,7 +132,7 @@
                         name="business-type" 
                         value="business" 
                         v-model="businessType"
-                        class="h-4 w-4 text-blue-800 focus:ring-blue-800 border-gray-300"
+                        class="h-4 w-4 text-orange-800 focus:ring-orange-800 border-gray-300"
                       />
                       <span class="ml-2 text-gray-700">Soy una empresa registrada</span>
                     </label>
@@ -142,7 +142,7 @@
                         name="business-type" 
                         value="private" 
                         v-model="businessType"
-                        class="h-4 w-4 text-blue-800 focus:ring-blue-800 border-gray-300"
+                        class="h-4 w-4 text-orange-800 focus:ring-orange-800 border-gray-300"
                         checked
                       />
                       <span class="ml-2 text-gray-700">Soy un vendedor particular</span>
@@ -155,8 +155,8 @@
             <!-- Location -->
             <section class="mb-8" id="location">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -174,7 +174,7 @@
                       type="text" 
                       id="country" 
                       v-model="formData.state" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="País o región"
                       required
                     />
@@ -188,7 +188,7 @@
                       type="text" 
                       id="city" 
                       v-model="formData.city" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Ciudad"
                       required
                     />
@@ -204,7 +204,7 @@
                       type="text" 
                       id="district" 
                       v-model="formData.district" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Distrito o colonia"
                     />
                   </div>
@@ -217,7 +217,7 @@
                       type="text" 
                       id="zip" 
                       v-model="formData.zip_code" 
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Código postal"
                       required
                     />
@@ -232,7 +232,7 @@
                     type="text" 
                     id="address" 
                     v-model="formData.address" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                     placeholder="Dirección completa"
                     required
                   />
@@ -248,8 +248,8 @@
             <!-- Property Details -->
             <section class="mb-8" id="details">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </div>
@@ -263,7 +263,7 @@
                     type="number" 
                     id="area" 
                     v-model="formData.square_feet" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                     min="20"
                     placeholder="Ingresa el área"
                   />
@@ -274,11 +274,11 @@
                   <div class="flex flex-wrap gap-2">
                     <label class="inline-flex items-center">
                       <input class="sr-only" type="radio" name="bedrooms" :value="0" v-model="formData.bedrooms" />
-                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bedrooms === 0 ? 'bg-blue-800 text-white border-blue-800' : 'border-gray-300 hover:border-blue-800'">Estudio</span>
+                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bedrooms === 0 ? 'bg-orange-800 text-white border-orange-800' : 'border-gray-300 hover:border-orange-800'">Estudio</span>
                     </label>
                     <label v-for="n in 5" :key="`bedroom-${n}`" class="inline-flex items-center">
                       <input class="sr-only" type="radio" name="bedrooms" :value="n" v-model="formData.bedrooms" />
-                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bedrooms === n ? 'bg-blue-800 text-white border-blue-800' : 'border-gray-300 hover:border-blue-800'">{{ n }}</span>
+                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bedrooms === n ? 'bg-orange-800 text-white border-orange-800' : 'border-gray-300 hover:border-orange-800'">{{ n }}</span>
                     </label>
                   </div>
                 </div>
@@ -288,7 +288,7 @@
                   <div class="flex flex-wrap gap-2">
                     <label v-for="n in 4" :key="`bathroom-${n}`" class="inline-flex items-center">
                       <input class="sr-only" type="radio" name="bathrooms" :value="n" v-model="formData.bathrooms" />
-                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bathrooms === n ? 'bg-blue-800 text-white border-blue-800' : 'border-gray-300 hover:border-blue-800'">{{ n }}</span>
+                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.bathrooms === n ? 'bg-orange-800 text-white border-orange-800' : 'border-gray-300 hover:border-orange-800'">{{ n }}</span>
                     </label>
                   </div>
                 </div>
@@ -298,7 +298,7 @@
                   <div class="flex flex-wrap gap-2">
                     <label v-for="n in 5" :key="`parking-${n-1}`" class="inline-flex items-center">
                       <input class="sr-only" type="radio" name="parking" :value="n-1" v-model="formData.parkingSpaces" />
-                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.parkingSpaces === n-1 ? 'bg-blue-800 text-white border-blue-800' : 'border-gray-300 hover:border-blue-800'">{{ n-1 }}</span>
+                      <span class="px-4 py-2 border rounded-md cursor-pointer" :class="formData.parkingSpaces === n-1 ? 'bg-orange-800 text-white border-orange-800' : 'border-gray-300 hover:border-orange-800'">{{ n-1 }}</span>
                     </label>
                   </div>
                 </div>
@@ -312,7 +312,7 @@
                           type="checkbox" 
                           :value="amenity.id" 
                           v-model="formData.amenities"
-                          class="h-4 w-4 rounded text-blue-800 focus:ring-blue-800 border-gray-300"
+                          class="h-4 w-4 rounded text-orange-800 focus:ring-orange-800 border-gray-300"
                         />
                         <span class="ml-2 text-gray-700">{{ amenity.label }}</span>
                       </label>
@@ -329,7 +329,7 @@
                           type="checkbox" 
                           :value="pet.id" 
                           v-model="formData.pets_allowed"
-                          class="h-4 w-4 rounded text-blue-800 focus:ring-blue-800 border-gray-300"
+                          class="h-4 w-4 rounded text-orange-800 focus:ring-orange-800 border-gray-300"
                         />
                         <span class="ml-2 text-gray-700">{{ pet.label }}</span>
                       </label>
@@ -343,7 +343,7 @@
                     id="description" 
                     v-model="formData.description"
                     rows="5" 
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                     placeholder="Describe tu propiedad"
                   ></textarea>
                   <p class="mt-1 text-sm text-gray-500">{{ 1500 - (formData.description?.length || 0) }} caracteres restantes</p>
@@ -355,7 +355,7 @@
                       <input 
                         type="checkbox" 
                         v-model="formData.isNew"
-                        class="h-4 w-4 rounded text-blue-800 focus:ring-blue-800 border-gray-300"
+                        class="h-4 w-4 rounded text-orange-800 focus:ring-orange-800 border-gray-300"
                       />
                       <span class="ml-2 text-gray-700">Marcar como Nuevo</span>
                     </label>
@@ -365,7 +365,7 @@
                       <input 
                         type="checkbox" 
                         v-model="formData.isVerified"
-                        class="h-4 w-4 rounded text-blue-800 focus:ring-blue-800 border-gray-300"
+                        class="h-4 w-4 rounded text-orange-800 focus:ring-orange-800 border-gray-300"
                       />
                       <span class="ml-2 text-gray-700">Marcar como Verificado</span>
                     </label>
@@ -377,8 +377,8 @@
             <!-- Price -->
             <section class="mb-8" id="price">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -396,7 +396,7 @@
                       type="number" 
                       id="price" 
                       v-model="formData.price"
-                      class="w-full sm:w-2/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full sm:w-2/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       min="200"
                       step="50"
                       placeholder="Precio"
@@ -412,8 +412,8 @@
             <!-- Photos -->
             <section class="mb-8" id="photos">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -421,7 +421,7 @@
               </div>
               
               <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+                <div class="bg-orange-50 border-l-4 border-orange-500 text-orange-700 p-4 mb-6" role="alert">
                   <p class="text-sm">
                     El tamaño máximo de foto es 8 MB. Formatos: jpeg, jpg, png. Coloca la imagen principal primero.<br>
                     El tamaño máximo de vídeo es 10 MB. Formatos: mp4, mov.
@@ -436,7 +436,7 @@
                     </svg>
                     <button 
                       type="button" 
-                      class="mb-3 px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-800"
+                      class="mb-3 px-4 py-2 bg-orange-800 text-white rounded-md hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-800"
                       @click="triggerFileInput"
                     >
                       Subir fotos / vídeo
@@ -466,8 +466,8 @@
             <!-- Contacts -->
             <section class="mb-8" id="contacts">
               <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
@@ -484,7 +484,7 @@
                       type="text" 
                       id="firstname" 
                       v-model="contactInfo.firstName"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Ingresa tu nombre"
                       required
                     />
@@ -498,7 +498,7 @@
                       type="text" 
                       id="lastname" 
                       v-model="contactInfo.lastName"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Ingresa tu apellido"
                       required
                     />
@@ -514,7 +514,7 @@
                       type="email" 
                       id="email" 
                       v-model="contactInfo.email"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="Ingresa tu correo electrónico"
                       required
                     />
@@ -528,7 +528,7 @@
                       type="tel" 
                       id="phone" 
                       v-model="contactInfo.phone"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                       placeholder="000-000-0000"
                       required
                     />
@@ -541,7 +541,7 @@
                     type="text" 
                     id="company" 
                     v-model="contactInfo.company"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-blue-800"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-orange-800"
                     placeholder="Ingresa el nombre de la empresa"
                   />
                 </div>
@@ -552,7 +552,7 @@
             <div class="flex flex-col sm:flex-row justify-between pt-4">
               <button 
                 type="button" 
-                class="mb-4 sm:mb-0 px-6 py-3 border border-blue-800 text-blue-800 font-medium rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-800"
+                class="mb-4 sm:mb-0 px-6 py-3 border border-orange-800 text-orange-800 font-medium rounded-md hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-800"
                 @click="openPreviewModal"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -564,7 +564,7 @@
               
               <button 
                 type="submit" 
-                class="px-6 py-3 bg-blue-800 text-white font-medium rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-800"
+                class="px-6 py-3 bg-orange-800 text-white font-medium rounded-md hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-800"
                 :disabled="isSubmitting"
               >
                 <span v-if="isSubmitting">
@@ -586,57 +586,57 @@
             <h3 class="text-lg font-bold mb-4">{{ progress }}% contenido completado</h3>
             
             <div class="h-2 bg-gray-200 rounded-full mb-6">
-              <div class="h-2 bg-blue-800 rounded-full" :style="`width: ${progress}%`"></div>
+              <div class="h-2 bg-orange-800 rounded-full" :style="`width: ${progress}%`"></div>
             </div>
             
             <ul class="space-y-3">
               <li class="flex items-center">
-                <div :class="[isBasicInfoComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isBasicInfoComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isBasicInfoComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#basic-info" class="text-gray-800 hover:text-blue-800">Información Básica</a>
+                <a href="#basic-info" class="text-gray-800 hover:text-orange-800">Información Básica</a>
               </li>
               <li class="flex items-center">
-                <div :class="[isLocationComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isLocationComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isLocationComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#location" class="text-gray-800 hover:text-blue-800">Ubicación</a>
+                <a href="#location" class="text-gray-800 hover:text-orange-800">Ubicación</a>
               </li>
               <li class="flex items-center">
-                <div :class="[isDetailsComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isDetailsComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isDetailsComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#details" class="text-gray-800 hover:text-blue-800">Detalles de la Propiedad</a>
+                <a href="#details" class="text-gray-800 hover:text-orange-800">Detalles de la Propiedad</a>
               </li>
               <li class="flex items-center">
-                <div :class="[isPriceComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isPriceComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isPriceComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#price" class="text-gray-800 hover:text-blue-800">Precio</a>
+                <a href="#price" class="text-gray-800 hover:text-orange-800">Precio</a>
               </li>
               <li class="flex items-center">
-                <div :class="[isPhotosComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isPhotosComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isPhotosComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#photos" class="text-gray-800 hover:text-blue-800">Fotos / Vídeo</a>
+                <a href="#photos" class="text-gray-800 hover:text-orange-800">Fotos / Vídeo</a>
               </li>
               <li class="flex items-center">
-                <div :class="[isContactsComplete ? 'bg-blue-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
+                <div :class="[isContactsComplete ? 'bg-orange-800 text-white' : 'bg-gray-200 text-gray-400', 'w-6 h-6 rounded-full flex items-center justify-center mr-3']">
                   <svg v-if="isContactsComplete" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <a href="#contacts" class="text-gray-800 hover:text-blue-800">Contactos</a>
+                <a href="#contacts" class="text-gray-800 hover:text-orange-800">Contactos</a>
               </li>
             </ul>
           </div>
@@ -660,7 +660,7 @@
               <div class="flex items-center gap-4">
                 <button 
                   type="button" 
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-800"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-800 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-800"
                   @click="handleSubmit"
                 >
                   Guardar y continuar
@@ -741,7 +741,7 @@
                     <span v-if="formData.isVerified" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Verificado
                     </span>
-                    <span v-if="formData.isNew" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span v-if="formData.isNew" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                       Nuevo
                     </span>
                   </div>
@@ -794,7 +794,7 @@
                     <h3 class="text-xl font-bold mb-3">Comodidades</h3>
                     <ul class="grid grid-cols-1 sm:grid-cols-3 gap-y-2">
                       <li v-for="(amenity, i) in formData.amenities" :key="`preview-amenity-${i}`" class="flex items-center">
-                        <svg class="h-5 w-5 text-blue-800 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 text-orange-800 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
                         {{ getAmenityLabel(amenity) }}
@@ -1326,8 +1326,8 @@ p.mt-1.text-sm.text-gray-500 {
 /* Color azul marino para círculos de selección */
 input[type="radio"]:checked,
 input[type="checkbox"]:checked {
-  background-color: #1E40AF !important; /* Azul marino */
-  border-color: #1E40AF !important;
+  background-color: #fd5631 !important; /* Azul marino */
+  border-color: #fd5631 !important;
 }
 
 /* Estilo para la pregunta sobre empresa */
@@ -1398,40 +1398,40 @@ li span {
 
 /* OTROS ELEMENTOS */
 /* Texto sobre archivos */
-.bg-blue-50.border-l-4.border-blue-500.text-blue-700 p.text-sm {
+.bg-orange-50.border-l-4.border-orange-500.text-orange-700 p.text-sm {
   color: #4B5563 !important; /* Gris oscuro */
 }
 
 /* Elementos seleccionados en azul marino */
-.bg-blue-800.text-white,
-.bg-blue-800.text-white.border-blue-800,
-[class*="bg-blue-800"],
-[class*="bg-blue-800"][class*="text-white"] {
-  background-color: #1E40AF !important; /* Azul marino */
+.bg-orange-800.text-white,
+.bg-orange-800.text-white.border-orange-800,
+[class*="bg-orange-800"],
+[class*="bg-orange-800"][class*="text-white"] {
+  background-color: #fd5631 !important; /* Azul marino */
   color: white !important;
-  border-color: #1E40AF !important;
+  border-color: #fd5631 !important;
 }
 
 /* Barra de progreso */
-.h-2.bg-blue-800.rounded-full,
+.h-2.bg-orange-800.rounded-full,
 .progress-bar,
 .progress-fill,
 .progress > div,
 [class*="progress"] > div {
-  background-color: #1E40AF !important;
+  background-color: #fd5631 !important;
   transition: width 0.3s ease-in-out !important;
-  background-image: linear-gradient(to right, #2563EB, #1E40AF) !important;
+  background-image: linear-gradient(to right, #2563EB, #fd5631) !important;
 }
 
 /* Mantener botón azul marino con texto blanco */
 .btn-primary, 
-.btn-blue, 
-button.bg-blue-800, 
+.btn-orange, 
+button.bg-orange-800, 
 button.bg-primary,
 button[type="submit"],
-.px-6.py-3.bg-blue-800 {
+.px-6.py-3.bg-orange-800 {
   color: white !important;
-  background-color: #1E40AF !important;
+  background-color: #fd5631 !important;
 }
 
 /* Ajustes para navegación lateral */
@@ -1459,11 +1459,11 @@ span.text-red-500 {
 
 /* Excepción para íconos y elementos que deben ser blancos */
 .btn-primary *, 
-.btn-blue *, 
-button.bg-blue-800 *, 
+.btn-orange *, 
+button.bg-orange-800 *, 
 button.bg-primary *,
 button[type="submit"] *,
-.px-6.py-3.bg-blue-800 * {
+.px-6.py-3.bg-orange-800 * {
   color: white !important;
 }
 

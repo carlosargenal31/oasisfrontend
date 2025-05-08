@@ -3,7 +3,7 @@
     <!-- Estado de carga -->
     <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy mx-auto mb-4"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange mx-auto mb-4"></div>
         <p class="text-lg font-medium text-gray-700">Cargando información...</p>
       </div>
     </div>
@@ -12,7 +12,7 @@
     <header class="bg-white border-b border-gray-200 py-4">
       <div class="container mx-auto px-4 flex items-center justify-between">
         <div class="flex items-center">
-          <div class="text-2xl font-bold text-blue-500">OASIS</div>
+          <div class="text-2xl font-bold text-orange-500">OASIS</div>
         </div>
         <div class="flex items-center gap-4">
           <div class="flex items-center">
@@ -27,7 +27,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-          <button class="bg-navy text-white px-4 py-2 rounded-md flex items-center">
+          <button class="bg-orange text-white px-4 py-2 rounded-md flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -40,8 +40,8 @@
 
     <!-- Navegación de migas de pan -->
     <div class="container mx-auto px-4 py-4">
-      <div class="flex items-center text-blue-500 text-sm">
-        <a href="/" class="hover:text-navy">Inicio</a>
+      <div class="flex items-center text-orange-500 text-sm">
+        <a href="/" class="hover:text-orange">Inicio</a>
         <span class="mx-2">/</span>
         <span class="text-gray-800">Información Personal</span>
       </div>
@@ -74,7 +74,7 @@
 <div class="px-4 pb-4">
   <button 
     @click="redirectToAddProperty" 
-    class="w-full bg-navy text-white py-2 rounded flex justify-center items-center"
+    class="w-full bg-orange text-white py-2 rounded flex justify-center items-center"
   >
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="white">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -85,11 +85,11 @@
 
             <!-- Menú de navegación -->
             <div class="border-t border-gray-200">
-              <a href="/account/account-info" class="flex items-center px-4 py-3 border-l-4 border-navy bg-gray-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <a href="/account/account-info" class="flex items-center px-4 py-3 border-l-4 border-orange bg-gray-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <span class="text-navy font-medium">Información Personal</span>
+                <span class="text-orange font-medium">Información Personal</span>
               </a>
               
               <a href="/account/properties" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
@@ -135,7 +135,7 @@
           <div class="mb-6">
             <p class="text-black mb-2 font-medium">Tu información personal está completada al {{ completeness }}%</p>
             <div class="w-full bg-gray-200 h-2 rounded-full">
-              <div class="bg-navy h-2 rounded-full" :style="{ width: completeness + '%' }"></div>
+              <div class="bg-orange h-2 rounded-full" :style="{ width: completeness + '%' }"></div>
             </div>
           </div>
 
@@ -146,7 +146,7 @@
               <div class="flex-grow">
                 <textarea 
                   v-model="formData.short_bio"
-                  class="w-full border border-gray-300 rounded-lg p-3 h-40 focus:ring-2 focus:ring-navy focus:border-navy" 
+                  class="w-full border border-gray-300 rounded-lg p-3 h-40 focus:ring-2 focus:ring-orange focus:border-orange" 
                   placeholder="Escribe tu biografía aquí. Se mostrará en tu perfil público."
                 ></textarea>
               </div>
@@ -172,7 +172,7 @@
                   <label class="block text-black text-sm mb-1">Nombre completo</label>
                   <div class="text-black font-medium">{{ user.first_name }} {{ user.last_name }}</div>
                 </div>
-                <button class="text-gray-500 hover:text-navy" @click="editField('name')">
+                <button class="text-gray-500 hover:text-orange" @click="editField('name')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -187,7 +187,7 @@
                   <label class="block text-black text-sm mb-1">Email</label>
                   <div class="text-black font-medium">{{ user.email }}</div>
                 </div>
-                <button class="text-gray-500 hover:text-navy" @click="editField('email')">
+                <button class="text-gray-500 hover:text-orange" @click="editField('email')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -202,7 +202,7 @@
                   <label class="block text-black text-sm mb-1">Número de teléfono</label>
                   <div class="text-black font-medium">{{ user.phone || 'No especificado' }}</div>
                 </div>
-                <button class="text-gray-500 hover:text-navy" @click="editField('phone')">
+                <button class="text-gray-500 hover:text-orange" @click="editField('phone')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -217,7 +217,7 @@
                   <label class="block text-black text-sm mb-1">Nombre de empresa</label>
                   <div class="text-gray-600">{{ user.company_name || 'No especificado' }}</div>
                 </div>
-                <button class="text-gray-500 hover:text-navy" @click="editField('company_name')">
+                <button class="text-gray-500 hover:text-orange" @click="editField('company_name')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -232,7 +232,7 @@
                   <label class="block text-black text-sm mb-1">Dirección</label>
                   <div class="text-gray-600">{{ user.address || 'No especificado' }}</div>
                 </div>
-                <button class="text-gray-500 hover:text-navy" @click="editField('address')">
+                <button class="text-gray-500 hover:text-orange" @click="editField('address')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
@@ -255,7 +255,7 @@
               <input 
                 v-model="formData.social_facebook"
                 type="text" 
-                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-navy focus:border-navy" 
+                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="Tu cuenta de Facebook"
               >
             </div>
@@ -270,7 +270,7 @@
               <input 
                 v-model="formData.social_linkedin"
                 type="text" 
-                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-navy focus:border-navy" 
+                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="Tu cuenta de LinkedIn"
               >
             </div>
@@ -285,7 +285,7 @@
               <input 
                 v-model="formData.social_twitter"
                 type="text" 
-                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-navy focus:border-navy" 
+                class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange focus:border-orange" 
                 placeholder="Tu cuenta de Twitter"
               >
             </div>
@@ -302,7 +302,7 @@
 <input 
               v-model="formData.social_instagram"
               type="text" 
-              class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-navy focus:border-navy" 
+              class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange focus:border-orange" 
               placeholder="Tu cuenta de Instagram">
 </div>
      <!-- Pinterest -->
@@ -315,7 +315,7 @@
            <input 
              v-model="formData.social_pinterest"
              type="text" 
-             class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-navy focus:border-navy" 
+             class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange focus:border-orange" 
              placeholder="Tu cuenta de Pinterest"
            >
          </div>
@@ -337,7 +337,7 @@
        
        <!-- Botones de acción -->
        <div class="flex items-center justify-between pt-4 mt-8 border-t border-gray-200">
-         <button @click="saveChanges" class="bg-navy text-white px-6 py-3 rounded-lg hover:bg-navy-dark transition">
+         <button @click="saveChanges" class="bg-orange text-white px-6 py-3 rounded-lg hover:bg-orange-dark transition">
            Guardar cambios
          </button>
          <button @click="showConfirmDelete = true" class="text-gray-600 hover:text-red-500 flex items-center">
@@ -370,7 +370,7 @@
   <!-- Modal para editar campos -->
   <div v-if="editingField" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-      <h3 class="text-xl font-bold text-navy mb-4">Editar {{ getFieldLabel(editingField) }}</h3>
+      <h3 class="text-xl font-bold text-orange mb-4">Editar {{ getFieldLabel(editingField) }}</h3>
 <div v-if="editingField === 'name'" class="mb-4">
     <label class="block text-gray-700 mb-2">Nombre</label>
     <input v-model="editForm.first_name" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2">
@@ -405,7 +405,7 @@
     <button @click="cancelEdit" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
       Cancelar
     </button>
-    <button @click="saveEdit" class="px-4 py-2 bg-navy text-white rounded hover:bg-navy-dark">
+    <button @click="saveEdit" class="px-4 py-2 bg-orange text-white rounded hover:bg-orange-dark">
       Guardar
     </button>
   </div>
@@ -911,43 +911,43 @@ onMounted(async () => {
 </script>
 <style>
 /* Colores personalizados */
-.bg-navy {
-  background-color: #0a3364;
+.bg-orange {
+  background-color: #fd5631;
 }
 
-.bg-navy-dark {
-  background-color: #072649;
+.bg-orange-dark {
+  background-color: #fd5631;
 }
 
-.text-navy {
-  color: #0a3364;
+.text-orange {
+  color: #fd5631;
 }
 
-.border-navy {
-  border-color: #0a3364;
+.border-orange {
+  border-color: #fd5631;
 }
 
-.hover\:bg-navy:hover {
-  background-color: #0a3364;
+.hover\:bg-orange:hover {
+  background-color: #fd5631;
 }
 
-.hover\:bg-navy-dark:hover {
-  background-color: #072649;
+.hover\:bg-orange-dark:hover {
+  background-color: #fd5631;
 }
 
-.hover\:text-navy:hover {
-  color: #0a3364;
+.hover\:text-orange:hover {
+  color: #fd5631;
 }
 
 /* Estilos de enfoque */
-.focus\:ring-navy:focus {
-  --tw-ring-color: #0a3364;
+.focus\:ring-orange:focus {
+  --tw-ring-color: #fd5631;
   --tw-ring-opacity: 0.5;
   box-shadow: 0 0 0 3px rgba(10, 51, 100, 0.5);
 }
 
-.focus\:border-navy:focus {
-  border-color: #0a3364;
+.focus\:border-orange:focus {
+  border-color: #fd5631;
 }
 
 /* Forzar texto negro para todos los elementos importantes */

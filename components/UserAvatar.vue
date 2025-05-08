@@ -15,7 +15,7 @@
     />
     <div 
       v-else 
-      class="flex items-center justify-center w-full h-full font-medium bg-blue-100 text-blue-800"
+      class="flex items-center justify-center w-full h-full font-medium bg-orange-100 text-orange-800"
     >
       {{ initials }}
     </div>

@@ -7,12 +7,12 @@
     "module": true,
     "resourceType": "script"
   },
-  "C:/Users/carlo/OneDrive/Escritorio/OASIS/client/node_modules/nuxt/dist/app/entry.js": {
+  "C:/Users/xRivera27/Documents/Ceutec/II Q2025/Tecnologia Emergente/En La Ceiba Frontend/enlaceibafrontend/node_modules/nuxt/dist/app/entry.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
     "isEntry": true,
-    "file": "C:/Users/carlo/OneDrive/Escritorio/OASIS/client/node_modules/nuxt/dist/app/entry.js"
+    "file": "C:/Users/xRivera27/Documents/Ceutec/II Q2025/Tecnologia Emergente/En La Ceiba Frontend/enlaceibafrontend/node_modules/nuxt/dist/app/entry.js"
   }
 }

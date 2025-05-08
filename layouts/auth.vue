@@ -15,7 +15,7 @@
         
         <!-- Logo -->
         <div class="flex justify-center mb-8">
-          <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">OASIS</h1>
+          <h1 class="text-3xl font-bold text-orange-600 dark:text-orange-400">OASIS</h1>
         </div>
         
         <!-- Auth Content -->
@@ -25,7 +25,7 @@
         
         <!-- Back to home -->
         <div class="mt-6 text-center">
-          <NuxtLink to="/" class="text-blue-600 dark:text-blue-400 text-sm hover:underline">
+          <NuxtLink to="/" class="text-orange-600 dark:text-orange-400 text-sm hover:underline">
             Volver a la Página de Inicio
           </NuxtLink>
         </div>

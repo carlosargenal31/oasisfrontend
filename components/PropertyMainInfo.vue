@@ -50,14 +50,14 @@
                   "Amet libero morbi venenatis ut est. Iaculis leo ultricies nunc id ante adipiscing. Vel metus odio at faucibus ac. Neque id placerat et id ut."
                 </blockquote>
                 <h3 class="text-xl font-bold text-black">
-                  <a href="/agents" class="hover:text-blue-600 transition-colors">
+                  <a href="/agents" class="hover:text-orange-600 transition-colors">
                     Kristin Watson
                   </a>
                 </h3>
                 <p class="text-gray-700">Imperial Property Group {{ property.status === 'for-rent' ? 'Rental' : 'Sales' }} Agent</p>
                 <div class="flex mt-4 space-x-2">
-                  <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                  <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                  <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                  <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                   <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
                 </div>
               </div>
@@ -65,7 +65,7 @@
                 <div class="flex text-yellow-500">
                   <span>★★★★★</span>
                 </div>
-                <a href="/agents" class="text-gray-700 text-sm hover:text-blue-600 transition-colors">
+                <a href="/agents" class="text-gray-700 text-sm hover:text-orange-600 transition-colors">
                   24 reviews
                 </a>
               </div>

@@ -34,9 +34,9 @@ Instrucciones:
             <h2 class="text-xl font-bold text-gray-900 mb-4">Map View</h2>
             
             <!-- Simulación de mapa con propiedades -->
-            <div class="w-full h-full relative bg-blue-50 rounded-lg overflow-hidden">
+            <div class="w-full h-full relative bg-orange-50 rounded-lg overflow-hidden">
               <!-- Background mapa -->
-              <div class="absolute inset-0 bg-opacity-40 bg-blue-100">
+              <div class="absolute inset-0 bg-opacity-40 bg-orange-100">
                 <!-- Líneas de cuadrícula simulando calles -->
                 <div class="grid-lines"></div>
                 
@@ -294,7 +294,7 @@ Instrucciones:
   }
   
   .sale-marker .marker-dot {
-    background-color: #3b82f6;
+    background-color: #fd5631;
   }
   
   .property-tooltip {
@@ -396,6 +396,6 @@ Instrucciones:
   }
   
   .sale-dot {
-    background-color: #3b82f6;
+    background-color: #fd5631;
   }
   </style>

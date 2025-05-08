@@ -9,13 +9,13 @@
         <button 
           v-if="!hideAddButton" 
           @click="$emit('add-review')" 
-          class="btn-primary text-white bg-blue-800 hover:bg-blue-900 py-2 px-4 rounded"
+          class="btn-primary text-white bg-orange-800 hover:bg-orange-900 py-2 px-4 rounded"
         >
           <span class="material-icons align-middle mr-1">edit</span>Añadir reseña
         </button>
         <!-- Indicador de carga -->
       <div v-if="loading" class="flex justify-center py-4">
-        <div class="spinner border-4 border-gray-200 border-t-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+        <div class="spinner border-4 border-gray-200 border-t-orange-500 rounded-full w-8 h-8 animate-spin"></div>
       </div>
       
       <!-- Mensaje de no hay reseñas -->
@@ -41,7 +41,7 @@
         </div>
         <p class="text-gray-700 mb-3">{{ review.comment }}</p>
         <div class="flex items-center">
-          <button @click="handleLike(review)" class="like-button flex items-center text-gray-500 hover:text-blue-500">
+          <button @click="handleLike(review)" class="like-button flex items-center text-gray-500 hover:text-orange-500">
             <span class="material-icons align-middle mr-1">thumb_up</span>
             <span>({{ review.likes || 0 }})</span>
           </button>
@@ -69,7 +69,7 @@
             <button 
               @click="currentPage = page"
               class="px-3 py-2 border-t border-b border-gray-300 text-sm"
-              :class="currentPage === page ? 'bg-blue-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+              :class="currentPage === page ? 'bg-orange-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
             >
               {{ page }}
             </button>

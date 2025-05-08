@@ -3,7 +3,7 @@
       <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Propiedades Destacadas</h2>
-          <router-link to="/properties" class="text-blue-900 font-semibold flex items-center hover:underline">
+          <router-link to="/properties" class="text-orange-900 font-semibold flex items-center hover:underline">
             Ver todas
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -17,14 +17,14 @@
             <div class="relative">
               <img :src="property.image" :alt="property.title" class="w-full h-56 object-cover">
               <div class="absolute top-4 left-4">
-                <span class="bg-blue-900 text-white text-xs font-bold px-3 py-1 rounded">{{ property.status }}</span>
+                <span class="bg-orange-900 text-white text-xs font-bold px-3 py-1 rounded">{{ property.status }}</span>
                 <span v-if="property.isNew" class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded ml-2">Nuevo</span>
               </div>
             </div>
             
             <!-- Detalles de la propiedad -->
             <div class="p-6">
-              <div class="text-xl font-bold text-blue-900 mb-2">${{ property.price.toLocaleString() }}</div>
+              <div class="text-xl font-bold text-orange-900 mb-2">${{ property.price.toLocaleString() }}</div>
               <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ property.title }}</h3>
               <div class="flex items-center text-gray-500 text-sm mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -183,7 +183,7 @@ watch(() => authStore.user, (newValue) => {
           <!-- Botón para añadir propiedad con el estilo de la imagen 2 -->
           <NuxtLink 
             to="/properties/add-property" 
-            class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors flex items-center"
+            class="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800 transition-colors flex items-center"
           >
             <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -201,7 +201,7 @@ watch(() => authStore.user, (newValue) => {
             <template v-if="!isAuthenticated">
               <button 
                 @click="redirectToLogin"
-                class="flex items-center text-blue-900 hover:text-blue-700"
+                class="flex items-center text-orange-900 hover:text-orange-700"
               >
                 <svg class="w-5 h-5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>

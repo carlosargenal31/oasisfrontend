@@ -26,7 +26,7 @@
       <!-- Badges -->
       <div class="absolute top-3 left-3">
         <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium">Verified</span>
-        <span v-if="isNew" class="bg-blue-500 ml-2 text-white px-2 py-1 rounded text-sm font-medium">New</span>
+        <span v-if="isNew" class="bg-orange-500 ml-2 text-white px-2 py-1 rounded text-sm font-medium">New</span>
       </div>
       
       <!-- Favorite button -->
@@ -45,7 +45,7 @@
         :key="index"
         @click="$emit('set-active', index)"
         class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden"
-        :class="{'border-2 border-blue-500': index === activeIndex, 'border border-gray-200': index !== activeIndex}"
+        :class="{'border-2 border-orange-500': index === activeIndex, 'border border-gray-200': index !== activeIndex}"
       >
         <img :src="image" :alt="'Thumbnail ' + (index + 1)" class="w-full h-full object-cover" />
       </div>

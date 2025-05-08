@@ -4,14 +4,14 @@
   <div class="container mx-auto px-4 py-8 bg-white property-page pt-20">
     <!-- Estado de carga -->
     <div v-if="isLoading" class="flex justify-center items-center min-h-[600px]">
-      <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-10 h-10 animate-spin"></div>
+      <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-10 h-10 animate-spin"></div>
       <p class="text-xl text-black ml-4">Cargando detalles de la propiedad...</p>
     </div>
 
     <!-- Estado de error -->
     <div v-else-if="error" class="flex flex-col justify-center items-center min-h-[600px]">
       <p class="text-xl text-red-600 mb-4">{{ error }}</p>
-      <button @click="fetchPropertyData" class="bg-blue-800 text-white py-2 px-4 rounded hover:bg-blue-900">
+      <button @click="fetchPropertyData" class="bg-orange-800 text-white py-2 px-4 rounded hover:bg-orange-900">
         Intentar de nuevo
       </button>
     </div>
@@ -20,9 +20,9 @@
     <div v-else-if="property">
       <!-- Breadcrumb -->
       <div class="breadcrumb flex items-center mb-4 text-sm">
-        <a href="/" class="text-black hover:text-blue-800">Inicio</a>
+        <a href="/" class="text-black hover:text-orange-800">Inicio</a>
         <span class="mx-2 text-black">›</span>
-        <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-black hover:text-blue-800">
+        <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-black hover:text-orange-800">
           {{ property.status === 'for-rent' ? 'Propiedades en alquiler' : 'Propiedades en venta' }}
         </a>
         <span class="mx-2 text-black">›</span>
@@ -58,7 +58,7 @@
               :key="index"
               @click="setActiveImage(index)"
               class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden"
-              :class="{'border-2 border-blue-800': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
+              :class="{'border-2 border-orange-800': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
             >
               <img :src="image" :alt="'Miniatura ' + (index + 1)" class="w-full h-full object-cover" />
             </div>
@@ -120,7 +120,7 @@
         </p>
         
         <h3 class="text-xl font-semibold mb-1">
-          <a href="#" @click.prevent="viewHostProperties()" class="text-blue-800 hover:text-blue-900">
+          <a href="#" @click.prevent="viewHostProperties()" class="text-orange-800 hover:text-orange-900">
             {{ hostName }}
           </a>
         </h3>
@@ -146,7 +146,7 @@
 </div>
         
         <div class="flex items-center text-sm text-black mb-3">
-          <span class="material-icons text-blue-800 mr-1">home</span>
+          <span class="material-icons text-orange-800 mr-1">home</span>
           <span>{{ hostProperties.length || property.host_properties_count || 0 }} propiedades</span>
         </div>
         
@@ -179,7 +179,7 @@
   <span class="text-yellow-400 material-icons mr-2">star</span>
   <span class="text-2xl font-bold text-black">{{ averageRating }} ({{ reviews.length }} reseñas)</span>
   <div class="ml-auto">
-    <button @click="openReviewModal" class="bg-blue-800 hover:bg-blue-900 text-white py-2 px-4 rounded flex items-center">
+    <button @click="openReviewModal" class="bg-orange-800 hover:bg-orange-900 text-white py-2 px-4 rounded flex items-center">
       <span class="material-icons mr-1 text-white">edit</span>
       <span class="text-white">Añadir reseña</span>
     </button>
@@ -200,7 +200,7 @@
 
             <!-- Estado de carga -->
             <div v-if="loadingReviews" class="flex justify-center py-4">
-              <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-8 h-8 animate-spin"></div>
+              <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-8 h-8 animate-spin"></div>
             </div>
             
             <!-- Mensaje sin reseñas -->
@@ -208,7 +208,7 @@
               <p class="text-black mb-4">No hay reseñas disponibles para esta propiedad.</p>
               <button 
                 @click="openReviewModal" 
-                class="bg-blue-800 hover:bg-blue-900 text-white py-2 px-4 rounded"
+                class="bg-orange-800 hover:bg-orange-900 text-white py-2 px-4 rounded"
               >
                 <span class="material-icons align-middle mr-1">edit</span>Sé el primero en dejar una reseña
               </button>
@@ -234,7 +234,7 @@
                     </div>
                     <p class="text-black mb-3">{{ review.comment }}</p>
                     <div class="flex items-center">
-                      <button @click="handleLikeReview(review)" class="flex items-center text-black hover:text-blue-800 mr-4">
+                      <button @click="handleLikeReview(review)" class="flex items-center text-black hover:text-orange-800 mr-4">
                         <span class="material-icons mr-1 text-sm">thumb_up</span>
                         <span>({{ review.likes || 0 }})</span>
                       </button>
@@ -255,7 +255,7 @@
                   @click="currentPage > 1 && (currentPage--)"
                   :disabled="currentPage === 1"
                   class="mx-1 px-3 py-1 rounded"
-                  :class="currentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                  :class="currentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-orange-800 text-white hover:bg-orange-900'"
                 >
                   Anterior
                 </button>
@@ -265,7 +265,7 @@
                   :key="page" 
                   @click="currentPage = page"
                   class="mx-1 px-3 py-1 rounded"
-                  :class="currentPage === page ? 'bg-blue-900 text-white' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                  :class="currentPage === page ? 'bg-orange-900 text-white' : 'bg-orange-800 text-white hover:bg-orange-900'"
                 >
                   {{ page }}
                 </button>
@@ -274,7 +274,7 @@
                   @click="currentPage < totalPages && (currentPage++)"
                   :disabled="currentPage === totalPages"
                   class="mx-1 px-3 py-1 rounded"
-                  :class="currentPage === totalPages ? 'bg-gray-200 text-gray-500' : 'bg-blue-800 text-white hover:bg-blue-900'"
+                  :class="currentPage === totalPages ? 'bg-gray-200 text-gray-500' : 'bg-orange-800 text-white hover:bg-orange-900'"
                 >
                   Siguiente
                 </button>
@@ -288,7 +288,7 @@
           <!-- Insignias y Botones -->
           <div class="flex items-center mb-4">
             <span v-if="property.isVerified" class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Verificado</span>
-            <span v-if="property.isNew" class="bg-blue-800 text-white px-2 py-1 rounded text-sm font-medium mr-2">Nuevo</span>
+            <span v-if="property.isNew" class="bg-orange-800 text-white px-2 py-1 rounded text-sm font-medium mr-2">Nuevo</span>
             <span v-if="property.isFeatured" class="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium mr-2">Destacado</span>
             
             <!-- Botones de favorito y compartir -->
@@ -344,12 +344,12 @@
           </div>
           
           <!-- Botón de reserva/contacto -->
-<button @click="navigateToBooking" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-3 px-4 rounded mb-4 transition">
+<button @click="navigateToBooking" class="w-full bg-orange-800 hover:bg-orange-900 text-white font-medium py-3 px-4 rounded mb-4 transition">
   {{ property.status === 'for-rent' ? 'Renta Ya' : 'Compra Ya' }}
 </button>
           
           <!-- Enlace a FAQ -->
-          <a href="#" class="flex items-center justify-center text-blue-800 hover:text-blue-900 mb-6">
+          <a href="#" class="flex items-center justify-center text-orange-800 hover:text-orange-900 mb-6">
             <span class="material-icons mr-2">help</span>
             Preguntas frecuentes
           </a>
@@ -359,7 +359,7 @@
             <h3 class="amenities-title text-xl font-bold text-black mb-4">Comodidades</h3>
             <div class="grid grid-cols-2 gap-y-3">
               <div v-for="(amenity, index) in property.amenities" :key="index" class="flex items-center">
-                <span class="material-icons mr-2 text-blue-800">{{ getAmenityIcon(amenity) }}</span>
+                <span class="material-icons mr-2 text-orange-800">{{ getAmenityIcon(amenity) }}</span>
                 <span class="text-black">{{ translateAmenity(amenity) }}</span>
               </div>
             </div>
@@ -374,7 +374,7 @@
               
               <!-- Botón para abrir Google Maps -->
               <div class="absolute bottom-3 right-3">
-                <a :href="getGoogleMapsUrl(property)" target="_blank" class="bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-900 transition-colors flex items-center">
+                <a :href="getGoogleMapsUrl(property)" target="_blank" class="bg-orange-800 text-white py-2 px-4 rounded-md hover:bg-orange-900 transition-colors flex items-center">
                   <span class="material-icons mr-2">directions</span>
                   Cómo llegar
                 </a>
@@ -391,7 +391,7 @@
   <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
   <div class="mr-4 pr-4 border-r border-gray-200">Nº anuncio: <b class="text-black">{{ property.id }}</b></div>
   <div class="flex items-center">
-    <span class="material-icons mr-1 text-blue-800">visibility</span>
+    <span class="material-icons mr-1 text-orange-800">visibility</span>
     Vistas: <b class="text-black ml-1">{{ property.views || viewCount }}</b>
   </div>
 </div>
@@ -402,13 +402,13 @@
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
           <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
-          <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-blue-800 flex items-center">
+          <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-orange-800 flex items-center">
             Ver todas <span class="ml-1">→</span>
           </a>
         </div>
         
         <div v-if="isLoadingSimilar" class="flex justify-center py-8">
-          <div class="spinner border-4 border-gray-200 border-t-blue-800 rounded-full w-8 h-8 animate-spin"></div>
+          <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-8 h-8 animate-spin"></div>
         </div>
         
         <div v-else-if="similarProperties.length === 0" class="text-center py-8 text-black">
@@ -421,13 +421,13 @@
               <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
               <div class="absolute top-3 left-3">
                 <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
-                <span v-if="listing.isNew" class="bg-blue-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
+                <span v-if="listing.isNew" class="bg-orange-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
                 <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
               </div>
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-blue-800' : 'text-green-500'">
+              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-orange-800' : 'text-green-500'">
                 {{ listing.status === 'for-sale' ? 'EN VENTA' : 'EN RENTA' }}
               </div>
               <h3 class="font-medium text-black mb-1">
@@ -486,7 +486,7 @@
             </div>
             <button 
   type="submit" 
-  class="w-full bg-blue-800 text-white font-medium py-2 px-4 rounded hover:bg-blue-900"
+  class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
   :disabled="submittingReview"
 >
   <span v-if="submittingReview" class="text-white">Enviando...</span>
@@ -1467,7 +1467,7 @@ onMounted(async () => {
 .property-page p,
 .property-page .description,
 .property-page .address,
-.property-page span:not(.material-icons):not(.text-white):not(.text-red-500):not(.text-green-500):not(.text-blue-800):not(.text-yellow-400) {
+.property-page span:not(.material-icons):not(.text-white):not(.text-red-500):not(.text-green-500):not(.text-orange-800):not(.text-yellow-400) {
   color: #000000 !important;
 }
 
@@ -1511,7 +1511,7 @@ onMounted(async () => {
 }
 
 .view-counter .material-icons {
-  color: #1e40af; /* blue-800 */
+  color: #fd5631; /* orange-800 */
   font-size: 18px;
   margin-right: 4px;
 }
@@ -1557,37 +1557,37 @@ label {
 }
 
 /* Estilos para botones principales */
-.bg-blue-800 {
-  background-color: #1e40af !important;
+.bg-orange-800 {
+  background-color: #fd5631 !important;
 }
 
-.bg-blue-900 {
-  background-color: #1e3a8a !important;
+.bg-orange-900 {
+  background-color: #fd5631 !important;
 }
 
-.hover\:bg-blue-800:hover {
-  background-color: #1e40af !important;
+.hover\:bg-orange-800:hover {
+  background-color: #fd5631 !important;
 }
 
-.hover\:bg-blue-900:hover {
-  background-color: #1e3a8a !important;
+.hover\:bg-orange-900:hover {
+  background-color: #fd5631 !important;
 }
 
-.text-blue-800 {
-  color: #1e40af !important;
+.text-orange-800 {
+  color: #fd5631 !important;
 }
 
-.hover\:text-blue-800:hover {
-  color: #1e40af !important;
+.hover\:text-orange-800:hover {
+  color: #fd5631 !important;
 }
 
-.hover\:text-blue-900:hover {
-  color: #1e3a8a !important;
+.hover\:text-orange-900:hover {
+  color: #fd5631 !important;
 }
 
 /* Estilos para miniaturas de imágenes */
-.border-blue-800 {
-  border-color: #1e40af !important;
+.border-orange-800 {
+  border-color: #fd5631 !important;
 }
 
 /* Estilos específicos para el formulario de reseña */
@@ -1603,7 +1603,7 @@ label {
 
 /* Estilos para el botón de envío de reseña */
 .submit-button {
-  background-color: #1e40af !important;
+  background-color: #fd5631 !important;
   color: white !important;
   font-weight: 500;
   padding: 0.5rem 1rem;
@@ -1612,7 +1612,7 @@ label {
 }
 
 .submit-button:hover {
-  background-color: #1e3a8a !important;
+  background-color: #fd5631 !important;
 }
 
 .submit-button:disabled {

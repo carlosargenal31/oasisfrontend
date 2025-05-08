@@ -2,13 +2,13 @@
     <div class="container mx-auto px-4 py-8 bg-white">
       <!-- Breadcrumb -->
       <div class="flex items-center text-sm text-gray-500 mb-4">
-        <a href="/" class="hover:text-blue-500">Home</a>
+        <a href="/" class="hover:text-orange-500">Home</a>
         <span class="mx-2">›</span>
-        <a href="/properties?type=rent" class="hover:text-blue-500">
+        <a href="/properties?type=rent" class="hover:text-orange-500">
           Property for rent
         </a>
         <span class="mx-2">›</span>
-        <span class="text-blue-500">Pine Apartments</span>
+        <span class="text-orange-500">Pine Apartments</span>
       </div>
   
       <!-- Main content - Two column layout with image on left, details on right -->
@@ -35,7 +35,7 @@
             <!-- Badges in top left -->
             <div class="absolute top-3 left-3">
               <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium">Verified</span>
-              <span class="bg-blue-500 ml-2 text-white px-2 py-1 rounded text-sm font-medium">New</span>
+              <span class="bg-orange-500 ml-2 text-white px-2 py-1 rounded text-sm font-medium">New</span>
             </div>
             
             <!-- Heart icon -->
@@ -51,7 +51,7 @@
               :key="index"
               @click="setActiveImage(index)"
               class="w-20 h-20 flex-shrink-0 cursor-pointer rounded overflow-hidden"
-              :class="{'border-2 border-blue-500': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
+              :class="{'border-2 border-orange-500': index === activeImageIndex, 'border border-gray-200': index !== activeImageIndex}"
             >
               <img :src="image" :alt="'Thumbnail ' + (index + 1)" class="w-full h-full object-cover" />
             </div>
@@ -111,8 +111,8 @@
                     <h3 class="text-xl font-bold text-gray-900">Kristin Watson</h3>
                     <p class="text-gray-500">Imperial Property Group Agent</p>
                     <div class="flex mt-4 space-x-2">
-                      <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-500">f</a>
-                      <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-400">t</a>
+                      <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-500">f</a>
+                      <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-400">t</a>
                       <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-500">i</a>
                     </div>
                   </div>
@@ -260,8 +260,8 @@
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold text-gray-900">Recently viewed</h2>
-          <a href="/properties" class="text-blue-500 flex items-center">
-            View all <span class="ml-1">→</span>
+          <a href="/properties" class="text-orange-500 flex items-center">
+            Ver todo <span class="ml-1">→</span>
           </a>
         </div>
         
@@ -272,12 +272,12 @@
               <img src="/api/placeholder/600x400?text=Apartment" alt="Property" class="w-full h-48 object-cover" />
               <div class="absolute top-3 left-3">
                 <span class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verified</span>
-                <span class="bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded block">New</span>
+                <span class="bg-orange-500 text-white px-2 py-1 text-xs font-medium rounded block">New</span>
               </div>
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium text-blue-500 uppercase mb-1">
+              <div class="text-sm font-medium text-orange-500 uppercase mb-1">
                 FOR RENT
               </div>
               <h3 class="font-medium text-gray-900 mb-1">
@@ -306,7 +306,7 @@
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium text-blue-500 uppercase mb-1">
+              <div class="text-sm font-medium text-orange-500 uppercase mb-1">
                 FOR SALE
               </div>
               <h3 class="font-medium text-gray-900 mb-1">
@@ -334,7 +334,7 @@
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium text-blue-500 uppercase mb-1">
+              <div class="text-sm font-medium text-orange-500 uppercase mb-1">
                 FOR RENT
               </div>
               <h3 class="font-medium text-gray-900 mb-1">
@@ -358,12 +358,12 @@
               <img src="/api/placeholder/600x400?text=Studio" alt="Property" class="w-full h-48 object-cover" />
               <div class="absolute top-3 left-3">
                 <span class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verified</span>
-                <span class="bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded block">New</span>
+                <span class="bg-orange-500 text-white px-2 py-1 text-xs font-medium rounded block">New</span>
               </div>
             </div>
             
             <div class="p-4">
-              <div class="text-sm font-medium text-blue-500 uppercase mb-1">
+              <div class="text-sm font-medium text-orange-500 uppercase mb-1">
                 FOR SALE
               </div>
               <h3 class="font-medium text-gray-900 mb-1">

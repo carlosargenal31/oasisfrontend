@@ -2,11 +2,11 @@
     <div class="container mx-auto px-4 py-8">
       <!-- Breadcrumb -->
       <div class="flex items-center text-sm text-gray-500 mb-6">
-        <a href="/" class="hover:text-blue-500">Home</a>
+        <a href="/" class="hover:text-orange-500">Home</a>
         <span class="mx-2">›</span>
-        <a href="/agents" class="hover:text-blue-500">Agents</a>
+        <a href="/agents" class="hover:text-orange-500">Agents</a>
         <span class="mx-2">›</span>
-        <span class="text-blue-500">{{ agent.name }}</span>
+        <span class="text-orange-500">{{ agent.name }}</span>
       </div>
   
       <!-- Agent Profile Header -->
@@ -43,8 +43,8 @@
               
               <!-- Social Media -->
               <div class="flex justify-center md:justify-start space-x-3">
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">f</a>
-                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-blue-600">t</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-orange-600">t</a>
                 <a href="#" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-pink-600">i</a>
               </div>
             </div>
@@ -64,7 +64,7 @@
               <img :src="property.image" alt="Property" class="w-full h-48 object-cover" />
               <div class="absolute top-3 left-3">
                 <span class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verified</span>
-                <span v-if="property.isNew" class="bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">New</span>
+                <span v-if="property.isNew" class="bg-orange-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">New</span>
                 <span v-if="property.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Featured</span>
               </div>
             </div>
@@ -90,10 +90,10 @@
           </div>
         </div>
         
-        <!-- View All Button -->
+        <!-- Ver todo Button -->
         <div class="mt-6 text-center">
-          <a href="#" class="inline-block px-6 py-3 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition">
-            View All Listings
+          <a href="#" class="inline-block px-6 py-3 bg-orange-800 text-white rounded-md hover:bg-orange-900 transition">
+            Ver todo Listings
           </a>
         </div>
       </div>
@@ -102,7 +102,7 @@
       <div>
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold text-black">Client Reviews</h2>
-          <button class="btn-primary text-white bg-blue-800 hover:bg-blue-900 py-2 px-4 rounded">
+          <button class="btn-primary text-white bg-orange-800 hover:bg-orange-900 py-2 px-4 rounded">
             Write a Review
           </button>
         </div>
@@ -130,7 +130,7 @@
         <div class="mt-6 flex justify-center">
           <nav class="inline-flex rounded-md shadow-sm" aria-label="Reviews Pagination">
             <a href="#" class="px-3 py-2 border border-gray-300 bg-white rounded-l-md text-sm">Previous</a>
-            <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-blue-800 text-white text-sm">1</a>
+            <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-orange-800 text-white text-sm">1</a>
             <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">2</a>
             <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">...</a>
             <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-sm">5</a>

@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   // Meta tags
   app: {
     head: {
-      title: 'OASIS - Real Estate',
+      title: 'En La Ceiba',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
