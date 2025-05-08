@@ -48,8 +48,10 @@
               @click="activeTab = 'filters'"
             >
               <span class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal-icon lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
-                 Filters
+                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Filters
               </span>
             </button>
           </div>
@@ -72,7 +74,6 @@
           <!-- Filters View -->
           <div v-else class="filters-view">
             
-            
             <!-- Location -->
             <div class="filter-section mb-5">
               <h3 class="filter-title text-base font-medium text-black mb-3">Ubicación</h3>
@@ -88,9 +89,9 @@
               </div>
             </div>
             
-            <!-- Property Type -->
+            <!-- Business Category (antes Property Type) -->
             <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de propiedad</h3>
+              <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de negocio</h3>
               <div class="property-types overflow-y-auto max-h-48">
                 <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
                   <input 
@@ -106,136 +107,21 @@
               </div>
             </div>
             
-            <!-- Price Range Component -->
+            <!-- Schedule (Horario) - Nuevo filtro para tu modelo -->
             <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Precio por mes</h3>
-              <div class="price-range-slider mb-4 relative">
-                <div class="relative w-full h-1 bg-gray-200 rounded-full my-6">
-                  <!-- Barra de rango de precio -->
-                  <div 
-                    class="absolute h-1 bg-red-500 rounded-full"
-                    :style="{
-                      left: getLeftPosition() + '%',
-                      width: getWidthPosition() + '%'
-                    }"
-                  ></div>
-                  
-                  <!-- Control deslizante mínimo -->
-                  <div 
-                    class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
-                    :style="{ left: getLeftPosition() + '%' }"
-                    @mousedown="startDragging('min')"
-                    @touchstart="startDragging('min')"
-                  ></div>
-                  
-                  <!-- Control deslizante máximo -->
-                  <div 
-                    class="absolute w-4 h-4 bg-red-500 rounded-full -mt-1.5 transform -translate-x-1/2 cursor-grab"
-                    :style="{ left: getRightPosition() + '%' }"
-                    @mousedown="startDragging('max')"
-                    @touchstart="startDragging('max')"
-                  ></div>
-                </div>
-              </div>
-              
-              <div class="flex items-center mt-4">
-                <div class="w-50 pe-2 flex-1">
-                  <div class="input-group flex items-center border border-gray-300 rounded-md">
-                    <span class="pl-3 text-gray-500">L</span>
-                    <input 
-                      type="number" 
-                      v-model.number="filters.minPrice" 
-                      @change="handleFilterChange"
-                      class="w-full p-2 border-none focus:ring-0 text-black font-medium"
-                    >
-                  </div>
-                </div>
-                <div class="text-muted mx-2">—</div>
-                <div class="w-50 ps-2 flex-1">
-                  <div class="input-group flex items-center border border-gray-300 rounded-md">
-                    <span class="pl-3 text-gray-500">L</span>
-                    <input 
-                      type="number" 
-                      v-model.number="filters.maxPrice" 
-                      @change="handleFilterChange"
-                      class="w-full p-2 border-none focus:ring-0 text-black font-medium"
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Bedrooms -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Habitaciones</h3>
-              <div class="flex space-x-2">
-                <label 
-                  v-for="option in bedOptions" 
-                  :key="option.value"
-                  :class="[
-                    'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                    filters.bedrooms === option.value 
-                      ? 'border-orange-500 text-white bg-orange-500' 
-                      : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
-                  ]"
-                >
-                  <input 
-                    type="radio" 
-                    :value="option.value" 
-                    v-model="filters.bedrooms"
-                    @change="handleFilterChange"
-                    class="sr-only"
-                  >
-                  {{ option.label }}
-                </label>
-              </div>
-            </div>
-            
-            <!-- Bathrooms -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Baños</h3>
-              <div class="flex space-x-2">
-                <label 
-                  v-for="option in bathOptions" 
-                  :key="option.value"
-                  :class="[
-                    'flex-1 py-2 px-2 text-center rounded-full border cursor-pointer text-sm',
-                    filters.bathrooms === option.value 
-                      ? 'border-orange-500 text-white bg-orange-500' 
-                      : 'border-gray-300 text-gray-700 bg-white hover:border-orange-500'
-                  ]"
-                >
-                  <input 
-                    type="radio" 
-                    :value="option.value" 
-                    v-model="filters.bathrooms"
-                    @change="handleFilterChange"
-                    class="sr-only"
-                  >
-                  {{ option.label }}
-                </label>
-              </div>
-            </div>
-            
-            <!-- Square Meters -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Metros cuadrados</h3>
-              <div class="flex items-center">
-                <input 
-                  type="number" 
-                  v-model="filters.minArea" 
+              <h3 class="filter-title text-base font-medium text-black mb-3">Horario</h3>
+              <div class="mb-3">
+                <select 
+                  v-model="filters.schedule" 
+                  class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" 
                   @change="handleFilterChange"
-                  placeholder="Mín"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
                 >
-                <span class="mx-3 text-gray-500">—</span>
-                <input 
-                  type="number" 
-                  v-model="filters.maxArea" 
-                  @change="handleFilterChange"
-                  placeholder="Máx"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-medium"
-                >
+                  <option value="">Cualquier horario</option>
+                  <option value="matutino">Matutino</option>
+                  <option value="vespertino">Vespertino</option>
+                  <option value="nocturno">Nocturno</option>
+                  <option value="24-horas">24 horas</option>
+                </select>
               </div>
             </div>
             
@@ -253,24 +139,6 @@
                     class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                   >
                   <label :for="amenity.value" class="ml-2 text-sm text-black">{{ amenity.label }}</label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Pets -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Mascotas</h3>
-              <div class="pets-list">
-                <div v-for="pet in petOptions" :key="pet.value" class="checkbox-item flex items-center mb-2">
-                  <input 
-                    type="checkbox" 
-                    :id="pet.value" 
-                    :value="pet.value" 
-                    v-model="filters.pets"
-                    @change="handleFilterChange"
-                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                  >
-                  <label :for="pet.value" class="ml-2 text-sm text-black">{{ pet.label }}</label>
                 </div>
               </div>
             </div>
@@ -328,8 +196,10 @@
                 @change="handleSortChange"
               >
                 <option value="newest">Más recientes</option>
-                <option value="price-low">Precio: de menor a mayor</option>
-                <option value="price-high">Precio: de mayor a menor</option>
+                <option value="views-high">Más vistas</option>
+                <option value="views-low">Menos vistas</option>
+                <option value="title-asc">Título A-Z</option>
+                <option value="title-desc">Título Z-A</option>
               </select>
             </div>
           </div>
@@ -389,48 +259,49 @@
               
               <!-- Property Details -->
               <div @click="navigateToProperty(property.id)" class="cursor-pointer">
-                <!-- For Rent Label - Keep this in red -->
+                <!-- Business Category Label -->
                 <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
-                  EN ALQUILER
+                  {{ property.category || 'NEGOCIO' }}
                 </div>
                 
-                <!-- Title and Area -->
+                <!-- Title -->
                 <h3 class="font-medium text-black px-4 mt-1">
-                  {{ property.title }} | {{ property.square_feet }} m²
+                  {{ property.title }}
                 </h3>
                 
                 <!-- Address -->
                 <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
                 
-                <!-- Price -->
-                <div class="flex items-center px-4 mt-2 mb-4">
+                <!-- Contact Information -->
+                <div class="flex items-center px-4 mt-2">
                   <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.8 10.9C9.53 10.31 8.8 9.7 8.8 8.75C8.8 7.66 9.81 6.9 11.5 6.9C13.28 6.9 13.94 7.75 14 9H16.21C16.14 7.28 15.09 5.7 13 5.19V3H10V5.16C8.06 5.58 6.5 6.84 6.5 8.77C6.5 11.08 8.41 12.23 11.2 12.9C13.7 13.5 14.2 14.38 14.2 15.31C14.2 16 13.71 17.1 11.5 17.1C9.44 17.1 8.63 16.18 8.52 15H6.32C6.44 17.19 8.08 18.42 10 18.83V21H13V18.85C14.95 18.48 16.5 17.35 16.5 15.3C16.5 12.46 14.07 11.49 11.8 10.9Z" fill="currentColor"/>
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
                   </svg>
-                  <span class="font-bold text-black">L {{ formatPrice(property.price) }}</span>
-                  <span class="text-sm text-gray-600 ml-1">/mes</span>
+                  <span class="text-sm text-gray-600">{{ property.email || 'Sin correo' }}</span>
                 </div>
                 
-                <!-- Features -->
-                <div class="grid grid-cols-3 border-t border-gray-200 text-sm text-gray-700">
-                  <div class="flex items-center justify-center py-2">
-                    <span class="mr-1">{{ property.bedrooms }}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7 13C8.66 13 10 11.66 10 10C10 8.34 8.66 7 7 7C5.34 7 4 8.34 4 10C4 11.66 5.34 13 7 13ZM19 7H11V14H3V7H1V20H3V17H21V20H23V11C23 8.79 21.21 7 19 7Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div class="flex items-center justify-center py-2 border-l border-r border-gray-200">
-                    <span class="mr-1">{{ property.bathrooms }}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7 7C7 5.9 6.1 5 5 5C3.9 5 3 5.9 3 7H7ZM9 3C9 1.9 8.1 1 7 1C5.9 1 5 1.9 5 3H9ZM15 3C15 1.9 14.1 1 13 1C11.9 1 11 1.9 11 3H15ZM21 3C21 1.9 20.1 1 19 1C17.9 1 17 1.9 17 3H21ZM23 21H21V19H19V21H17V19H15V21H13V19H11V21H9V19H7V21H5V19H3V21H1V17H23V21ZM21 15H3V9H21V15Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div class="flex items-center justify-center py-2">
-                    <span class="mr-1">{{ property.parkingSpaces || 0 }}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" fill="currentColor"/>
-                    </svg>
-                  </div>
+                <div class="flex items-center px-4 mt-1 mb-4">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-sm text-gray-600">{{ property.phone || 'Sin teléfono' }}</span>
+                </div>
+                
+                <!-- Schedule -->
+                <div class="flex items-center px-4 mt-1 mb-4">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
+                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-sm text-gray-600">{{ property.schedule || 'Horario no disponible' }}</span>
+                </div>
+                
+                <!-- Views Count -->
+                <div class="flex items-center justify-end px-4 py-2 border-t border-gray-200 bg-gray-50">
+                  <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-xs text-gray-500">{{ property.views || 0 }} vistas</span>
                 </div>
               </div>
             </div>
@@ -512,6 +383,7 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '~/store/user';
 import { useFavoritesStore } from '~/store/favorites';
+import { usePropertyService } from '~/services/propertyService';
 import axios from 'axios';
 
 export default {
@@ -523,6 +395,7 @@ export default {
     const route = useRoute();
     const userStore = useUserStore();
     const favoritesStore = useFavoritesStore();
+    const propertyService = usePropertyService();
 
     // Estado de búsqueda
     const searchQuery = ref('');
@@ -543,7 +416,7 @@ export default {
     const itemsPerPage = ref(9);
     const sortBy = ref('newest');
 
-    // Datos disponibles para selección - Lista actualizada y dinámica
+    // Datos disponibles para selección
     const availableCities = ref([
       'Tegucigalpa',
       'Roatán',
@@ -557,131 +430,62 @@ export default {
       'Tela'
     ]);
 
-    // Opciones de habitaciones
-    const bedOptions = [
-      { value: 'studio', label: 'Estudio' },
-      { value: '1', label: '1' },
-      { value: '2', label: '2' },
-      { value: '3', label: '3' },
-      { value: '4+', label: '4+' }
-    ];
-
-    // Opciones de baños
-    const bathOptions = [
-      { value: '1', label: '1' },
-      { value: '2', label: '2' },
-      { value: '3', label: '3' },
-      { value: '4', label: '4' }
-    ];
-
-    // Property Types
+    // Property Types (actualizados a categorías de negocios)
     const propertyTypes = [
-      { value: 'house', label: 'Casa' },
-      { value: 'apartment', label: 'Apartamento' },
-      { value: 'room', label: 'Habitación' },
-      { value: 'office', label: 'Oficina' },
-      { value: 'commercial', label: 'Comercial' },
-      { value: 'land', label: 'Terreno' },
-      { value: 'daily-rental', label: 'Alquiler diario' },
-      { value: 'new-building', label: 'Edificio nuevo' },
-      { value: 'parking-lot', label: 'Estacionamiento' }
+      { value: 'Gym', label: 'Gimnasio' },
+      { value: 'Balneario', label: 'Balneario' },
+      { value: 'Belleza', label: 'Belleza' },
+      { value: 'Futbol', label: 'Fútbol' },
+      { value: 'Motocross', label: 'Motocross' },
+      { value: 'Cafetería', label: 'Cafetería' },
+      { value: 'Restaurante', label: 'Restaurante' },
+      { value: 'Bar y restaurante', label: 'Bar y Restaurante' },
+      { value: 'Comida rápida', label: 'Comida Rápida' },
+      { value: 'Otro', label: 'Otro' },
+      { value: 'Repostería', label: 'Repostería' },
+      { value: 'Heladería', label: 'Heladería' },
+      { value: 'Bebidas', label: 'Bebidas' },
+      { value: 'Bar', label: 'Bar' },
+      { value: 'Hotel', label: 'Hotel' },
+      { value: 'Motel', label: 'Motel' },
+      { value: 'Casino', label: 'Casino' },
+      { value: 'Cine', label: 'Cine' },
+      { value: 'Videojuegos', label: 'Videojuegos' }
     ];
 
-    // Amenities options - Todas las comodidades solicitadas
+    // Amenities options - Lista reducida para categorías de negocios
     const amenities = [
-      { value: 'aerotermia', label: 'Aerotermia' },
-      { value: 'agua-incluida', label: 'Agua incluida' },
-      { value: 'aire-acondicionado', label: 'Aire acondicionado' },
-      { value: 'alarma', label: 'Alarma' },
-      { value: 'almacen', label: 'Almacén' },
-      { value: 'alta-rentabilidad', label: 'Alta rentabilidad' },
-      { value: 'amueblado', label: 'Amueblado' },
-      { value: 'armarios-empotrados', label: 'Armarios empotrados' },
-      { value: 'ascensor', label: 'Ascensor' },
-      { value: 'balcon', label: 'Balcón' },
-      { value: 'barbacoa', label: 'Barbacoa' },
-      { value: 'calefaccion', label: 'Calefacción' },
-      { value: 'chimenea', label: 'Chimenea' },
-      { value: 'cocina-equipada', label: 'Cocina equipada' },
-      { value: 'doble-altura', label: 'Doble altura' },
-      { value: 'domotica', label: 'Domótica' },
-      { value: 'edificable', label: 'Edificable' },
-      { value: 'eficiencia-energetica-a', label: 'Eficiencia energética A' },
-      { value: 'electricidad-incluida', label: 'Electricidad incluida' },
-      { value: 'escaparate', label: 'Escaparate' },
-      { value: 'esquina', label: 'Esquina' },
-      { value: 'falso-techo', label: 'Falso techo' },
-      { value: 'fibra-optica', label: 'Fibra óptica' },
-      { value: 'facil-maniobra', label: 'Fácil maniobra' },
-      { value: 'garaje', label: 'Garaje' },
-      { value: 'gimnasio', label: 'Gimnasio' },
-      { value: 'jacuzzi', label: 'Jacuzzi' },
-      { value: 'jardines', label: 'Jardines' },
-      { value: 'jardin', label: 'Jardín' },
-      { value: 'lavadora', label: 'Lavadora' },
-      { value: 'lavavajillas', label: 'Lavavajillas' },
-      { value: 'licencia-actividad', label: 'Licencia actividad' },
-      { value: 'locales-comerciales', label: 'Locales comerciales' },
-      { value: 'parking', label: 'Parking' },
-      { value: 'persiana-metalica', label: 'Persiana metálica' },
-      { value: 'piscina', label: 'Piscina' },
-      { value: 'piscina-comunitaria', label: 'Piscina comunitaria' },
-      { value: 'primera-linea-playa', label: 'Primera línea playa' },
-      { value: 'puerta-automatica', label: 'Puerta automática' },
-      { value: 'recepcion', label: 'Recepción' },
-      { value: 'reformado', label: 'Reformado' },
-      { value: 'ropa-cama', label: 'Ropa cama' },
-      { value: 'salas-reuniones', label: 'Salas reuniones' },
-      { value: 'salida-humos', label: 'Salida humos' },
-      { value: 'seguridad-24h', label: 'Seguridad 24h' },
-      { value: 'servicios-conectados', label: 'Servicios conectados' },
-      { value: 'suelo-radiante', label: 'Suelo radiante' },
-      { value: 'suelo-tecnico', label: 'Suelo técnico' },
-      { value: 'suministros-independientes', label: 'Suministros independientes' },
-      { value: 'terraza', label: 'Terraza' },
-      { value: 'totalmente-alquilado', label: 'Totalmente alquilado' },
-      { value: 'trastero', label: 'Trastero' },
-      { value: 'ubicacion-prime', label: 'Ubicación prime' },
-      { value: 'urbanizacion-privada', label: 'Urbanización privada' },
-      { value: 'urbanizado', label: 'Urbanizado' },
-      { value: 'vigilancia-24h', label: 'Vigilancia 24h' },
-      { value: 'vistas-mar', label: 'Vistas mar' },
-      { value: 'vistas-montana', label: 'Vistas montaña' },
-      { value: 'vistas-panoramicas', label: 'Vistas panorámicas' },
       { value: 'wifi', label: 'WiFi' },
-      { value: 'zona-infantil', label: 'Zona infantil' }
+      { value: 'aire-acondicionado', label: 'Aire acondicionado' },
+      { value: 'estacionamiento', label: 'Estacionamiento' },
+      { value: 'terraza', label: 'Terraza' },
+      { value: 'delivery', label: 'Delivery' },
+      { value: 'música-en-vivo', label: 'Música en vivo' },
+      { value: 'area-niños', label: 'Área de niños' },
+      { value: 'reservaciones', label: 'Reservaciones' },
+      { value: 'acceso-discapacitados', label: 'Acceso para discapacitados' },
+      { value: 'pago-tarjeta', label: 'Pago con tarjeta' }
     ];
-
-    // Pet options
-    const petOptions = [
-      { value: 'cats-allowed', label: 'Se permiten gatos' },
-      { value: 'dogs-allowed', label: 'Se permiten perros' }
-    ];
-
+    
     // Additional options
     const additionalOptions = [
       { value: 'verified', label: 'Verificado' },
       { value: 'featured', label: 'Destacado' },
-      { value: 'new', label: 'Nuevo' }
+      { value: 'new', label: 'Nuevo' },
+      { value: 'popular', label: 'Más visitados' }
     ];
 
-    // Filtros
+    // Filtros actualizados para modelo de negocio
     const filters = ref({
       city: '',
-      property_type: null,
-      minPrice: 0,   // Ajustados a lempiras (aprox. $200 USD)
-      maxPrice: 200000, // Ajustados a lempiras (aprox. $5,000 USD)
-      bedrooms: '',
-      bathrooms: '',
-      minArea: '',
-      maxArea: '',
+      property_type: null, // Ahora representa la categoría del negocio
+      schedule: '', // Horario del negocio
       amenities: [],
-      pets: [],
       additionalOptions: [],
-      status: 'for-rent' // Siempre en modo alquiler para esta página
+      status: 'active' // Estado activo para negocios
     });
-
-    // Categorías
+    
+    // Categorías actualizadas para tipos de negocios
     const categories = ref([
       { 
         id: 'accommodation',
@@ -756,21 +560,21 @@ export default {
       if (searchQuery.value.trim()) {
         // Actualizar filtros o realizar búsqueda específica
         console.log('Buscando:', searchQuery.value);
-        // Implementar lógica de búsqueda aquí
+        currentPage.value = 1;
         fetchProperties();
       }
     };
-
-    // Navegación a la página de propiedades en venta
-    const navigateToSale = () => {
-      router.push('/properties/sale');
+    
+    // Navegación a la página de detalles de propiedad
+    const navigateToProperty = (propertyId) => {
+      router.push(`/properties/${propertyId}`);
     };
-
+    
     // Verificar si una propiedad es favorita
     const isFavorite = (propertyId) => {
       return favoritesStore.isFavorite(propertyId);
     };
-
+    
     // Alternar estado de favorito
     const toggleFavorite = async (propertyId) => {
       try {
@@ -788,14 +592,39 @@ export default {
         console.error('Error toggling favorite:', error);
       }
     };
-
+    
     // Seleccionar categoría
     const selectCategory = (categoryId) => {
       console.log('Categoría seleccionada:', categoryId);
-      // Implementar lógica para filtrar por categoría
-      router.push(`/category/${categoryId}`);
+      // Filtrar por categoría
+      currentPage.value = 1;
+      
+      // Mapear ID de categoría a tipos de propiedad correspondientes
+      const categoryMapping = {
+        'food': ['Restaurante', 'Cafetería', 'Bar', 'Comida rápida', 'Repostería', 'Heladería', 'Bebidas', 'Bar y restaurante'],
+        'fitness': ['Gym', 'Futbol', 'Motocross'],
+        'nightlife': ['Bar', 'Casino', 'Bar y restaurante'],
+        'beauty': ['Belleza'],
+        'entertainment': ['Cine', 'Videojuegos', 'Casino']
+      };
+      
+      // Obtener tipos de propiedad según la categoría
+      const propertyTypesForCategory = categoryMapping[categoryId] || [];
+      
+      // Limpiar filtros actuales
+      resetFilters();
+      
+      // Aplicar los nuevos filtros
+      if (propertyTypesForCategory.length > 0) {
+        selectedPropertyTypes.value = propertyTypesForCategory;
+        updatePropertyTypeFilters();
+      }
+      
+      // Actualizar parámetros y buscar
+      updateQueryParams();
+      fetchProperties();
     };
-
+    
     // Actualizar los tipos de propiedad seleccionados
     const updatePropertyTypeFilters = () => {
       if (selectedPropertyTypes.value.length === 1) {
@@ -806,116 +635,6 @@ export default {
       } else {
         filters.value.property_type = null;
       }
-      handleFilterChange();
-    };
-
-    // Funciones para controlar el slider de precios
-    const getLeftPosition = () => {
-      const sliderMin = 0;
-      const sliderMax = 300000;
-      const range = sliderMax - sliderMin;
-      if (range <= 0) return 0;
-      
-      let position = ((filters.value.minPrice - sliderMin) / range) * 100;
-      // Asegurar que está dentro de los límites
-      position = Math.max(0, Math.min(position, 100));
-      return position;
-    };
-
-    const getRightPosition = () => {
-      const sliderMin = 0;
-      const sliderMax = 300000;
-      const range = sliderMax - sliderMin;
-      if (range <= 0) return 100;
-      
-      let position = ((filters.value.maxPrice - sliderMin) / range) * 100;
-      // Asegurar que está dentro de los límites
-      position = Math.max(0, Math.min(position, 100));
-      return position;
-    };
-
-    const getWidthPosition = () => {
-      return getRightPosition() - getLeftPosition();
-    };
-
-    // Variables para el control del slider
-    const draggingHandle = ref(null);
-
-    // Iniciar arrastre
-    const startDragging = (handle) => {
-      draggingHandle.value = handle;
-      document.addEventListener('mousemove', handleDrag);
-      document.addEventListener('mouseup', stopDragging);
-      document.addEventListener('touchmove', handleDrag, { passive: false });
-      document.addEventListener('touchend', stopDragging);
-      
-      // Cambiar estilo del cursor durante arrastre
-      document.body.style.cursor = 'grabbing';
-    };
-
-    // Manejar arrastre
-    const handleDrag = (e) => {
-      e.preventDefault();
-      
-      if (!draggingHandle.value) return;
-      
-      const sliderTrack = document.querySelector('.price-range-slider > div');
-      if (!sliderTrack) return;
-      
-      const trackRect = sliderTrack.getBoundingClientRect();
-      const trackWidth = trackRect.width;
-      
-      // Obtener posición X (manejar eventos táctiles y de ratón)
-      let clientX;
-      if (e.type === 'touchmove') {
-        clientX = e.touches[0].clientX;
-      } else {
-        clientX = e.clientX;
-      }
-      
-      // Calcular posición porcentual
-      let percentPosition = (clientX - trackRect.left) / trackWidth;
-      percentPosition = Math.min(Math.max(percentPosition, 0), 1);
-      
-      // Calcular precio según posición
-      const sliderMin = 0;
-      const sliderMax = 300000;
-      const priceRange = sliderMax - sliderMin;
-      let priceValue = Math.round((percentPosition * priceRange + sliderMin) / 500) * 500;
-      
-      // Actualizar precio mínimo o máximo según qué control se está arrastrando
-      if (draggingHandle.value === 'min') {
-        // Asegurar que el precio mínimo no exceda el máximo
-        filters.value.minPrice = Math.min(priceValue, filters.value.maxPrice - 500);
-      } else {
-        // Asegurar que el precio máximo no sea menor que el mínimo
-        filters.value.maxPrice = Math.max(priceValue, filters.value.minPrice + 500);
-      }
-    };
-
-    // Detener arrastre
-    const stopDragging = () => {
-      if (draggingHandle.value) {
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('mouseup', stopDragging);
-        document.removeEventListener('touchmove', handleDrag);
-        document.removeEventListener('touchend', stopDragging);
-        
-        // Restaurar estilo del cursor
-        document.body.style.cursor = '';
-        
-        // Aplicar cambios de filtro
-        handleFilterChange();
-        
-        // Resetear estado de arrastre
-        draggingHandle.value = null;
-      }
-    };
-
-    // Actualizar rango de precios desde el slider
-    const updatePriceRange = ({ min, max }) => {
-      filters.value.minPrice = min;
-      filters.value.maxPrice = max;
       handleFilterChange();
     };
 
@@ -930,8 +649,9 @@ export default {
     const handleSortChange = () => {
       currentPage.value = 1;
       updateQueryParams();
+      fetchProperties();
     };
-
+    
     // Actualizar los parámetros de la URL
     const updateQueryParams = () => {
       // Construir objeto de query
@@ -949,126 +669,115 @@ export default {
         }
       });
       
+      // Agregar búsqueda si existe
+      if (searchQuery.value) {
+        query.q = searchQuery.value;
+      }
+      
       // Actualizar URL sin refrescar la página
       router.replace({ query });
     };
 
     // Obtener propiedades de la API
     const fetchProperties = async () => {
-      loading.value = true;
-      error.value = null;
-      
-      try {
-        // Convertir filtros a formato API
-        const apiFilters = {
-          status: 'for-rent',
-          page: currentPage.value,
-          limit: itemsPerPage.value,
-          q: searchQuery.value // Agregar parámetro de búsqueda
-        };
-        
-        // Aplicar property_type
-        if (filters.value.property_type) {
-          apiFilters.property_type = filters.value.property_type;
-        }
-        
-        // Por estas (enviar el precio directamente):
-        if (filters.value.minPrice) {
-          apiFilters.minPrice = filters.value.minPrice;
-        }
-        if (filters.value.maxPrice) {
-          apiFilters.maxPrice = filters.value.maxPrice;
-        }
-        
-        // Aplicar filtros de ubicación
-        if (filters.value.city) {
-          apiFilters.city = filters.value.city;
-        }
-        
-        // Convertir bedrooms de "studio" a 0 para API
-        if (filters.value.bedrooms === 'studio') {
-          apiFilters.minBedrooms = 0;
-        } else if (filters.value.bedrooms) {
-          apiFilters.minBedrooms = parseInt(filters.value.bedrooms);
-        }
-        
-        // Convertir bathrooms para API
-        if (filters.value.bathrooms) {
-          apiFilters.minBathrooms = parseInt(filters.value.bathrooms);
-        }
-        
-        // Aplicar filtros de área
-        if (filters.value.minArea) {
-          apiFilters.minArea = parseInt(filters.value.minArea);
-        }
-        
-        if (filters.value.maxArea) {
-          apiFilters.maxArea = parseInt(filters.value.maxArea);
-        }
-        
-        // Aplicar filtros de amenidades
-        if (filters.value.amenities && filters.value.amenities.length > 0) {
-          apiFilters.amenities = filters.value.amenities;
-        }
-        
-        // Aplicar filtros de mascotas
-        if (filters.value.pets && filters.value.pets.length > 0) {
-          apiFilters.pets = filters.value.pets;
-        }
-        
-        // Aplicar opciones adicionales
-        if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
-          if (filters.value.additionalOptions.includes('verified')) {
-            apiFilters.verified = true;
-          }
-          
-          if (filters.value.additionalOptions.includes('featured')) {
-            apiFilters.featured = true;
-          }
-          
-          if (filters.value.additionalOptions.includes('new')) {
-            apiFilters.isNew = true;
-          }
-        }
-        
-        // Realizar petición a la API
-        const response = await axios.get(`${API_URL}/properties`, { 
-          params: apiFilters 
-        });
-        
-        if (response.data && response.data.success) {
-          properties.value = response.data.data.properties;
-          totalProperties.value = response.data.data.total;
-        } else {
-          error.value = 'No se pudieron cargar las propiedades';
-          properties.value = [];
-          totalProperties.value = 0;
-        }
-      } catch (err) {
-        console.error('Error al obtener propiedades:', err);
-        error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
-        properties.value = [];
-        totalProperties.value = 0;
-      } finally {
-        loading.value = false;
-      }
+  loading.value = true;
+  error.value = null;
+  
+  try {
+    // Convertir filtros a formato API
+    const apiFilters = {
+      page: currentPage.value,
+      limit: itemsPerPage.value
     };
+    
+    // Agregar parámetro de búsqueda solo si hay texto
+    if (searchQuery.value.trim()) {
+      apiFilters.q = searchQuery.value;
+    }
+    
+    // Aplicar category (antiguamente property_type)
+    if (filters.value.property_type) {
+      apiFilters.category = filters.value.property_type;
+    }
+    
+    // Aplicar filtros de ubicación
+    if (filters.value.city) {
+      apiFilters.address = filters.value.city; // Buscar por dirección en lugar de city
+    }
+    
+    // Aplicar filtro de horario
+    if (filters.value.schedule) {
+      apiFilters.schedule = filters.value.schedule;
+    }
+    
+    // Aplicar filtros de amenidades
+    if (filters.value.amenities && filters.value.amenities.length > 0) {
+      apiFilters.amenities = filters.value.amenities;
+    }
+    
+    // Aplicar opciones adicionales
+    if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
+      if (filters.value.additionalOptions.includes('verified')) {
+        apiFilters.verified = true;
+      }
+      
+      if (filters.value.additionalOptions.includes('featured')) {
+        apiFilters.featured = true;
+      }
+      
+      if (filters.value.additionalOptions.includes('new')) {
+        apiFilters.isNew = true;
+      }
+      
+      if (filters.value.additionalOptions.includes('popular')) {
+        apiFilters.popular = true;
+      }
+    }
+    
+    // Realizar petición a la API usando el servicio
+    const result = await propertyService.getProperties(apiFilters);
+console.log('Respuesta completa:', result); // Para debugging
 
-    // Ordenar propiedades
+if (result && result.success) {
+  // Intenta diferentes estructuras posibles
+  properties.value = result.properties || result.data?.properties || [];
+  totalProperties.value = result.data?.total || result.total || 0;
+  
+  console.log('Propiedades cargadas:', properties.value.length);
+} else{
+  error.value = 'No se pudieron cargar las propiedades';
+  properties.value = [];
+  totalProperties.value = 0;
+}
+  } catch (err) {
+    console.error('Error al obtener propiedades:', err);
+    error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
+    properties.value = [];
+    totalProperties.value = 0;
+  } finally {
+    loading.value = false;
+  }
+};
+
+    // Ordenar propiedades (actualizado para el nuevo modelo)
     const sortedProperties = computed(() => {
       let result = [...properties.value];
       
       if (sortBy.value === 'newest') {
         result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else if (sortBy.value === 'price-low') {
-        result.sort((a, b) => a.price - b.price);
-      } else if (sortBy.value === 'price-high') {
-        result.sort((a, b) => b.price - a.price);
+      } else if (sortBy.value === 'views-high') {
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
+      } else if (sortBy.value === 'views-low') {
+        result.sort((a, b) => (a.views || 0) - (b.views || 0));
+      } else if (sortBy.value === 'title-asc') {
+        result.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortBy.value === 'title-desc') {
+        result.sort((a, b) => b.title.localeCompare(a.title));
       }
       
       return result;
     });
-
+    
     // Paginación
     const totalPages = computed(() => {
       return Math.ceil(totalProperties.value / itemsPerPage.value);
@@ -1135,35 +844,24 @@ export default {
 
     // Resetear todos los filtros
     const resetFilters = () => {
-      searchQuery.value = '';
-      selectedPropertyTypes.value = [];
-      
-      filters.value = { 
-        status: 'for-rent', // Siempre en modo alquiler para esta página
-        city: '',
-        property_type: null,
-        minPrice: 0,   // Valores ajustados a lempiras
-        maxPrice: 200000, // Valores ajustados a lempiras
-        bedrooms: '',
-        bathrooms: '',
-        minArea: '',
-        maxArea: '',
-        amenities: [],
-        pets: [],
-        additionalOptions: []
-      };
-      
-      currentPage.value = 1;
-      updateQueryParams();
-      fetchProperties();
-    };
+  searchQuery.value = '';
+  selectedPropertyTypes.value = [];
+  
+  filters.value = { 
+    // Elimina el filtro de status
+    city: '',
+    property_type: null,
+    schedule: '',
+    amenities: [],
+    additionalOptions: []
+  };
+  
+  currentPage.value = 1;
+  updateQueryParams();
+  fetchProperties();
+};
 
-    // Navegar a página de detalles de propiedad
-    const navigateToProperty = (propertyId) => {
-      router.push(`/properties/${propertyId}`);
-    };
-
-    // Formatear precio con comas
+    // Formatear precio con comas (por si acaso hay campo price en el futuro)
     const formatPrice = (price) => {
       if (!price) return "0";
       return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -1179,7 +877,7 @@ export default {
       }
       
       // Establecer ordenación desde query
-      if (query.sort && ['newest', 'price-low', 'price-high'].includes(query.sort)) {
+      if (query.sort && ['newest', 'views-high', 'views-low', 'title-asc', 'title-desc'].includes(query.sort)) {
         sortBy.value = query.sort;
       }
       
@@ -1188,7 +886,7 @@ export default {
         currentPage.value = parseInt(query.page);
       }
       
-      // Establecer tipo de propiedad desde query
+      // Establecer tipo de propiedad/categoría desde query
       if (query.property_type) {
         if (typeof query.property_type === 'string') {
           filters.value.property_type = query.property_type;
@@ -1201,25 +899,12 @@ export default {
       
       // Establecer otros filtros desde query
       if (query.city) filters.value.city = query.city;
+      if (query.schedule) filters.value.schedule = query.schedule;
       
-      if (query.minPrice) filters.value.minPrice = parseInt(query.minPrice);
-      if (query.maxPrice) filters.value.maxPrice = parseInt(query.maxPrice);
-      
-      if (query.bedrooms) filters.value.bedrooms = query.bedrooms;
-      if (query.bathrooms) filters.value.bathrooms = query.bathrooms;
-      
-      if (query.minArea) filters.value.minArea = parseInt(query.minArea);
-      if (query.maxArea) filters.value.maxArea = parseInt(query.maxArea);
-      
-      // Parsear amenidades y mascotas si están en la URL
+      // Parsear amenidades si están en la URL
       if (query.amenities) {
         const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
         filters.value.amenities = amenitiesArray;
-      }
-      
-      if (query.pets) {
-        const petsArray = Array.isArray(query.pets) ? query.pets : [query.pets];
-        filters.value.pets = petsArray;
       }
       
       // Parsear opciones adicionales
@@ -1233,6 +918,10 @@ export default {
       
       if (query.isNew === 'true') {
         filters.value.additionalOptions.push('new');
+      }
+      
+      if (query.popular === 'true') {
+        filters.value.additionalOptions.push('popular');
       }
     };
 
@@ -1295,15 +984,11 @@ export default {
       currentPage,
       sortBy,
       filters,
-      draggingHandle,
       
       // Datos
       availableCities,
-      bedOptions,
-      bathOptions,
       propertyTypes,
       amenities,
-      petOptions,
       additionalOptions,
       categories,
       
@@ -1314,16 +999,9 @@ export default {
       
       // Métodos
       handleSearch,
-      navigateToSale,
       isFavorite,
       toggleFavorite,
       updatePropertyTypeFilters,
-      getLeftPosition,
-      getRightPosition,
-      getWidthPosition,
-      startDragging,
-      handleDrag,
-      stopDragging,
       handleFilterChange,
       handleSortChange,
       changePage,
