@@ -6,27 +6,27 @@
         <div class="filters-column w-full md:w-72 flex-shrink-0 bg-white pb-6 mt-16">
           <!-- Search Bar -->
           <div class="search-container mb-6">
-            <div class="relative flex items-center">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
-              >
-              <span class="absolute left-3 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                </svg>
-              </span>
-              <button 
-                class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
-                @click="handleSearch"
-              >
-                Search
-              </button>
-            </div>
-          </div>
+  <div class="relative flex items-center">
+    <input 
+  type="text" 
+  placeholder="Buscar por título, categoría o tipo..." 
+  class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+  v-model="searchQuery"
+  @keyup.enter="handleSearch"
+>
+    <span class="absolute left-3 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+    </span>
+   <button 
+  class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
+  @click="handleSearch"
+>
+  Buscar
+</button>
+  </div>
+</div>
           
           <!-- Tabs for toggling between Categories and Filters -->
           <div class="tabs flex mb-6 border-b">
@@ -191,16 +191,17 @@
             <div class="flex items-center space-x-2">
               <span class="text-gray-500">Ordenar por:</span>
               <select 
-                v-model="sortBy" 
-                class="sort-select py-1 px-3 border border-gray-300 rounded-md bg-white text-black"
-                @change="handleSortChange"
-              >
-                <option value="newest">Más recientes</option>
-                <option value="views-high">Más vistas</option>
-                <option value="views-low">Menos vistas</option>
-                <option value="title-asc">Título A-Z</option>
-                <option value="title-desc">Título Z-A</option>
-              </select>
+  v-model="sortBy" 
+  class="sort-select py-1 px-3 border border-gray-300 rounded-md bg-white text-black"
+  @change="handleSortChange"
+>
+  <option value="id-asc">Ascendente</option>
+  <option value="newest">Más recientes</option>
+  <option value="views-high">Más vistas</option>
+  <option value="views-low">Menos vistas</option>
+  <option value="title-asc">Título A-Z</option>
+  <option value="title-desc">Título Z-A</option>
+</select>
             </div>
           </div>
           
@@ -477,13 +478,14 @@ export default {
 
     // Filtros actualizados para modelo de negocio
     const filters = ref({
-      city: '',
-      property_type: null, // Ahora representa la categoría del negocio
-      schedule: '', // Horario del negocio
-      amenities: [],
-      additionalOptions: [],
-      status: 'active' // Estado activo para negocios
-    });
+  city: '',
+  property_type: null,
+  category: null, // Añadimos categoría como un filtro independiente
+  schedule: '',
+  amenities: [],
+  additionalOptions: [],
+  status: 'active'
+});
     
     // Categorías actualizadas para tipos de negocios
     const categories = ref([
@@ -556,14 +558,50 @@ export default {
     const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
     // Manejar la búsqueda
-    const handleSearch = () => {
-      if (searchQuery.value.trim()) {
-        // Actualizar filtros o realizar búsqueda específica
-        console.log('Buscando:', searchQuery.value);
-        currentPage.value = 1;
-        fetchProperties();
+    // En el componente PropertyFinder.vue
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    console.log('Buscando:', searchQuery.value);
+    currentPage.value = 1;
+    loading.value = true;
+    
+    // Especificar los campos donde queremos buscar
+    const searchFields = ['title', 'category', 'property_type'];
+    
+    propertyService.searchProperties(searchQuery.value, searchFields)
+      .then(result => {
+        console.log('Resultado de búsqueda:', result);
+        
+        if (result && result.success) {
+          properties.value = result.data?.properties || [];
+          totalProperties.value = result.data?.total || properties.value.length;
+          console.log('Propiedades encontradas:', properties.value.length);
+        } else {
+          error.value = 'No se pudieron cargar los resultados de búsqueda';
+          properties.value = [];
+          totalProperties.value = 0;
+        }
+      })
+      .catch(err => {
+        console.error('Error en búsqueda:', err);
+        error.value = 'Error al buscar propiedades';
+        properties.value = [];
+        totalProperties.value = 0;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    
+    // Actualizar la URL para reflejar la búsqueda
+    router.replace({ 
+      query: { 
+        ...route.query,
+        q: searchQuery.value,
+        page: 1
       }
-    };
+    });
+  }
+};
     
     // Navegación a la página de detalles de propiedad
     const navigateToProperty = (propertyId) => {
@@ -595,35 +633,39 @@ export default {
     
     // Seleccionar categoría
     const selectCategory = (categoryId) => {
-      console.log('Categoría seleccionada:', categoryId);
-      // Filtrar por categoría
-      currentPage.value = 1;
-      
-      // Mapear ID de categoría a tipos de propiedad correspondientes
-      const categoryMapping = {
-        'food': ['Restaurante', 'Cafetería', 'Bar', 'Comida rápida', 'Repostería', 'Heladería', 'Bebidas', 'Bar y restaurante'],
-        'fitness': ['Gym', 'Futbol', 'Motocross'],
-        'nightlife': ['Bar', 'Casino', 'Bar y restaurante'],
-        'beauty': ['Belleza'],
-        'entertainment': ['Cine', 'Videojuegos', 'Casino']
-      };
-      
-      // Obtener tipos de propiedad según la categoría
-      const propertyTypesForCategory = categoryMapping[categoryId] || [];
-      
-      // Limpiar filtros actuales
-      resetFilters();
-      
-      // Aplicar los nuevos filtros
-      if (propertyTypesForCategory.length > 0) {
-        selectedPropertyTypes.value = propertyTypesForCategory;
-        updatePropertyTypeFilters();
-      }
-      
-      // Actualizar parámetros y buscar
-      updateQueryParams();
-      fetchProperties();
-    };
+  console.log('Categoría seleccionada:', categoryId);
+  // Reiniciar la página al cambiar de categoría
+  currentPage.value = 1;
+  
+  // Limpiar filtros actuales
+  resetFilters();
+  
+  // Mapear el ID de categoría a la categoría real que se almacena en el backend
+  const categoryMapping = {
+    'accommodation': 'Alojamiento',
+    'food': 'Restaurante y bar',
+    'entertainment': 'Entretenimiento',
+    'shopping': 'Compras',
+    'art': 'Arte e Historia',
+    'beauty': 'Belleza',
+    'auto': 'Alquiler de Vehículos', 
+    'fitness': 'Deporte y Fitness',
+    'nightlife': 'Vida Nocturna',
+    'medicine': 'Salud'
+  };
+  
+  // Obtener la categoría real
+  const selectedCategory = categoryMapping[categoryId];
+  
+  if (selectedCategory) {
+    // Filtrar directamente por la categoría exacta en lugar de usar tipos de propiedad
+    filters.value.category = selectedCategory;
+    
+    // Actualizar parámetros de URL y buscar propiedades
+    updateQueryParams();
+    fetchProperties();
+  }
+};
     
     // Actualizar los tipos de propiedad seleccionados
     const updatePropertyTypeFilters = () => {
@@ -654,32 +696,33 @@ export default {
     
     // Actualizar los parámetros de la URL
     const updateQueryParams = () => {
-      // Construir objeto de query
-      const query = {
-        sort: sortBy.value,
-        page: currentPage.value
-      };
-      
-      // Agregar filtros no vacíos a la query
-      Object.entries(filters.value).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '' && 
-            !(Array.isArray(value) && value.length === 0) && 
-            key !== 'status') { // No necesitamos pasar status a la URL para esta página
-          query[key] = value;
-        }
-      });
-      
-      // Agregar búsqueda si existe
-      if (searchQuery.value) {
-        query.q = searchQuery.value;
-      }
-      
-      // Actualizar URL sin refrescar la página
-      router.replace({ query });
-    };
+  // Construir objeto de query
+  const query = {
+    sort: sortBy.value,
+    page: currentPage.value
+  };
+  
+  // Agregar filtros no vacíos a la query
+  Object.entries(filters.value).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== '' && 
+        !(Array.isArray(value) && value.length === 0) && 
+        key !== 'status') {
+      query[key] = value;
+    }
+  });
+  
+  // Agregar búsqueda si existe
+  if (searchQuery.value) {
+    query.q = searchQuery.value;
+  }
+  
+  // Actualizar URL sin refrescar la página
+  router.replace({ query });
+};
 
     // Obtener propiedades de la API
-    const fetchProperties = async () => {
+   // En el componente PropertyFinder.vue
+const fetchProperties = async () => {
   loading.value = true;
   error.value = null;
   
@@ -687,96 +730,100 @@ export default {
     // Convertir filtros a formato API
     const apiFilters = {
       page: currentPage.value,
-      limit: itemsPerPage.value
+      limit: itemsPerPage.value,
+      // Incluir el ordenamiento
+      sort: sortBy.value
     };
     
-    // Agregar parámetro de búsqueda solo si hay texto
-    if (searchQuery.value.trim()) {
-      apiFilters.q = searchQuery.value;
-    }
-    
-    // Aplicar category (antiguamente property_type)
-    if (filters.value.property_type) {
-      apiFilters.category = filters.value.property_type;
-    }
-    
-    // Aplicar filtros de ubicación
+    // Aplicar filtros adicionales
     if (filters.value.city) {
-      apiFilters.address = filters.value.city; // Buscar por dirección en lugar de city
+      apiFilters.city = filters.value.city;
     }
     
-    // Aplicar filtro de horario
     if (filters.value.schedule) {
       apiFilters.schedule = filters.value.schedule;
     }
     
-    // Aplicar filtros de amenidades
     if (filters.value.amenities && filters.value.amenities.length > 0) {
       apiFilters.amenities = filters.value.amenities;
     }
     
     // Aplicar opciones adicionales
-    if (filters.value.additionalOptions && filters.value.additionalOptions.length > 0) {
-      if (filters.value.additionalOptions.includes('verified')) {
-        apiFilters.verified = true;
-      }
-      
-      if (filters.value.additionalOptions.includes('featured')) {
-        apiFilters.featured = true;
-      }
-      
-      if (filters.value.additionalOptions.includes('new')) {
-        apiFilters.isNew = true;
-      }
-      
-      if (filters.value.additionalOptions.includes('popular')) {
-        apiFilters.popular = true;
-      }
+    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('verified')) {
+      apiFilters.verified = true;
     }
     
-    // Realizar petición a la API usando el servicio
-    const result = await propertyService.getProperties(apiFilters);
-console.log('Respuesta completa:', result); // Para debugging
-
-if (result && result.success) {
-  // Intenta diferentes estructuras posibles
-  properties.value = result.properties || result.data?.properties || [];
-  totalProperties.value = result.data?.total || result.total || 0;
-  
-  console.log('Propiedades cargadas:', properties.value.length);
-} else{
-  error.value = 'No se pudieron cargar las propiedades';
-  properties.value = [];
-  totalProperties.value = 0;
-}
+    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('featured')) {
+      apiFilters.featured = true;
+    }
+    
+    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('new')) {
+      apiFilters.isNew = true;
+    }
+    
+    let result;
+    
+    // Si hay término de búsqueda, usar la búsqueda
+    if (searchQuery.value.trim()) {
+      const searchFields = ['title', 'category', 'property_type'];
+      result = await propertyService.searchProperties(searchQuery.value, searchFields);
+    }
+    // Determinar qué método de servicio usar según los filtros si no hay búsqueda
+    else if (filters.value.category) {
+      // Si hay una categoría seleccionada, usar el método específico
+      result = await propertyService.getPropertiesByCategory(filters.value.category, apiFilters);
+    } else if (filters.value.property_type) {
+      // Si hay un tipo de propiedad seleccionado, usar el método general con filtro
+      apiFilters.property_type = filters.value.property_type;
+      result = await propertyService.getProperties(apiFilters);
+    } else {
+      // Si no hay filtros de categoría ni tipo, usar el método general
+      result = await propertyService.getProperties(apiFilters);
+    }
+    
+    console.log('Respuesta del API:', result);
+    
+    // Procesar resultados
+    if (result && result.success) {
+      // Asegurarse de acceder correctamente a los datos según la estructura de respuesta
+      properties.value = result.data?.properties || [];
+      totalProperties.value = result.data?.total || 0;
+      
+      console.log('Propiedades cargadas:', properties.value.length);
+    } else {
+      error.value = 'No se pudieron cargar las propiedades';
+      properties.value = [];
+      totalProperties.value = 0;
+    }
   } catch (err) {
     console.error('Error al obtener propiedades:', err);
-    error.value = 'No se pudieron cargar las propiedades. Por favor, inténtelo de nuevo.';
+    error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
     properties.value = [];
     totalProperties.value = 0;
   } finally {
     loading.value = false;
   }
 };
-
     // Ordenar propiedades (actualizado para el nuevo modelo)
     const sortedProperties = computed(() => {
-      let result = [...properties.value];
-      
-      if (sortBy.value === 'newest') {
-        result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else if (sortBy.value === 'views-high') {
-        result.sort((a, b) => (b.views || 0) - (a.views || 0));
-      } else if (sortBy.value === 'views-low') {
-        result.sort((a, b) => (a.views || 0) - (b.views || 0));
-      } else if (sortBy.value === 'title-asc') {
-        result.sort((a, b) => a.title.localeCompare(b.title));
-      } else if (sortBy.value === 'title-desc') {
-        result.sort((a, b) => b.title.localeCompare(a.title));
-      }
-      
-      return result;
-    });
+  let result = [...properties.value];
+  
+  if (sortBy.value === 'id-asc') {
+    result.sort((a, b) => a.id - b.id);
+  } else if (sortBy.value === 'newest') {
+    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } else if (sortBy.value === 'views-high') {
+    result.sort((a, b) => (b.views || 0) - (a.views || 0));
+  } else if (sortBy.value === 'views-low') {
+    result.sort((a, b) => (a.views || 0) - (b.views || 0));
+  } else if (sortBy.value === 'title-asc') {
+    result.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy.value === 'title-desc') {
+    result.sort((a, b) => b.title.localeCompare(a.title));
+  }
+  
+  return result;
+});
     
     // Paginación
     const totalPages = computed(() => {
@@ -868,62 +915,72 @@ if (result && result.success) {
     };
 
     // Inicializar filtros desde parámetros de URL
-    const initFromQueryParams = () => {
-      const query = route.query;
-      
-      // Establecer búsqueda desde query
-      if (query.q) {
-        searchQuery.value = query.q;
-      }
-      
-      // Establecer ordenación desde query
-      if (query.sort && ['newest', 'views-high', 'views-low', 'title-asc', 'title-desc'].includes(query.sort)) {
-        sortBy.value = query.sort;
-      }
-      
-      // Establecer página desde query
-      if (query.page && !isNaN(parseInt(query.page))) {
-        currentPage.value = parseInt(query.page);
-      }
-      
-      // Establecer tipo de propiedad/categoría desde query
-      if (query.property_type) {
-        if (typeof query.property_type === 'string') {
-          filters.value.property_type = query.property_type;
-          selectedPropertyTypes.value = [query.property_type];
-        } else if (Array.isArray(query.property_type)) {
-          filters.value.property_type = query.property_type;
-          selectedPropertyTypes.value = query.property_type;
-        }
-      }
-      
-      // Establecer otros filtros desde query
-      if (query.city) filters.value.city = query.city;
-      if (query.schedule) filters.value.schedule = query.schedule;
-      
-      // Parsear amenidades si están en la URL
-      if (query.amenities) {
-        const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
-        filters.value.amenities = amenitiesArray;
-      }
-      
-      // Parsear opciones adicionales
-      if (query.verified === 'true') {
-        filters.value.additionalOptions.push('verified');
-      }
-      
-      if (query.featured === 'true') {
-        filters.value.additionalOptions.push('featured');
-      }
-      
-      if (query.isNew === 'true') {
-        filters.value.additionalOptions.push('new');
-      }
-      
-      if (query.popular === 'true') {
-        filters.value.additionalOptions.push('popular');
-      }
-    };
+   // En el componente PropertyFinder.vue
+const initFromQueryParams = () => {
+  const query = route.query;
+  
+  // Establecer búsqueda desde query
+  if (query.q) {
+    searchQuery.value = query.q;
+  } else {
+    searchQuery.value = ''; // Limpiar búsqueda si no está en URL
+  }
+  
+  // Establecer ordenación desde query
+  if (query.sort && ['id-asc', 'newest', 'views-high', 'views-low', 'title-asc', 'title-desc'].includes(query.sort)) {
+    sortBy.value = query.sort;
+  }
+  
+  // Establecer página desde query
+  if (query.page && !isNaN(parseInt(query.page))) {
+    currentPage.value = parseInt(query.page);
+  }
+  
+  // Establecer categoría desde query
+  if (query.category) {
+    filters.value.category = query.category;
+  }
+  
+  // Establecer tipo de propiedad/categoría desde query
+  if (query.property_type) {
+    if (typeof query.property_type === 'string') {
+      filters.value.property_type = query.property_type;
+      selectedPropertyTypes.value = [query.property_type];
+    } else if (Array.isArray(query.property_type)) {
+      filters.value.property_type = query.property_type;
+      selectedPropertyTypes.value = query.property_type;
+    }
+  }
+  
+  // Establecer otros filtros desde query
+  if (query.city) filters.value.city = query.city;
+  if (query.schedule) filters.value.schedule = query.schedule;
+  
+  // Parsear amenidades si están en la URL
+  if (query.amenities) {
+    const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
+    filters.value.amenities = amenitiesArray;
+  }
+  
+  // Parsear opciones adicionales
+  filters.value.additionalOptions = [];
+  
+  if (query.verified === 'true') {
+    filters.value.additionalOptions.push('verified');
+  }
+  
+  if (query.featured === 'true') {
+    filters.value.additionalOptions.push('featured');
+  }
+  
+  if (query.isNew === 'true') {
+    filters.value.additionalOptions.push('new');
+  }
+  
+  if (query.popular === 'true') {
+    filters.value.additionalOptions.push('popular');
+  }
+};
 
     // Aplicar correcciones de color para estilo consistente
     const applyColorFix = () => {
