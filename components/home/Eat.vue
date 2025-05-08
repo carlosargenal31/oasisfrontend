@@ -25,7 +25,7 @@
         <!-- Where to eat (lado derecho) -->
         <div class="lg:w-2/3">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-3xl font-bold text-gray-900">Where to eat</h2>
+            <h2 class="text-3xl font-bold text-gray-900">¿Con hambre? Aquí se come bien en La Ceiba</h2>
             <a href="#" class="text-orange-700 font-medium flex items-center">
               Ver todo
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">

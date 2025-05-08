@@ -180,7 +180,7 @@ const _i9rMVBIuG6 = (function(nitro) {
 
 const rootDir = "C:/Users/carlo/OneDrive/Escritorio/EnLaCeiba/client";
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Find your dream property with OASIS - Your Real Estate Oasis"}],"link":[{"rel":"icon","type":"image/png","href":"/images/OASIS.png"},{"rel":"icon","type":"image/png","href":"/images/OASIS.png","sizes":"32x32"},{"rel":"icon","type":"image/png","href":"/images/OASIS.png","sizes":"16x16"},{"rel":"apple-touch-icon","href":"/images/OASIS.png"},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"}],"style":[],"script":[],"noscript":[],"title":"En La Ceiba"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"En La Ceiba"}],"link":[{"rel":"icon","type":"image/png","href":"/images/logolcb.png"},{"rel":"icon","type":"image/png","href":"/images/logolcb.png","sizes":"32x32"},{"rel":"icon","type":"image/png","href":"/images/logolcb.png","sizes":"16x16"},{"rel":"apple-touch-icon","href":"/images/logolcb.png"},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"}],"style":[],"script":[],"noscript":[],"title":"En La Ceiba"};
 
 const appRootTag = "div";
 

@@ -14,17 +14,17 @@ export default defineNuxtConfig({
         {
            hid: 'description',
            name: 'description',
-           content: 'Find your dream property with OASIS - Your Real Estate Oasis'
+           content: 'En La Ceiba'
          }
       ],
       link: [
         // Favicon básico (ruta corregida)
-        { rel: 'icon', type: 'image/png', href: '/images/OASIS.png' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png' },
         // Favicon para navegadores modernos (ruta corregida)
-        { rel: 'icon', type: 'image/png', href: '/images/OASIS.png', sizes: '32x32' },
-        { rel: 'icon', type: 'image/png', href: '/images/OASIS.png', sizes: '16x16' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png', sizes: '32x32' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png', sizes: '16x16' },
         // Para dispositivos Apple (ruta corregida)
-        { rel: 'apple-touch-icon', href: '/images/OASIS.png' },
+        { rel: 'apple-touch-icon', href: '/images/logolcb.png' },
         // Stylesheet
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' }
       ]

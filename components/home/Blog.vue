@@ -2,9 +2,9 @@
   <!-- Blog: Latest posts -->
   <section class="container mx-auto px-4 my-12 py-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-2">
-      <h2 class="text-2xl font-bold text-gray-900 mb-4 sm:mb-0">You may be also interested in</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 sm:mb-0">¿Te gustó esto? Hay más</h2>
       <NuxtLink class="text-orange-600 hover:text-orange-800 flex items-center" to="/blog/grid">
-        Go to blog
+        Explora nuestro blog
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>

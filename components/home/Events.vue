@@ -118,7 +118,7 @@ const changeMonth = (direction) => {
     <!-- Encabezado con título y filtros de fecha -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-        Upcoming events in Berlin
+        ¡La Ceiba está que arde! Próximos eventos
       </h2>
       
       <!-- Filtros de fecha -->

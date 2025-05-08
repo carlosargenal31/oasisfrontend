@@ -173,7 +173,7 @@ watch(() => authStore.user, (newValue) => {
         <!-- Logo with image -->
         <NuxtLink to="/" class="flex items-center">
           <!-- Logo - usando la imagen 3 o 4 -->
-          <img src="~/public/images/oasis-logo.png" alt="OASIS Real Estate" class="h-10 mr-2" />
+          <img src="~/public/images/logolcb.png" alt="OASIS Real Estate" class="h-10 mr-2" />
           <!-- También puedes añadir el texto "REAL ESTATE" como en la imagen 4 -->
         </NuxtLink>
 

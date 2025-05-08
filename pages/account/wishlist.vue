@@ -4,7 +4,7 @@
       <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange mx-auto mb-4"></div>
-          <p class="text-lg font-medium text-gray-700">Cargando lista de deseos...</p>
+          <p class="text-lg font-medium text-gray-700">Cargando favoritos...</p>
         </div>
       </div>
   
@@ -43,7 +43,7 @@
         <div class="flex items-center text-orange-500 text-sm">
           <a href="/" class="hover:text-orange">Inicio</a>
           <span class="mx-2">/</span>
-          <span class="text-gray-800">Lista de Deseos</span>
+          <span class="text-gray-800">Favoritos</span>
         </div>
       </div>
   
@@ -96,7 +96,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
-                  <span class="text-black">Mis Propiedades</span>
+                  <span class="text-black">Mis Comercios</span>
                 </a>
                 <a href="/account/bookings" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,7 +114,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                  <span class="text-orange font-medium">Lista de Deseos</span>
+                  <span class="text-orange font-medium">Favoritos</span>
                 </a>
                 
                 <a href="/logout" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
@@ -130,7 +130,7 @@
           <!-- Main Content Area -->
           <div class="w-full md:w-2/3">
             <div class="flex items-center justify-between mb-4">
-              <h1 class="text-2xl font-bold text-black">Lista de Deseos</h1>
+              <h1 class="text-2xl font-bold text-black">Favoritos</h1>
               <button 
                 v-if="favoritesStore.getFavoriteCount > 0"
                 @click="clearAllFavorites" 
@@ -153,13 +153,13 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">Tu lista de deseos está vacía</h3>
-              <p class="text-gray-600 mb-4">Agrega propiedades que te gusten para verlas aquí.</p>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">Tu favoritos está vacía</h3>
+              <p class="text-gray-600 mb-4">Agrega lugares que te gusten para verlas aquí.</p>
               <button @click="redirectToSearch" class="bg-orange text-white py-2 px-4 rounded-md hover:bg-orange-dark transition flex items-center mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                Buscar propiedades
+                Buscar lugares
               </button>
             </div>
   
@@ -309,7 +309,7 @@ const notification = ref({
   timeout: null
 });
 
-// Obtener propiedades favoritas
+// Obtener comercios favoritas
 const favoriteProperties = computed(() => {
   return favoritesStore.getFavoriteProperties;
 });
@@ -332,7 +332,7 @@ const contactAgent = (property) => {
   showNotification('info', `Contactando agente por propiedad: ${property.title}`);
 };
 
-// Redirigir a buscador de propiedades
+// Redirigir a buscador de comercios
 const redirectToSearch = () => {
   router.push('/properties/rent');
 };
@@ -450,7 +450,7 @@ onMounted(async () => {
     // Luego cargar favoritos
     await favoritesStore.fetchFavorites();
     
-    // Si solo tenemos IDs de propiedades, cargar detalles completos
+    // Si solo tenemos IDs de comercios, cargar detalles completos
     if (favoritesStore.favorites.length > 0) {
       await favoritesStore.fetchFavoriteDetails();
     }

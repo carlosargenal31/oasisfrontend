@@ -120,7 +120,7 @@ const toggleFavorite = (id) => {
     <!-- Encabezado de la sección -->
     <div class="flex flex-row justify-between items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800">
-        Where to stay in Berlin
+        Explora y descansa: hospedaje en La Ceiba
       </h2>
       <a href="/catalog" class="text-orange-600 font-medium flex items-center hover:underline">
         Ver todo

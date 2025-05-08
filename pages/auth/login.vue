@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white text-black p-6 rounded-lg shadow-lg max-w-md mx-auto">
     <div class="flex justify-center mb-6">
-      <img src="~/public/images/oasis-logo.png" alt="OASIS Logo" class="h-16" />
+      <img src="~/public/images/logolcb.png" alt="OASIS Logo" class="h-16" />
     </div>
     
     <h1 class="text-2xl font-bold mb-6 text-center text-black">Inicia sesión en tu cuenta</h1>
