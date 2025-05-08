@@ -4,14 +4,14 @@
     <nav class="mb-4">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Inicio</a></li>
-        <li class="breadcrumb-item active">Añadir Propiedad</li>
+        <li class="breadcrumb-item active">Añadir Comercio</li>
       </ol>
     </nav>
     
     <div class="row">
       <!-- Page content -->
       <div class="col-lg-8">
-        <h1 class="h2 mb-0">Añadir Propiedad</h1>
+        <h1 class="h2 mb-0">Añadir Comercio</h1>
         
         <!-- Mobile progress bar -->
         <div class="d-lg-none pt-3 mb-2">{{ progress }}% contenido completado</div>

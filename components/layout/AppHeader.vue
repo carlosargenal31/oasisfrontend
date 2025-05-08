@@ -12,7 +12,7 @@ const isMounted = ref(false); // Para resolver problemas de hidratación
 
 // Textos en español directamente
 const texts = {
-  addProperty: 'Añadir Propiedad',
+  addProperty: 'Añadir Comercio',
   signIn: 'Iniciar Sesión',
   personalInfo: 'Información Personal',
   passwordAndSecurity: 'Contraseña y Seguridad',
@@ -180,7 +180,7 @@ watch(() => authStore.user, (newValue) => {
         <!-- Acciones del header -->
         <div class="flex items-center gap-4">
           
-          <!-- Botón para añadir propiedad con el estilo de la imagen 2 -->
+          <!-- Botón para Añadir Comercio con el estilo de la imagen 2 -->
           <NuxtLink 
             to="/properties/add-property" 
             class="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800 transition-colors flex items-center"

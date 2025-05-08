@@ -19,12 +19,12 @@ export default defineNuxtConfig({
       ],
       link: [
         // Favicon básico (ruta corregida)
-        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb1.png' },
         // Favicon para navegadores modernos (ruta corregida)
-        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png', sizes: '32x32' },
-        { rel: 'icon', type: 'image/png', href: '/images/logolcb.png', sizes: '16x16' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb1.png', sizes: '32x32' },
+        { rel: 'icon', type: 'image/png', href: '/images/logolcb1.png', sizes: '16x16' },
         // Para dispositivos Apple (ruta corregida)
-        { rel: 'apple-touch-icon', href: '/images/logolcb.png' },
+        { rel: 'apple-touch-icon', href: '/images/logolcb1.png' },
         // Stylesheet
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' }
       ]

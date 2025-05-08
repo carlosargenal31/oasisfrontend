@@ -7,12 +7,12 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-        <span class="text-orange-800">Añadir Propiedad</span>
+        <span class="text-orange-800">Añadir Comercio</span>
       </div>
     </div>
 
     <div class="container px-6 pt-6 pb-10">
-      <h1 class="text-3xl font-bold mb-8">Añadir Propiedad</h1>
+      <h1 class="text-3xl font-bold mb-8">Añadir Comercio</h1>
       
       <div class="grid grid-cols-12 gap-8">
         <!-- Main content area -->

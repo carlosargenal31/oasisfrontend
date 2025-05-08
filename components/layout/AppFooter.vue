@@ -8,18 +8,16 @@
           <div class="flex flex-col md:flex-row justify-between">
             <div class="mb-8 md:mb-0 md:mr-12">
               <router-link class="inline-block mb-6" to="/">
-                <h1 class="text-xl font-bold text-orange-600 dark:text-orange-400">OASIS - Tu Aliado en Bienes Raíces</h1>
+                <h1 class="text-xl font-bold text-orange-600 dark:text-orange-400">En La Ceiba</h1>
               </router-link>
-              <p class="text-gray-600 dark:text-gray-400 mb-6">
-                En OASIS, hacemos que encontrar la propiedad perfecta sea una experiencia sencilla, transparente y placentera. Nuestro compromiso es ayudarte a tomar decisiones informadas y seguras en el mundo inmobiliario.
-              </p>
+              
               <ul class="space-y-3">
                 <li>
                   <a href="mailto:info@oasis-realestate.com" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    info@oasis-realestate.com
+                    info@enlaceiba.com
                   </a>
                 </li>
                 <li>
@@ -57,19 +55,16 @@
             <div class="grid grid-cols-2 gap-8">
               
               <div>
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Servicios</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Enlaces rápidos</h4>
                 <ul class="space-y-3">
                   <li>
-                    <router-link to="/properties/sale" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Compra de propiedades</router-link>
+                    <router-link to="/properties/sale" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Comercios</router-link>
                   </li>
                   <li>
-                    <router-link to="/properties/add-property" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Venta de propiedades</router-link>
+                    <router-link to="/properties/add-property" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Eventos</router-link>
                   </li>
                   <li>
-                    <router-link to="/properties/rent" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Alquiler de propiedades</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/account/account-info" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Administración de propiedades</router-link>
+                    <router-link to="/properties/rent" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Blog</router-link>
                   </li>
                 </ul>
               </div>
@@ -78,7 +73,7 @@
         </div>
         <div>
           <div>
-            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Contactanos</h4>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Contáctanos</h4>
             <div class="flex items-start mb-6">
               <div class="flex-shrink-0 mr-3 mt-1">
                 <svg class="h-5 w-5 text-orange-600 dark:text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,7 +105,7 @@
       
       <div class="text-center mt-10">
         <p class="text-gray-600 dark:text-gray-400 text-sm">
-          &copy; {{ new Date().getFullYear() }} OASIS Real Estate. All rights reserved.
+          &copy; {{ new Date().getFullYear() }} En La Ceiba. All rights reserved.
         </p>
         
       </div>

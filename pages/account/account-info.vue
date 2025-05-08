@@ -31,7 +31,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            Añadir propiedad
+            Añadir Comercio
           </button>
           <img class="h-10 w-10 rounded-full" :src="user.profile_image || '/img/default-avatar.png'" alt="Perfil de usuario">
         </div>
@@ -70,7 +70,7 @@
               </div>
             </div>
 
-            <!-- Botón añadir propiedad -->
+            <!-- Botón Añadir Comercio -->
 <div class="px-4 pb-4">
   <button 
     @click="redirectToAddProperty" 
@@ -79,7 +79,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="white">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
     </svg>
-    Añadir propiedad
+    Añadir Comercio
   </button>
 </div>
 
@@ -351,7 +351,7 @@ const logout = async () => {
   window.location.href = '/';
 };
 
-// Función para redirigir a la página de añadir propiedad
+// Función para redirigir a la página de Añadir Comercio
 const redirectToAddProperty = () => {
   window.location.href = '/properties/add-property';
 };
