@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { usePropertyService } from '~/services/propertyService';
+import EstrellaRating from '~/components/EstrellaRating.vue'; // Importamos el componente de estrellas
 
 // Inicializar el servicio de propiedades
 const propertyService = usePropertyService();
@@ -23,7 +24,7 @@ const loadAccommodations = async () => {
     // Llamada a la API para obtener propiedades de la categoría "Alojamiento"
     const result = await propertyService.getPropertiesByCategory('Alojamiento', {
       limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
-      sort: 'rating-high' // Ordenar por mayor calificación
+      sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero (ya que ordenaremos por rating después)
     });
     
     if (result && result.success) {
@@ -32,61 +33,35 @@ const loadAccommodations = async () => {
       // Transformar las propiedades al formato que necesitamos para el carrusel
       const properties = result.data.properties || [];
       
-      // Primero convertimos las propiedades al formato deseado
-      const transformedProperties = properties.map(property => ({
-        id: property.id,
-        name: property.title,
-        image: property.image || 'https://placehold.co/600x400?text=Sin+Imagen',
-        rating: property.average_rating !== undefined ? Number(property.average_rating) : null,
-        reviews: property.reviews_count || 0,
-        address: property.address || 'Dirección no disponible',
-        email: property.email || 'Sin correo',
-        phone: property.phone || 'Sin teléfono',
-        schedule: property.schedule || 'Horario no disponible',
-        isFavorite: false // Por defecto no es favorito
-      }));
-      
-      console.log('Propiedades transformadas:', transformedProperties);
-      
-      // Si no hay propiedades, mostramos un error
-      if (transformedProperties.length === 0) {
+      if (properties.length === 0) {
         console.warn('No se encontraron alojamientos en la respuesta de la API');
         error.value = 'No se encontraron alojamientos disponibles';
         accommodations.value = [];
       } else {
-        // Ahora cargamos las calificaciones desde la API para cada propiedad
-        const propertiesWithRatings = await Promise.all(
-          transformedProperties.map(async (property) => {
-            // Solo consultamos la API si la calificación no está definida
-            if (property.rating === null || property.rating === undefined) {
-              try {
-                console.log(`Cargando calificación para propiedad ${property.id}`);
-                const rating = await propertyService.getPropertyRating(property.id);
-                console.log(`Calificación obtenida para ${property.name}: ${rating}`);
-                property.rating = rating;
-              } catch (err) {
-                console.error(`Error al cargar calificación para ${property.name}:`, err);
-                property.rating = 0;
-              }
-            } else {
-              console.log(`La propiedad ${property.name} ya tiene calificación: ${property.rating}`);
-            }
-            return property;
-          })
-        );
+        // Primero convertimos las propiedades al formato deseado
+        const transformedProperties = properties.map(property => ({
+          id: property.id,
+          name: property.title,
+          image: property.image || 'https://placehold.co/600x400?text=Sin+Imagen',
+          rating: null, // Inicializamos rating como null para cargarlo después
+          reviews: property.reviews_count || 0,
+          address: property.address || 'Dirección no disponible',
+          email: property.email || 'Sin correo',
+          phone: property.phone || 'Sin teléfono',
+          schedule: property.schedule || 'Horario no disponible',
+          isFavorite: false // Por defecto no es favorito
+        }));
         
-        console.log('Propiedades con calificaciones:', propertiesWithRatings);
+        console.log('Propiedades transformadas:', transformedProperties);
         
-        // Ordenamos por calificación de mayor a menor
-        const sortedProperties = [...propertiesWithRatings].sort((a, b) => 
-          (b.rating || 0) - (a.rating || 0)
-        );
+        // Guardamos las propiedades en el estado
+        accommodations.value = transformedProperties;
         
-        console.log('Propiedades ordenadas por calificación:', 
-          sortedProperties.map(p => `${p.name}: ${p.rating}`)
-        );
+        // Cargamos calificaciones mediante la función especializada
+        await loadPropertyRatings();
         
-        accommodations.value = sortedProperties;
+        // Ordenamos por calificación después de cargar ratings
+        sortAccommodationsByRating();
       }
     } else {
       // Si hay un error en la respuesta
@@ -101,6 +76,64 @@ const loadAccommodations = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+// Función para cargar calificaciones de todas las propiedades
+const loadPropertyRatings = async () => {
+  if (accommodations.value.length === 0) return;
+  
+  try {
+    console.log('Cargando calificaciones para', accommodations.value.length, 'alojamientos');
+    
+    // Buscamos propiedades sin calificación
+    const propsToLoad = accommodations.value.filter(p => 
+      p.rating === undefined || p.rating === null
+    );
+    
+    console.log(`${propsToLoad.length} alojamientos necesitan cargar calificación`);
+    
+    // Para cada propiedad sin calificación, obtener su calificación
+    const promises = propsToLoad.map(async (prop) => {
+      try {
+        const rating = await propertyService.getPropertyRating(prop.id);
+        console.log(`Alojamiento ${prop.id} - ${prop.name} - Rating: ${rating}`);
+        
+        // Asegurar que rating sea un número (convertir si es necesario)
+        prop.rating = rating !== null && rating !== undefined ? Number(rating) : 0;
+      } catch (err) {
+        console.error(`Error al cargar rating para alojamiento ${prop.id}:`, err);
+        prop.rating = 0;
+      }
+    });
+    
+    await Promise.all(promises);
+    console.log('Calificaciones cargadas correctamente');
+    
+    // Comprobar que todos los alojamientos tienen calificación ahora
+    const missingRatings = accommodations.value.filter(p => 
+      p.rating === undefined || p.rating === null
+    ).length;
+    
+    if (missingRatings > 0) {
+      console.warn(`Aún hay ${missingRatings} alojamientos sin calificación`);
+    } else {
+      console.log('Todos los alojamientos tienen calificación asignada');
+    }
+  } catch (error) {
+    console.error('Error al cargar calificaciones:', error);
+  }
+};
+
+// Función para ordenar alojamientos por calificación
+const sortAccommodationsByRating = () => {
+  // Ordenamos por calificación de mayor a menor
+  accommodations.value.sort((a, b) => 
+    (b.rating || 0) - (a.rating || 0)
+  );
+  
+  console.log('Alojamientos ordenados por calificación:', 
+    accommodations.value.map(p => `${p.name}: ${p.rating}`)
+  );
 };
 
 // Función para ir al slide anterior
@@ -143,7 +176,8 @@ const toggleFavorite = (id) => {
   }
 };
 
-// Función que genera las estrellas de calificación
+// Función que genera las estrellas de calificación - mantenerla como referencia
+// aunque ya no la usemos directamente en el template
 const generateStars = (rating) => {
   const stars = [];
   const fullStars = Math.floor(rating || 0);
@@ -288,29 +322,18 @@ onMounted(() => {
             <!-- Dirección -->
             <p class="text-sm text-gray-600 mb-2">{{ accommodation.address }}</p>
             
-            <!-- Estrellas de calificación -->
-            <div class="flex items-center mb-3">
-              <!-- Renderizar estrellas según la calificación -->
-              <span v-for="(star, index) in generateStars(accommodation.rating)" :key="index" class="inline-block">
-                <svg v-if="star.type === 'full'" class="w-4 h-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-                <svg v-else-if="star.type === 'half'" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <defs>
-                    <linearGradient id="halfStarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="50%" stop-color="#FBBF24" />
-                      <stop offset="50%" stop-color="#D1D5DB" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="url(#halfStarGradient)" />
-                </svg>
-                <svg v-else class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-              </span>
+            <!-- Estrellas de calificación - Usando el componente EstrellaRating -->
+            <div class="flex items-center mb-3 estrella-rating-container" style="color: #FBBF24">
+              <!-- Para propósitos de depuración, muestra el valor del rating directamente (ocultar en producción) -->
+           
               
-              <!-- Mostrar valor numérico de calificación -->
-              <span class="ml-1 text-sm text-gray-600">({{ (accommodation.rating || 0).toFixed(1) }})</span>
+              <!-- Componente EstrellaRating con clases adicionales para forzar estilos -->
+              <div class="estrellas-wrapper" style="color: #FBBF24 !important;">
+                <estrella-rating 
+                  :calificacion="accommodation.rating || 0"
+                  :mostrarNumero="true"
+                />
+              </div>
             </div>
             
             <!-- Datos de contacto -->
@@ -328,14 +351,6 @@ onMounted(() => {
               <span class="text-sm text-gray-600">{{ accommodation.phone }}</span>
             </div>
             
-            <!-- Reseñas -->
-            <div class="flex items-center mt-2">
-              <svg class="mr-2 text-gray-500 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span class="text-sm text-gray-600" v-if="accommodation.reviews > 0">{{ accommodation.reviews }} reseñas</span>
-              <span class="text-sm text-gray-600" v-else>Sin reseñas</span>
-            </div>
           </div>
         </div>
       </div>
@@ -394,12 +409,23 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
-/* Estrellas */
-.text-yellow-400 {
+/* Estilos para el contenedor de estrellas */
+.estrella-rating-container {
   color: #FBBF24 !important;
 }
 
-.text-gray-300 {
+.estrellas-wrapper :deep(.text-yellow-400) {
+  color: #FBBF24 !important;
+}
+
+.estrellas-wrapper :deep(.text-gray-300) {
   color: #D1D5DB !important;
+}
+
+/* Asegurar que las estrellas sean visibles */
+.estrellas-wrapper :deep(svg) {
+  min-width: 16px;
+  min-height: 16px;
+  color: inherit;
 }
 </style>

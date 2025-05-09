@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { usePropertyService } from '~/services/propertyService';
+import EstrellaRating from '~/components/EstrellaRating.vue'; // Importamos el componente de estrellas
 
 // Inicializar el servicio de propiedades
 const propertyService = usePropertyService();
@@ -10,9 +11,16 @@ const restaurants = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
-// Para la navegación del slider
-const currentIndex = ref(0);
-const visibleCount = ref(3); // Número de elementos visibles a la vez en pantallas grandes
+// Obtener restaurantes para cada columna
+const leftColumnRestaurants = computed(() => {
+  if (restaurants.value.length === 0) return [];
+  return restaurants.value.slice(0, 3); // Obtener los primeros 3 restaurantes para la columna izquierda
+});
+
+const rightColumnRestaurants = computed(() => {
+  if (restaurants.value.length === 0) return [];
+  return restaurants.value.slice(3, 6); // Obtener los siguientes 3 restaurantes para la columna derecha
+});
 
 // Función para cargar los restaurantes desde la API
 const loadRestaurants = async () => {
@@ -22,73 +30,44 @@ const loadRestaurants = async () => {
   try {
     // Llamada a la API para obtener propiedades de la categoría "Restaurante y bar"
     const result = await propertyService.getPropertiesByCategory('Restaurante y bar', {
-      limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
-      sort: 'rating-high' // Ordenar por mayor calificación
+      limit: 6, // Solo necesitamos 6 para el grid estático
+      sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero
     });
     
     if (result && result.success) {
       console.log('Resultado de la API:', result.data);
       
-      // Transformar las propiedades al formato que necesitamos para el carrusel
+      // Transformar las propiedades al formato que necesitamos para el grid
       const properties = result.data.properties || [];
       
-      // Primero convertimos las propiedades al formato deseado
-      const transformedProperties = properties.map(property => ({
-        id: property.id,
-        name: property.title,
-        image: property.image || 'https://placehold.co/600x400?text=Sin+Imagen',
-        rating: property.average_rating !== undefined ? Number(property.average_rating) : null,
-        reviews: property.reviews_count || 0,
-        address: property.address || 'Dirección no disponible',
-        email: property.email || 'Sin correo',
-        phone: property.phone || 'Sin teléfono',
-        priceLevel: property.price_level || 1, // Nivel de precio (1-3)
-        schedule: property.schedule || 'Horario no disponible',
-        distanceFromCenter: property.distance_from_center || Math.floor(Math.random() * 30) / 10, // Distancia desde el centro en km
-        isFavorite: false // Por defecto no es favorito
-      }));
-      
-      console.log('Propiedades transformadas:', transformedProperties);
-      
-      // Si no hay propiedades, mostramos un error
-      if (transformedProperties.length === 0) {
+      if (properties.length === 0) {
         console.warn('No se encontraron restaurantes en la respuesta de la API');
         error.value = 'No se encontraron restaurantes disponibles';
         restaurants.value = [];
       } else {
-        // Ahora cargamos las calificaciones desde la API para cada propiedad
-        const propertiesWithRatings = await Promise.all(
-          transformedProperties.map(async (property) => {
-            // Solo consultamos la API si la calificación no está definida
-            if (property.rating === null || property.rating === undefined) {
-              try {
-                console.log(`Cargando calificación para propiedad ${property.id}`);
-                const rating = await propertyService.getPropertyRating(property.id);
-                console.log(`Calificación obtenida para ${property.name}: ${rating}`);
-                property.rating = rating;
-              } catch (err) {
-                console.error(`Error al cargar calificación para ${property.name}:`, err);
-                property.rating = 0;
-              }
-            } else {
-              console.log(`La propiedad ${property.name} ya tiene calificación: ${property.rating}`);
-            }
-            return property;
-          })
-        );
+        // Primero convertimos las propiedades al formato deseado
+        const transformedProperties = properties.map(property => ({
+          id: property.id,
+          name: property.title,
+          image: property.image || null,
+          rating: null, // Inicializamos rating como null para cargarlo después
+          reviews: property.reviews_count || 0,
+          address: property.address || 'La Ceiba, Honduras',
+          phone: property.phone || 'Sin teléfono',
+          email: property.email || 'Sin correo',
+          isFavorite: false // Por defecto no es favorito
+        }));
         
-        console.log('Propiedades con calificaciones:', propertiesWithRatings);
+        console.log('Propiedades transformadas:', transformedProperties);
         
-        // Ordenamos por calificación de mayor a menor
-        const sortedProperties = [...propertiesWithRatings].sort((a, b) => 
-          (b.rating || 0) - (a.rating || 0)
-        );
+        // Guardamos las propiedades en el estado
+        restaurants.value = transformedProperties;
         
-        console.log('Propiedades ordenadas por calificación:', 
-          sortedProperties.map(p => `${p.name}: ${p.rating}`)
-        );
+        // Cargamos calificaciones mediante la función especializada
+        await loadPropertyRatings();
         
-        restaurants.value = sortedProperties;
+        // Ordenamos por calificación después de cargar ratings
+        sortRestaurantsByRating();
       }
     } else {
       // Si hay un error en la respuesta
@@ -105,99 +84,67 @@ const loadRestaurants = async () => {
   }
 };
 
-// Función para ir al slide anterior
-const prevSlide = () => {
-  if (currentIndex.value > 0) {
-    currentIndex.value--;
-  } else {
-    // Volver al final si estamos al principio
-    currentIndex.value = Math.max(0, restaurants.value.length - visibleCount.value);
-  }
-};
-
-// Función para ir al siguiente slide
-const nextSlide = () => {
-  if (currentIndex.value < restaurants.value.length - visibleCount.value) {
-    currentIndex.value++;
-  } else {
-    // Volver al inicio si estamos al final
-    currentIndex.value = 0;
-  }
-};
-
-// Calcular los elementos visibles según el índice actual
-const visibleItems = computed(() => {
-  // Si no hay restaurantes, devolver array vacío
-  if (restaurants.value.length === 0) {
-    return [];
-  }
+// Función para cargar calificaciones de todas las propiedades
+const loadPropertyRatings = async () => {
+  if (restaurants.value.length === 0) return;
   
-  const startIndex = currentIndex.value;
-  const endIndex = Math.min(startIndex + visibleCount.value, restaurants.value.length);
-  return restaurants.value.slice(startIndex, endIndex);
-});
-
-// Función para alternar favoritos
-const toggleFavorite = (id) => {
-  const restaurant = restaurants.value.find(item => item.id === id);
-  if (restaurant) {
-    restaurant.isFavorite = !restaurant.isFavorite;
+  try {
+    console.log('Cargando calificaciones para', restaurants.value.length, 'restaurantes');
+    
+    // Buscamos propiedades sin calificación
+    const propsToLoad = restaurants.value.filter(p => 
+      p.rating === undefined || p.rating === null
+    );
+    
+    console.log(`${propsToLoad.length} restaurantes necesitan cargar calificación`);
+    
+    // Para cada propiedad sin calificación, obtener su calificación
+    const promises = propsToLoad.map(async (prop) => {
+      try {
+        const rating = await propertyService.getPropertyRating(prop.id);
+        console.log(`Restaurante ${prop.id} - ${prop.name} - Rating: ${rating}`);
+        
+        // Asegurar que rating sea un número (convertir si es necesario)
+        prop.rating = rating !== null && rating !== undefined ? Number(rating) : 0;
+      } catch (err) {
+        console.error(`Error al cargar rating para restaurante ${prop.id}:`, err);
+        prop.rating = 0;
+      }
+    });
+    
+    await Promise.all(promises);
+    console.log('Calificaciones cargadas correctamente');
+    
+    // Comprobar que todos los restaurantes tienen calificación ahora
+    const missingRatings = restaurants.value.filter(p => 
+      p.rating === undefined || p.rating === null
+    ).length;
+    
+    if (missingRatings > 0) {
+      console.warn(`Aún hay ${missingRatings} restaurantes sin calificación`);
+    } else {
+      console.log('Todos los restaurantes tienen calificación asignada');
+    }
+  } catch (error) {
+    console.error('Error al cargar calificaciones:', error);
   }
 };
 
-// Función que genera las estrellas de calificación
-const generateStars = (rating) => {
-  const stars = [];
-  const fullStars = Math.floor(rating || 0);
-  const hasHalfStar = (rating || 0) - fullStars >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  // Agregar estrellas llenas
-  for (let i = 0; i < fullStars; i++) {
-    stars.push({ type: 'full' });
-  }
-
-  // Agregar media estrella si es necesario
-  if (hasHalfStar) {
-    stars.push({ type: 'half' });
-  }
-
-  // Agregar estrellas vacías
-  for (let i = 0; i < emptyStars; i++) {
-    stars.push({ type: 'empty' });
-  }
-
-  return stars;
-};
-
-// Función para generar indicadores de precio ($, $$, $$$)
-const getPriceSymbols = (priceLevel) => {
-  return '$'.repeat(priceLevel || 1);
+// Función para ordenar restaurantes por calificación
+const sortRestaurantsByRating = () => {
+  // Ordenamos por calificación de mayor a menor
+  restaurants.value.sort((a, b) => 
+    (b.rating || 0) - (a.rating || 0)
+  );
+  
+  console.log('Restaurantes ordenados por calificación:', 
+    restaurants.value.map(p => `${p.name}: ${p.rating}`)
+  );
 };
 
 // Cargar datos al montar el componente
 onMounted(() => {
   loadRestaurants();
-  
-  // Ajustar la cantidad visible según el ancho de la pantalla
-  const handleResize = () => {
-    if (window.innerWidth < 768) {
-      visibleCount.value = 1;
-    } else if (window.innerWidth < 1024) {
-      visibleCount.value = 2;
-    } else {
-      visibleCount.value = 3;
-    }
-  };
-  
-  // Configurar el listener para resize
-  handleResize();
-  window.addEventListener('resize', handleResize);
-  
-  // Limpiar listener al desmontar
-  return () => {
-    window.removeEventListener('resize', handleResize);
-  };
 });
 </script>
 
@@ -243,140 +190,88 @@ onMounted(() => {
       <p class="text-lg text-gray-800">No se encontraron restaurantes disponibles.</p>
     </div>
     
-    <!-- Contenedor del carrusel con controles de navegación -->
-    <div v-else class="relative">
-      <!-- Botón de navegación izquierda -->
-      <button 
-        @click="prevSlide" 
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-gray-100 focus:outline-none"
-        aria-label="Anterior"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      
-      <!-- Grid de restaurantes -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-hidden">
-        <!-- Restaurant Card - Iterate through visible items -->
-        <div v-for="restaurant in visibleItems" :key="restaurant.id" 
-             class="bg-white rounded-lg overflow-hidden shadow-md">
-          <!-- Restaurant Image -->
-          <div class="relative">
-            <img 
-              :src="restaurant.image" 
-              :alt="restaurant.name" 
-              class="w-full h-56 md:h-64 object-cover"
-              @error="$event.target.src = 'https://placehold.co/600x400?text=Sin+Imagen'"
-            />
-            <button 
-              @click="toggleFavorite(restaurant.id)" 
-              class="absolute top-3 right-3 bg-white rounded-full p-2 shadow heart-btn"
-              :class="{ 'favorite': restaurant.isFavorite }"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 heart-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            </button>
+    <!-- Grid de restaurantes (2 columnas) -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- COLUMNA IZQUIERDA -->
+      <div>
+        <!-- Restaurante 1 -->
+        <div v-for="restaurant in leftColumnRestaurants" :key="restaurant.id" 
+             class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all">
+          <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
+            <div class="text-3xl text-gray-400 font-light">R</div>
           </div>
-          
-          <!-- Restaurant Details -->
-          <div class="p-4">
-            <!-- Categoría (RESTAURANTE Y BAR) -->
-            <div class="uppercase text-sm font-medium text-orange-500 mb-1">
-              RESTAURANTE Y BAR
-            </div>
-            
-            <!-- Nombre del restaurante -->
-            <h3 class="text-xl font-bold text-gray-800 mb-2">
-              {{ restaurant.name }}
-            </h3>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
             
             <!-- Estrellas de calificación -->
-            <div class="flex items-center mb-3">
-              <!-- Renderizar estrellas según la calificación -->
-              <span v-for="(star, index) in generateStars(restaurant.rating)" :key="index" class="inline-block">
-                <svg v-if="star.type === 'full'" class="w-4 h-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-                <svg v-else-if="star.type === 'half'" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <defs>
-                    <linearGradient id="halfStarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="50%" stop-color="#FBBF24" />
-                      <stop offset="50%" stop-color="#D1D5DB" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="url(#halfStarGradient)" />
-                </svg>
-                <svg v-else class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-              </span>
-              
-              <!-- Mostrar valor numérico de calificación -->
-              <span class="ml-1 text-sm text-gray-600">({{ (restaurant.rating || 0).toFixed(1) }})</span>
-              <span class="text-gray-500 text-sm ml-1">({{ restaurant.reviews }})</span>
+            <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
+              <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
+                <estrella-rating 
+                  :calificacion="restaurant.rating || 0"
+                  :mostrarNumero="true"
+                />
+              </div>
             </div>
             
-            <!-- Nivel de precio -->
-            <div class="flex items-center mb-1 text-sm text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-              {{ getPriceSymbols(restaurant.priceLevel) }}
-            </div>
-            
-            <!-- Dirección y distancia -->
-            <div class="flex items-center text-sm text-gray-500 mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Dirección -->
+            <div class="flex items-start mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {{ restaurant.distanceFromCenter.toFixed(1) }} km from center
+              <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
             </div>
             
-            <!-- Dirección detallada -->
-            <p class="text-sm text-gray-600 mb-2">{{ restaurant.address }}</p>
-            
-            <!-- Datos de contacto -->
-            <div v-if="restaurant.email !== 'Sin correo'" class="flex items-center mt-2">
-              <svg class="mr-2 text-gray-500 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <span class="text-sm text-gray-600">{{ restaurant.email }}</span>
-            </div>
-            
-            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center mt-2">
-              <svg class="mr-2 text-gray-500 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Teléfono -->
+            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
+              <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              <span class="text-sm text-gray-600">{{ restaurant.phone }}</span>
+              {{ restaurant.phone }}
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Botón de navegación derecha -->
-      <button 
-        @click="nextSlide" 
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-gray-100 focus:outline-none"
-        aria-label="Siguiente"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-      
-      <!-- Indicador de paginación (puntos) -->
-      <div v-if="restaurants.length > visibleCount.value" class="flex justify-center mt-6">
-        <button 
-          v-for="i in Math.ceil(restaurants.length / visibleCount)" 
-          :key="i" 
-          @click="currentIndex = (i - 1) * visibleCount"
-          class="w-2 h-2 mx-1 rounded-full transition-colors duration-200"
-          :class="currentIndex >= (i - 1) * visibleCount && currentIndex < i * visibleCount ? 'bg-orange-600' : 'bg-gray-300'"
-          :aria-label="`Página ${i} de ${Math.ceil(restaurants.length / visibleCount)}`"
-        ></button>
+      <!-- COLUMNA DERECHA -->
+      <div>
+        <!-- Restaurante 2 -->
+        <div v-for="restaurant in rightColumnRestaurants" :key="restaurant.id" 
+             class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all">
+          <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
+            <div class="text-3xl text-gray-400 font-light">R</div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
+            
+            <!-- Estrellas de calificación -->
+            <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
+              <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
+                <estrella-rating 
+                  :calificacion="restaurant.rating || 0"
+                  :mostrarNumero="true"
+                />
+              </div>
+            </div>
+            
+            <!-- Dirección -->
+            <div class="flex items-start mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
+            </div>
+            
+            <!-- Teléfono -->
+            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
+              <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              {{ restaurant.phone }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -410,18 +305,41 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
-/* Estrellas */
-.text-yellow-400 {
+/* Estilos para el contenedor de estrellas */
+.estrella-rating-container {
   color: #FBBF24 !important;
 }
 
-.text-gray-300 {
+.estrellas-wrapper :deep(.text-yellow-400) {
+  color: #FBBF24 !important;
+}
+
+.estrellas-wrapper :deep(.text-gray-300) {
   color: #D1D5DB !important;
 }
 
+/* Asegurar que las estrellas sean visibles */
+.estrellas-wrapper :deep(svg) {
+  min-width: 16px;
+  min-height: 16px;
+  color: inherit;
+}
+
+/* Para limitar texto a cierto número de líneas */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Colores personalizados */
-.text-orange-500, .text-orange-600 {
+.text-orange-600 {
   color: #FD5631;
+}
+
+.bg-gray-50 {
+  background-color: #F9FAFB;
 }
 
 .bg-orange-500 {
@@ -430,5 +348,44 @@ onMounted(() => {
 
 .bg-orange-600 {
   background-color: #E04424;
+}
+
+.text-gray-900 {
+  color: #1F2937;
+}
+
+.text-gray-600 {
+  color: #4B5563;
+}
+
+.text-gray-500 {
+  color: #6B7280;
+}
+
+.text-gray-400 {
+  color: #9CA3AF;
+}
+
+/* Interactividad */
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.hover\:translate-y-\[-2px\]:hover {
+  transform: translateY(-2px);
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+/* Añadimos min-width para elementos flexibles */
+.min-w-0 {
+  min-width: 0;
+}
+
+/* Ajustamos el flex-shrink para que los iconos no se reduzcan */
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 </style>

@@ -1,12 +1,17 @@
 <!-- components/EstrellaRating.vue -->
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center estrella-rating-component">
+    <!-- Añadir un div para debugging que se pueda mostrar/ocultar -->
+    <div v-if="debug" class="mr-2 text-xs bg-gray-200 px-1 rounded">
+      Rating: {{ calificacionNumerica }} ({{ typeof calificacion }})
+    </div>
+    
     <div class="flex">
       <template v-for="n in 5" :key="n">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
-          width="14" 
-          height="14" 
+          width="16" 
+          height="16" 
           fill="currentColor"
           :class="getStarClass(n)"
           viewBox="0 0 24 24"
@@ -31,13 +36,32 @@ export default {
     mostrarNumero: {
       type: Boolean,
       default: true
+    },
+    debug: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     // Convertir calificación a un número para los cálculos
     calificacionNumerica() {
+      // Primero verificar si es null o undefined
+      if (this.calificacion === null || this.calificacion === undefined) {
+        console.warn('EstrellaRating recibió calificación null o undefined');
+        return 0;
+      }
+      
+      // Manejar el caso de string vacío
+      if (this.calificacion === '') {
+        return 0;
+      }
+      
       const valor = parseFloat(this.calificacion);
-      return isNaN(valor) ? 0 : valor;
+      if (isNaN(valor)) {
+        console.warn(`EstrellaRating: valor no numérico: "${this.calificacion}"`);
+        return 0;
+      }
+      return valor;
     },
     // Formatear para mostrar siempre un decimal
     formatearCalificacion() {
@@ -50,11 +74,11 @@ export default {
       const rating = this.calificacionNumerica;
       
       if (rating >= position) {
-        return "text-yellow-400"; // Estrella completa
+        return "estrella-llena"; // Estrella completa
       } else if (rating >= position - 0.5) {
-        return "text-yellow-400 opacity-60"; // Media estrella
+        return "estrella-media"; // Media estrella
       } else {
-        return "text-gray-300"; // Estrella vacía
+        return "estrella-vacia"; // Estrella vacía
       }
     }
   },
@@ -62,19 +86,33 @@ export default {
     // Observar cambios en la calificación para debugging
     calificacion: {
       handler(newVal, oldVal) {
-        console.log(`EstrellaRating - calificación cambió: ${oldVal} → ${newVal}`);
+        console.log(`EstrellaRating - calificación cambió: ${oldVal} → ${newVal} (${typeof newVal})`);
       },
       immediate: true
     }
+  },
+  mounted() {
+    console.log(`EstrellaRating montado con calificación: ${this.calificacion} (${typeof this.calificacion})`);
   }
 }
 </script>
 
 <style scoped>
-.text-yellow-400 {
+/* Usar clases específicas en lugar de clases de Tailwind para evitar conflictos */
+.estrella-llena {
   color: #FBBF24 !important;
 }
-.text-gray-300 {
+.estrella-media {
+  color: #FBBF24 !important;
+  opacity: 0.7;
+}
+.estrella-vacia {
   color: #D1D5DB !important;
+}
+
+/* Asegurar que las estrellas tengan un tamaño mínimo visible */
+svg {
+  min-width: 16px;
+  min-height: 16px;
 }
 </style>
