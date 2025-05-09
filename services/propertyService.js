@@ -25,6 +25,35 @@ export const usePropertyService = () => {
     }
   };
   
+  // Nuevo método para obtener propiedades por categoría Y tipo
+  const getPropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
+    try {
+      // Clonar los parámetros básicos
+      const queryParams = { ...params };
+      
+      // Añadir el tipo de propiedad al objeto de parámetros
+      if (propertyType) {
+        if (Array.isArray(propertyType)) {
+          // Si es un array, lo dejamos como está para que Axios lo maneje
+          queryParams.property_type = propertyType;
+        } else {
+          queryParams.property_type = propertyType;
+        }
+      }
+      
+      // Usar la ruta de categoría y pasar el tipo de propiedad como parámetro
+      const response = await $axios.get(`/properties/categories/${category}`, { params: queryParams });
+      return response.data;
+    } catch (error) {
+      console.error(`Error obteniendo propiedades por categoría ${category} y tipo ${propertyType}:`, error);
+      return {
+        success: false,
+        data: { properties: [], total: 0 },
+        error: error.message
+      };
+    }
+  };
+  
   // Get all main categories
   const getMainCategories = async () => {
     try {
@@ -196,6 +225,7 @@ export const usePropertyService = () => {
   return {
     getProperties,
     getPropertiesByCategory,
+    getPropertiesByCategoryAndType, // Nuevo método añadido
     getMainCategories,
     getProperty,
     createProperty,

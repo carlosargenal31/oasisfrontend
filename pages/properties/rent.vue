@@ -71,21 +71,21 @@
             
             <!-- Tipo de negocio -->
             <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de negocio</h3>
-              <div class="property-types overflow-y-auto max-h-48">
-                <div v-for="type in propertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
-                  <input 
-                    type="checkbox" 
-                    :id="type.value" 
-                    :value="type.value" 
-                    v-model="selectedPropertyTypes"
-                    @change="updatePropertyTypeFilters"
-                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                  >
-                  <label :for="type.value" class="ml-2 text-sm text-black">{{ type.label }}</label>
-                </div>
-              </div>
-            </div>
+  <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de negocio</h3>
+  <div class="property-types overflow-y-auto max-h-48">
+    <div v-for="type in filteredPropertyTypes" :key="type.value" class="checkbox-item flex items-center mb-2">
+      <input 
+        type="checkbox" 
+        :id="type.value" 
+        :value="type.value" 
+        v-model="selectedPropertyTypes"
+        @change="updatePropertyTypeFilters"
+        class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+      >
+      <label :for="type.value" class="ml-2 text-sm text-black">{{ type.label }}</label>
+    </div>
+  </div>
+</div>
             
             
             
@@ -320,6 +320,8 @@
   </div>
 </template>
 
+
+
 <script>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -429,7 +431,7 @@ export default {
       status: 'active'
     });
     
-  // Categorías actualizadas para tipos de negocios (mantenidas para referencia)
+    // Categorías actualizadas para tipos de negocios (mantenidas para referencia)
     const categories = ref([
       { 
         id: 'accommodation',
@@ -450,6 +452,30 @@ export default {
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket-icon lucide-ticket"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>'
       }
     ]);
+
+    // Método para filtrar property types basados en la categoría seleccionada
+    const filteredPropertyTypes = computed(() => {
+      if (!filters.value.category) {
+        return propertyTypes;
+      }
+      
+      const alojamientoTypes = ['Hotel', 'Motel'];
+      const restauranteTypes = ['Cafetería', 'Restaurante', 'Bar y restaurante', 
+                              'Comida rápida', 'Repostería', 'Heladería', 
+                              'Bebidas', 'Bar', 'Otro'];
+      const entretenimientoTypes = ['Gym', 'Balneario', 'Belleza', 'Futbol', 
+                                  'Motocross', 'Casino', 'Cine', 'Videojuegos', 'Otro'];
+      
+      if (filters.value.category === 'Alojamiento') {
+        return propertyTypes.filter(type => alojamientoTypes.includes(type.value));
+      } else if (filters.value.category === 'Restaurante y bar') {
+        return propertyTypes.filter(type => restauranteTypes.includes(type.value));
+      } else if (filters.value.category === 'Entretenimiento') {
+        return propertyTypes.filter(type => entretenimientoTypes.includes(type.value));
+      }
+      
+      return propertyTypes;
+    });
 
     // Método para cargar las calificaciones de las propiedades
     const loadPropertyRatings = async () => {
@@ -551,20 +577,62 @@ export default {
     };
     
     // Seleccionar categoría (versión modificada para trabajar directamente con el selector)
-  const selectCategory = (categoryValue) => {
-  console.log('Categoría seleccionada:', categoryValue);
-  
-  // Reiniciar la página
-  currentPage.value = 1;
-  
-  // IMPORTANTE: NO reiniciar los tipos de negocio seleccionados
-  // Simplemente actualizar la categoría
-  filters.value.category = categoryValue;
-  
-  // Actualizar parámetros de URL y buscar propiedades
-  updateQueryParams();
-  fetchProperties();
-};
+    const selectCategory = (categoryValue) => {
+      console.log('Categoría seleccionada:', categoryValue);
+      
+      // Verificar si la categoría está cambiando
+      const categoryChanged = filters.value.category !== categoryValue;
+      
+      // Establecer la categoría
+      filters.value.category = categoryValue;
+      
+      // Reiniciar la página
+      currentPage.value = 1;
+      
+      // Si la categoría cambió, verificar los tipos de propiedad seleccionados
+      if (categoryChanged) {
+        const alojamientoTypes = ['Hotel', 'Motel'];
+        const restauranteTypes = ['Cafetería', 'Restaurante', 'Bar y restaurante', 
+                                'Comida rápida', 'Repostería', 'Heladería', 
+                                'Bebidas', 'Bar', 'Otro'];
+        const entretenimientoTypes = ['Gym', 'Balneario', 'Belleza', 'Futbol', 
+                                    'Motocross', 'Casino', 'Cine', 'Videojuegos', 'Otro'];
+        
+        let validTypes = [];
+        
+        if (categoryValue === 'Alojamiento') {
+          validTypes = alojamientoTypes;
+        } else if (categoryValue === 'Restaurante y bar') {
+          validTypes = restauranteTypes;
+        } else if (categoryValue === 'Entretenimiento') {
+          validTypes = entretenimientoTypes;
+        }
+        
+        // Filtrar los tipos de propiedad seleccionados para mantener solo los compatibles
+        if (selectedPropertyTypes.value.length > 0) {
+          const compatibleTypes = selectedPropertyTypes.value.filter(type => validTypes.includes(type));
+          
+          // Si hay tipos compatibles, actualizar la selección
+          if (compatibleTypes.length > 0) {
+            selectedPropertyTypes.value = compatibleTypes;
+            
+            if (compatibleTypes.length === 1) {
+              filters.value.property_type = compatibleTypes[0];
+            } else {
+              filters.value.property_type = compatibleTypes;
+            }
+          } else {
+            // Si no hay tipos compatibles, limpiar la selección
+            selectedPropertyTypes.value = [];
+            filters.value.property_type = null;
+          }
+        }
+      }
+      
+      // Actualizar parámetros de URL y buscar propiedades
+      updateQueryParams();
+      fetchProperties();
+    };
     
     // Actualizar los tipos de propiedad seleccionados
     const updatePropertyTypeFilters = () => {
@@ -619,13 +687,13 @@ export default {
       router.replace({ query });
     };
 
-    // Obtener propiedades de la API
-  const fetchProperties = async () => {
+    // Obtener propiedades de la API (MÉTODO MODIFICADO)
+    const fetchProperties = async () => {
   loading.value = true;
   error.value = null;
   
   try {
-    // Preparar filtros para la API - incluir TODOS los filtros aquí
+    // Convertir filtros a formato API
     const apiFilters = {
       page: currentPage.value,
       limit: itemsPerPage.value,
@@ -641,40 +709,46 @@ export default {
       apiFilters.amenities = filters.value.amenities;
     }
     
-    // IMPORTANTE: Incluir TODOS los filtros en una sola llamada
-    // Añadir tipo de propiedad si existe
+    // Siempre incluir property_type cuando esté presente, independientemente de otros filtros
     if (filters.value.property_type) {
       apiFilters.property_type = filters.value.property_type;
     }
     
-    // Añadir categoría si existe
-    if (filters.value.category) {
-      apiFilters.category = filters.value.category;
-    }
-    
     let result;
     
-    // Usar búsqueda específica solo para términos de búsqueda
+    // Si hay término de búsqueda, usar la búsqueda
     if (searchQuery.value.trim()) {
-      // Si hay término de búsqueda, usar búsqueda
       const searchFields = ['title', 'category', 'property_type'];
       result = await propertyService.searchProperties(searchQuery.value, searchFields);
-    } 
+    }
+    // Si no hay búsqueda, usar el método más adecuado según los filtros
     else {
-      // Para todos los demás casos, usar el método general con TODOS los filtros
-      // Esto imita el comportamiento que funciona cuando solo seleccionas tipo de negocio
+      // SOLUCIÓN CLAVE: Siempre usar getProperties con los filtros correspondientes
+      // Esto garantiza que funcione con o sin categoría
       result = await propertyService.getProperties(apiFilters);
     }
+    
+    console.log('Respuesta del API:', result);
     
     // Procesar resultados
     if (result && result.success) {
       properties.value = result.data?.properties || [];
       totalProperties.value = result.data?.total || 0;
       
+      console.log('Propiedades cargadas:', properties.value.length);
+      
+      // Aplicar filtro de categoría en el cliente si es necesario
+      if (filters.value.category && properties.value.length > 0) {
+        properties.value = properties.value.filter(property => 
+          property.category === filters.value.category
+        );
+        totalProperties.value = properties.value.length;
+      }
+      
       // Cargar calificaciones para las propiedades
       await loadPropertyRatings();
     } else {
-      error.value = result.message || 'No se pudieron cargar las propiedades';
+      error.value = 'No se pudieron cargar las propiedades';
       properties.value = [];
       totalProperties.value = 0;
     }
@@ -912,6 +986,7 @@ export default {
       // Datos
       availableCities,
       propertyTypes,
+      filteredPropertyTypes,
       amenities,
       additionalOptions,
       categories,
