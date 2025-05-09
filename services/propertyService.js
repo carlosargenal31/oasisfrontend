@@ -159,6 +159,40 @@ export const usePropertyService = () => {
     }
   };
   
+  // Obtener la calificación promedio de una propiedad
+  const getPropertyRating = async (propertyId) => {
+    try {
+      const response = await $axios.get(`/reviews/property/${propertyId}/rating`);
+      if (response.data && response.data.success) {
+        return response.data.data.averageRating;
+      }
+      return 0;
+    } catch (error) {
+      console.error(`Error al obtener calificación para propiedad ${propertyId}:`, error);
+      return 0;
+    }
+  };
+  
+  // Obtener todas las reseñas de una propiedad
+  const getPropertyReviews = async (propertyId) => {
+    try {
+      const response = await $axios.get('/reviews', { 
+        params: { property_id: propertyId } 
+      });
+      
+      if (response.data && response.data.success) {
+        return {
+          success: true,
+          data: response.data.data.reviews
+        };
+      }
+      return { success: false, data: [] };
+    } catch (error) {
+      console.error(`Error al obtener reseñas para propiedad ${propertyId}:`, error);
+      return { success: false, data: [] };
+    }
+  };
+  
   return {
     getProperties,
     getPropertiesByCategory,
@@ -172,6 +206,8 @@ export const usePropertyService = () => {
     getPopularProperties,
     searchProperties,
     incrementPropertyViews,
-    getSimilarProperties
+    getSimilarProperties,
+    getPropertyRating,
+    getPropertyReviews
   };
 };

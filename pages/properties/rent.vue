@@ -191,17 +191,19 @@
             <div class="flex items-center space-x-2">
               <span class="text-gray-500">Ordenar por:</span>
               <select 
-  v-model="sortBy" 
-  class="sort-select py-1 px-3 border border-gray-300 rounded-md bg-white text-black"
-  @change="handleSortChange"
->
-  <option value="id-asc">Ascendente</option>
-  <option value="newest">Más recientes</option>
-  <option value="views-high">Más vistas</option>
-  <option value="views-low">Menos vistas</option>
-  <option value="title-asc">Título A-Z</option>
-  <option value="title-desc">Título Z-A</option>
-</select>
+                v-model="sortBy" 
+                class="sort-select py-1 px-3 border border-gray-300 rounded-md bg-white text-black"
+                @change="handleSortChange"
+              >
+                <option value="id-asc">Ascendente</option>
+                <option value="newest">Más recientes</option>
+                <option value="views-high">Más vistas</option>
+                <option value="views-low">Menos vistas</option>
+                <option value="title-asc">Título A-Z</option>
+                <option value="title-desc">Título Z-A</option>
+                <option value="rating-high">Mayor calificación</option>
+                <option value="rating-low">Menor calificación</option>
+              </select>
             </div>
           </div>
           
@@ -258,53 +260,64 @@
                 </button>
               </div>
               
-              <!-- Property Details -->
-              <div @click="navigateToProperty(property.id)" class="cursor-pointer">
-                <!-- Business Category Label -->
-                <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
-                  {{ property.category || 'NEGOCIO' }}
-                </div>
-                
-                <!-- Title -->
-                <h3 class="font-medium text-black px-4 mt-1">
-                  {{ property.title }}
-                </h3>
-                
-                <!-- Address -->
-                <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
-                
-                <!-- Contact Information -->
-                <div class="flex items-center px-4 mt-2">
-                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
-                  </svg>
-                  <span class="text-sm text-gray-600">{{ property.email || 'Sin correo' }}</span>
-                </div>
-                
-                <div class="flex items-center px-4 mt-1 mb-4">
-                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
-                  </svg>
-                  <span class="text-sm text-gray-600">{{ property.phone || 'Sin teléfono' }}</span>
-                </div>
-                
-                <!-- Schedule -->
-                <div class="flex items-center px-4 mt-1 mb-4">
-                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
-                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
-                  </svg>
-                  <span class="text-sm text-gray-600">{{ property.schedule || 'Horario no disponible' }}</span>
-                </div>
-                
-                <!-- Views Count -->
-                <div class="flex items-center justify-end px-4 py-2 border-t border-gray-200 bg-gray-50">
-                  <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
-                  </svg>
-                  <span class="text-xs text-gray-500">{{ property.views || 0 }} vistas</span>
-                </div>
-              </div>
+             <!-- Property Details -->
+<div @click="navigateToProperty(property.id)" class="cursor-pointer">
+  <!-- Business Category Label -->
+  <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
+    {{ property.category || 'NEGOCIO' }}
+  </div>
+  
+  <!-- Title -->
+  <h3 class="font-medium text-black px-4 mt-1">
+    {{ property.title }}
+  </h3>
+  
+  <!-- Address -->
+  <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
+  
+  <!-- Rating (Calificación) - MOVIDO AQUÍ ANTES DEL CORREO -->
+  <div class="flex items-center px-4 mt-2 mb-3">
+    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
+    </svg>
+    <estrella-rating 
+      :calificacion="property.average_rating || 0"
+      :mostrarNumero="true"
+    />
+  </div>
+  
+  <!-- Contact Information -->
+  <div class="flex items-center px-4 mt-2">
+    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+    </svg>
+    <span class="text-sm text-gray-600">{{ property.email || 'Sin correo' }}</span>
+  </div>
+  
+  <div class="flex items-center px-4 mt-1 mb-4">
+    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+    </svg>
+    <span class="text-sm text-gray-600">{{ property.phone || 'Sin teléfono' }}</span>
+  </div>
+  
+  <!-- Schedule -->
+  <div class="flex items-center px-4 mt-1 mb-4">
+    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
+      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
+    </svg>
+    <span class="text-sm text-gray-600">{{ property.schedule || 'Horario no disponible' }}</span>
+  </div>
+  
+  <!-- Views Count -->
+  <div class="flex items-center justify-end px-4 py-2 border-t border-gray-200 bg-gray-50">
+    <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+    </svg>
+    <span class="text-xs text-gray-500">{{ property.views || 0 }} vistas</span>
+  </div>
+</div>
             </div>
           </div>
           
@@ -378,17 +391,22 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '~/store/user';
 import { useFavoritesStore } from '~/store/favorites';
 import { usePropertyService } from '~/services/propertyService';
+import EstrellaRating from '~/components/EstrellaRating.vue'; // Importar componente de estrellas
 import axios from 'axios';
 
 export default {
   name: 'PropertyFinder',
+  
+  // Registrar el componente de estrellas
+  components: {
+    EstrellaRating
+  },
   
   setup() {
     // Router y ruta actual
@@ -478,14 +496,14 @@ export default {
 
     // Filtros actualizados para modelo de negocio
     const filters = ref({
-  city: '',
-  property_type: null,
-  category: null, // Añadimos categoría como un filtro independiente
-  schedule: '',
-  amenities: [],
-  additionalOptions: [],
-  status: 'active'
-});
+      city: '',
+      property_type: null,
+      category: null, // Añadimos categoría como un filtro independiente
+      schedule: '',
+      amenities: [],
+      additionalOptions: [],
+      status: 'active'
+    });
     
     // Categorías actualizadas para tipos de negocios
     const categories = ref([
@@ -554,54 +572,76 @@ export default {
       }
     ]);
 
+    // Método para cargar las calificaciones de las propiedades
+    const loadPropertyRatings = async () => {
+      if (properties.value.length === 0) return;
+      
+      try {
+        // Para cada propiedad que no tiene calificación, obtenerla
+        const promises = properties.value
+          .filter(prop => prop.average_rating === undefined || prop.average_rating === null)
+          .map(async (prop) => {
+            const rating = await propertyService.getPropertyRating(prop.id);
+            // Actualizar la propiedad directamente
+            prop.average_rating = rating;
+          });
+        
+        await Promise.all(promises);
+      } catch (error) {
+        console.error('Error al cargar calificaciones:', error);
+      }
+    };
+
     // API URL
     const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
     // Manejar la búsqueda
-    // En el componente PropertyFinder.vue
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    console.log('Buscando:', searchQuery.value);
-    currentPage.value = 1;
-    loading.value = true;
-    
-    // Especificar los campos donde queremos buscar
-    const searchFields = ['title', 'category', 'property_type'];
-    
-    propertyService.searchProperties(searchQuery.value, searchFields)
-      .then(result => {
-        console.log('Resultado de búsqueda:', result);
+    const handleSearch = () => {
+      if (searchQuery.value.trim()) {
+        console.log('Buscando:', searchQuery.value);
+        currentPage.value = 1;
+        loading.value = true;
         
-        if (result && result.success) {
-          properties.value = result.data?.properties || [];
-          totalProperties.value = result.data?.total || properties.value.length;
-          console.log('Propiedades encontradas:', properties.value.length);
-        } else {
-          error.value = 'No se pudieron cargar los resultados de búsqueda';
-          properties.value = [];
-          totalProperties.value = 0;
-        }
-      })
-      .catch(err => {
-        console.error('Error en búsqueda:', err);
-        error.value = 'Error al buscar propiedades';
-        properties.value = [];
-        totalProperties.value = 0;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    
-    // Actualizar la URL para reflejar la búsqueda
-    router.replace({ 
-      query: { 
-        ...route.query,
-        q: searchQuery.value,
-        page: 1
+        // Especificar los campos donde queremos buscar
+        const searchFields = ['title', 'category', 'property_type'];
+        
+        propertyService.searchProperties(searchQuery.value, searchFields)
+          .then(result => {
+            console.log('Resultado de búsqueda:', result);
+            
+            if (result && result.success) {
+              properties.value = result.data?.properties || [];
+              totalProperties.value = result.data?.total || properties.value.length;
+              console.log('Propiedades encontradas:', properties.value.length);
+              
+              // Cargar calificaciones para las propiedades encontradas
+              loadPropertyRatings();
+            } else {
+              error.value = 'No se pudieron cargar los resultados de búsqueda';
+              properties.value = [];
+              totalProperties.value = 0;
+            }
+          })
+          .catch(err => {
+            console.error('Error en búsqueda:', err);
+            error.value = 'Error al buscar propiedades';
+            properties.value = [];
+            totalProperties.value = 0;
+          })
+          .finally(() => {
+            loading.value = false;
+          });
+        
+        // Actualizar la URL para reflejar la búsqueda
+        router.replace({ 
+          query: { 
+            ...route.query,
+            q: searchQuery.value,
+            page: 1
+          }
+        });
       }
-    });
-  }
-};
+    };
     
     // Navegación a la página de detalles de propiedad
     const navigateToProperty = (propertyId) => {
@@ -633,39 +673,39 @@ const handleSearch = () => {
     
     // Seleccionar categoría
     const selectCategory = (categoryId) => {
-  console.log('Categoría seleccionada:', categoryId);
-  // Reiniciar la página al cambiar de categoría
-  currentPage.value = 1;
-  
-  // Limpiar filtros actuales
-  resetFilters();
-  
-  // Mapear el ID de categoría a la categoría real que se almacena en el backend
-  const categoryMapping = {
-    'accommodation': 'Alojamiento',
-    'food': 'Restaurante y bar',
-    'entertainment': 'Entretenimiento',
-    'shopping': 'Compras',
-    'art': 'Arte e Historia',
-    'beauty': 'Belleza',
-    'auto': 'Alquiler de Vehículos', 
-    'fitness': 'Deporte y Fitness',
-    'nightlife': 'Vida Nocturna',
-    'medicine': 'Salud'
-  };
-  
-  // Obtener la categoría real
-  const selectedCategory = categoryMapping[categoryId];
-  
-  if (selectedCategory) {
-    // Filtrar directamente por la categoría exacta en lugar de usar tipos de propiedad
-    filters.value.category = selectedCategory;
-    
-    // Actualizar parámetros de URL y buscar propiedades
-    updateQueryParams();
-    fetchProperties();
-  }
-};
+      console.log('Categoría seleccionada:', categoryId);
+      // Reiniciar la página al cambiar de categoría
+      currentPage.value = 1;
+      
+      // Limpiar filtros actuales
+      resetFilters();
+      
+      // Mapear el ID de categoría a la categoría real que se almacena en el backend
+      const categoryMapping = {
+        'accommodation': 'Alojamiento',
+        'food': 'Restaurante y bar',
+        'entertainment': 'Entretenimiento',
+        'shopping': 'Compras',
+        'art': 'Arte e Historia',
+        'beauty': 'Belleza',
+        'auto': 'Alquiler de Vehículos', 
+        'fitness': 'Deporte y Fitness',
+        'nightlife': 'Vida Nocturna',
+        'medicine': 'Salud'
+      };
+      
+      // Obtener la categoría real
+      const selectedCategory = categoryMapping[categoryId];
+      
+      if (selectedCategory) {
+        // Filtrar directamente por la categoría exacta en lugar de usar tipos de propiedad
+        filters.value.category = selectedCategory;
+        
+        // Actualizar parámetros de URL y buscar propiedades
+        updateQueryParams();
+        fetchProperties();
+      }
+    };
     
     // Actualizar los tipos de propiedad seleccionados
     const updatePropertyTypeFilters = () => {
@@ -696,134 +736,143 @@ const handleSearch = () => {
     
     // Actualizar los parámetros de la URL
     const updateQueryParams = () => {
-  // Construir objeto de query
-  const query = {
-    sort: sortBy.value,
-    page: currentPage.value
-  };
-  
-  // Agregar filtros no vacíos a la query
-  Object.entries(filters.value).forEach(([key, value]) => {
-    if (value !== null && value !== undefined && value !== '' && 
-        !(Array.isArray(value) && value.length === 0) && 
-        key !== 'status') {
-      query[key] = value;
-    }
-  });
-  
-  // Agregar búsqueda si existe
-  if (searchQuery.value) {
-    query.q = searchQuery.value;
-  }
-  
-  // Actualizar URL sin refrescar la página
-  router.replace({ query });
-};
+      // Construir objeto de query
+      const query = {
+        sort: sortBy.value,
+        page: currentPage.value
+      };
+      
+      // Agregar filtros no vacíos a la query
+      Object.entries(filters.value).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '' && 
+            !(Array.isArray(value) && value.length === 0) && 
+            key !== 'status') {
+          query[key] = value;
+        }
+      });
+      
+      // Agregar búsqueda si existe
+      if (searchQuery.value) {
+        query.q = searchQuery.value;
+      }
+      
+      // Actualizar URL sin refrescar la página
+      router.replace({ query });
+    };
 
     // Obtener propiedades de la API
-   // En el componente PropertyFinder.vue
-const fetchProperties = async () => {
-  loading.value = true;
-  error.value = null;
-  
-  try {
-    // Convertir filtros a formato API
-    const apiFilters = {
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      // Incluir el ordenamiento
-      sort: sortBy.value
+    const fetchProperties = async () => {
+      loading.value = true;
+      error.value = null;
+      
+      try {
+        // Convertir filtros a formato API
+        const apiFilters = {
+          page: currentPage.value,
+          limit: itemsPerPage.value,
+          // Incluir el ordenamiento
+          sort: sortBy.value
+        };
+        
+        // Aplicar filtros adicionales
+        if (filters.value.city) {
+          apiFilters.city = filters.value.city;
+        }
+        
+        if (filters.value.schedule) {
+          apiFilters.schedule = filters.value.schedule;
+        }
+        
+        if (filters.value.amenities && filters.value.amenities.length > 0) {
+          apiFilters.amenities = filters.value.amenities;
+        }
+        
+        // Aplicar opciones adicionales
+        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('verified')) {
+          apiFilters.verified = true;
+        }
+        
+        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('featured')) {
+          apiFilters.featured = true;
+        }
+        
+        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('new')) {
+          apiFilters.isNew = true;
+        }
+        
+        let result;
+        
+        // Si hay término de búsqueda, usar la búsqueda
+        if (searchQuery.value.trim()) {
+          const searchFields = ['title', 'category', 'property_type'];
+          result = await propertyService.searchProperties(searchQuery.value, searchFields);
+        }
+        // Determinar qué método de servicio usar según los filtros si no hay búsqueda
+        else if (filters.value.category) {
+          // Si hay una categoría seleccionada, usar el método específico
+          result = await propertyService.getPropertiesByCategory(filters.value.category, apiFilters);
+        } else if (filters.value.property_type) {
+          // Si hay un tipo de propiedad seleccionado, usar el método general con filtro
+          apiFilters.property_type = filters.value.property_type;
+          result = await propertyService.getProperties(apiFilters);
+        } else {
+          // Si no hay filtros de categoría ni tipo, usar el método general
+          result = await propertyService.getProperties(apiFilters);
+        }
+        
+        console.log('Respuesta del API:', result);
+        
+        // Procesar resultados
+        if (result && result.success) {
+          // Asegurarse de acceder correctamente a los datos según la estructura de respuesta
+          properties.value = result.data?.properties || [];
+          totalProperties.value = result.data?.total || 0;
+          
+          console.log('Propiedades cargadas:', properties.value.length);
+          
+          // Cargar calificaciones para las propiedades
+          await loadPropertyRatings();
+        } else {
+          error.value = 'No se pudieron cargar las propiedades';
+          properties.value = [];
+          totalProperties.value = 0;
+        }
+      } catch (err) {
+        console.error('Error al obtener propiedades:', err);
+        error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
+        properties.value = [];
+        totalProperties.value = 0;
+      } finally {
+        loading.value = false;
+      }
     };
     
-    // Aplicar filtros adicionales
-    if (filters.value.city) {
-      apiFilters.city = filters.value.city;
-    }
-    
-    if (filters.value.schedule) {
-      apiFilters.schedule = filters.value.schedule;
-    }
-    
-    if (filters.value.amenities && filters.value.amenities.length > 0) {
-      apiFilters.amenities = filters.value.amenities;
-    }
-    
-    // Aplicar opciones adicionales
-    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('verified')) {
-      apiFilters.verified = true;
-    }
-    
-    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('featured')) {
-      apiFilters.featured = true;
-    }
-    
-    if (filters.value.additionalOptions && filters.value.additionalOptions.includes('new')) {
-      apiFilters.isNew = true;
-    }
-    
-    let result;
-    
-    // Si hay término de búsqueda, usar la búsqueda
-    if (searchQuery.value.trim()) {
-      const searchFields = ['title', 'category', 'property_type'];
-      result = await propertyService.searchProperties(searchQuery.value, searchFields);
-    }
-    // Determinar qué método de servicio usar según los filtros si no hay búsqueda
-    else if (filters.value.category) {
-      // Si hay una categoría seleccionada, usar el método específico
-      result = await propertyService.getPropertiesByCategory(filters.value.category, apiFilters);
-    } else if (filters.value.property_type) {
-      // Si hay un tipo de propiedad seleccionado, usar el método general con filtro
-      apiFilters.property_type = filters.value.property_type;
-      result = await propertyService.getProperties(apiFilters);
-    } else {
-      // Si no hay filtros de categoría ni tipo, usar el método general
-      result = await propertyService.getProperties(apiFilters);
-    }
-    
-    console.log('Respuesta del API:', result);
-    
-    // Procesar resultados
-    if (result && result.success) {
-      // Asegurarse de acceder correctamente a los datos según la estructura de respuesta
-      properties.value = result.data?.properties || [];
-      totalProperties.value = result.data?.total || 0;
-      
-      console.log('Propiedades cargadas:', properties.value.length);
-    } else {
-      error.value = 'No se pudieron cargar las propiedades';
-      properties.value = [];
-      totalProperties.value = 0;
-    }
-  } catch (err) {
-    console.error('Error al obtener propiedades:', err);
-    error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
-    properties.value = [];
-    totalProperties.value = 0;
-  } finally {
-    loading.value = false;
-  }
-};
     // Ordenar propiedades (actualizado para el nuevo modelo)
     const sortedProperties = computed(() => {
-  let result = [...properties.value];
-  
-  if (sortBy.value === 'id-asc') {
-    result.sort((a, b) => a.id - b.id);
-  } else if (sortBy.value === 'newest') {
-    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  } else if (sortBy.value === 'views-high') {
-    result.sort((a, b) => (b.views || 0) - (a.views || 0));
-  } else if (sortBy.value === 'views-low') {
-    result.sort((a, b) => (a.views || 0) - (b.views || 0));
-  } else if (sortBy.value === 'title-asc') {
-    result.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (sortBy.value === 'title-desc') {
-    result.sort((a, b) => b.title.localeCompare(a.title));
-  }
-  
-  return result;
-});
+      let result = [...properties.value];
+      
+      if (sortBy.value === 'id-asc') {
+        result.sort((a, b) => a.id - b.id);
+      } else if (sortBy.value === 'newest') {
+        result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (sortBy.value === 'views-high') {
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
+      } else if (sortBy.value === 'views-low') {
+        result.sort((a, b) => (a.views || 0) - (b.views || 0));
+      } else if (sortBy.value === 'title-asc') {
+        result.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortBy.value === 'title-desc') {
+        result.sort((a, b) => b.title.localeCompare(a.title));
+      } else if (sortBy.value === 'rating-high') {
+        // Nuevo orden por calificación más alta
+        result.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+      } else if (sortBy.value === 'rating-low') {
+        // Nuevo orden por calificación más baja
+        result.sort((a, b) => (a.average_rating || 0) - (b.average_rating || 0));
+      }
+      
+      return result;
+    });
     
     // Paginación
     const totalPages = computed(() => {
@@ -891,22 +940,24 @@ const fetchProperties = async () => {
 
     // Resetear todos los filtros
     const resetFilters = () => {
-  searchQuery.value = '';
-  selectedPropertyTypes.value = [];
-  
-  filters.value = { 
-    // Elimina el filtro de status
-    city: '',
-    property_type: null,
-    schedule: '',
-    amenities: [],
-    additionalOptions: []
-  };
-  
-  currentPage.value = 1;
-  updateQueryParams();
-  fetchProperties();
-};
+      searchQuery.value = '';
+      selectedPropertyTypes.value = [];
+      
+      filters.value = { 
+        // Elimina el filtro de status
+        city: '',
+        property_type: null,
+        category: null,
+        schedule: '',
+        amenities: [],
+        additionalOptions: [],
+        status: 'active'
+      };
+      
+      currentPage.value = 1;
+      updateQueryParams();
+      fetchProperties();
+    };
 
     // Formatear precio con comas (por si acaso hay campo price en el futuro)
     const formatPrice = (price) => {
@@ -915,72 +966,71 @@ const fetchProperties = async () => {
     };
 
     // Inicializar filtros desde parámetros de URL
-   // En el componente PropertyFinder.vue
-const initFromQueryParams = () => {
-  const query = route.query;
-  
-  // Establecer búsqueda desde query
-  if (query.q) {
-    searchQuery.value = query.q;
-  } else {
-    searchQuery.value = ''; // Limpiar búsqueda si no está en URL
-  }
-  
-  // Establecer ordenación desde query
-  if (query.sort && ['id-asc', 'newest', 'views-high', 'views-low', 'title-asc', 'title-desc'].includes(query.sort)) {
-    sortBy.value = query.sort;
-  }
-  
-  // Establecer página desde query
-  if (query.page && !isNaN(parseInt(query.page))) {
-    currentPage.value = parseInt(query.page);
-  }
-  
-  // Establecer categoría desde query
-  if (query.category) {
-    filters.value.category = query.category;
-  }
-  
-  // Establecer tipo de propiedad/categoría desde query
-  if (query.property_type) {
-    if (typeof query.property_type === 'string') {
-      filters.value.property_type = query.property_type;
-      selectedPropertyTypes.value = [query.property_type];
-    } else if (Array.isArray(query.property_type)) {
-      filters.value.property_type = query.property_type;
-      selectedPropertyTypes.value = query.property_type;
-    }
-  }
-  
-  // Establecer otros filtros desde query
-  if (query.city) filters.value.city = query.city;
-  if (query.schedule) filters.value.schedule = query.schedule;
-  
-  // Parsear amenidades si están en la URL
-  if (query.amenities) {
-    const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
-    filters.value.amenities = amenitiesArray;
-  }
-  
-  // Parsear opciones adicionales
-  filters.value.additionalOptions = [];
-  
-  if (query.verified === 'true') {
-    filters.value.additionalOptions.push('verified');
-  }
-  
-  if (query.featured === 'true') {
-    filters.value.additionalOptions.push('featured');
-  }
-  
-  if (query.isNew === 'true') {
-    filters.value.additionalOptions.push('new');
-  }
-  
-  if (query.popular === 'true') {
-    filters.value.additionalOptions.push('popular');
-  }
-};
+    const initFromQueryParams = () => {
+      const query = route.query;
+      
+      // Establecer búsqueda desde query
+      if (query.q) {
+        searchQuery.value = query.q;
+      } else {
+        searchQuery.value = ''; // Limpiar búsqueda si no está en URL
+      }
+      
+    // Establecer ordenación desde query
+      if (query.sort && ['id-asc', 'newest', 'views-high', 'views-low', 'title-asc', 'title-desc', 'rating-high', 'rating-low'].includes(query.sort)) {
+        sortBy.value = query.sort;
+      }
+      
+      // Establecer página desde query
+      if (query.page && !isNaN(parseInt(query.page))) {
+        currentPage.value = parseInt(query.page);
+      }
+      
+      // Establecer categoría desde query
+      if (query.category) {
+        filters.value.category = query.category;
+      }
+      
+      // Establecer tipo de propiedad/categoría desde query
+      if (query.property_type) {
+        if (typeof query.property_type === 'string') {
+          filters.value.property_type = query.property_type;
+          selectedPropertyTypes.value = [query.property_type];
+        } else if (Array.isArray(query.property_type)) {
+          filters.value.property_type = query.property_type;
+          selectedPropertyTypes.value = query.property_type;
+        }
+      }
+      
+      // Establecer otros filtros desde query
+      if (query.city) filters.value.city = query.city;
+      if (query.schedule) filters.value.schedule = query.schedule;
+      
+      // Parsear amenidades si están en la URL
+      if (query.amenities) {
+        const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
+        filters.value.amenities = amenitiesArray;
+      }
+      
+      // Parsear opciones adicionales
+      filters.value.additionalOptions = [];
+      
+      if (query.verified === 'true') {
+        filters.value.additionalOptions.push('verified');
+      }
+      
+      if (query.featured === 'true') {
+        filters.value.additionalOptions.push('featured');
+      }
+      
+      if (query.isNew === 'true') {
+        filters.value.additionalOptions.push('new');
+      }
+      
+      if (query.popular === 'true') {
+        filters.value.additionalOptions.push('popular');
+      }
+    };
 
     // Aplicar correcciones de color para estilo consistente
     const applyColorFix = () => {
@@ -1065,11 +1115,14 @@ const initFromQueryParams = () => {
       resetFilters,
       selectCategory,
       navigateToProperty,
-      formatPrice
+      formatPrice,
+      loadPropertyRatings
     };
   }
 };
 </script>
+
+
 
 <style scoped>
 /* Contenedor principal */
