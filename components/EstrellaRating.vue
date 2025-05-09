@@ -16,7 +16,7 @@
         </svg>
       </template>
     </div>
-    <span v-if="mostrarNumero" class="text-xs text-gray-500 ml-1">({{ calificacion.toFixed(1) }})</span>
+    <span v-if="mostrarNumero" class="text-xs text-gray-500 ml-1">({{ formatearCalificacion }})</span>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
   name: 'EstrellaRating',
   props: {
     calificacion: {
-      type: Number,
+      type: [Number, String],
       default: 0
     },
     mostrarNumero: {
@@ -33,16 +33,48 @@ export default {
       default: true
     }
   },
+  computed: {
+    // Convertir calificación a un número para los cálculos
+    calificacionNumerica() {
+      const valor = parseFloat(this.calificacion);
+      return isNaN(valor) ? 0 : valor;
+    },
+    // Formatear para mostrar siempre un decimal
+    formatearCalificacion() {
+      return this.calificacionNumerica.toFixed(1);
+    }
+  },
   methods: {
     getStarClass(position) {
-      if (this.calificacion >= position) {
+      // Usar la propiedad computada para asegurar que siempre es un número
+      const rating = this.calificacionNumerica;
+      
+      if (rating >= position) {
         return "text-yellow-400"; // Estrella completa
-      } else if (this.calificacion >= position - 0.5) {
+      } else if (rating >= position - 0.5) {
         return "text-yellow-400 opacity-60"; // Media estrella
       } else {
         return "text-gray-300"; // Estrella vacía
       }
     }
+  },
+  watch: {
+    // Observar cambios en la calificación para debugging
+    calificacion: {
+      handler(newVal, oldVal) {
+        console.log(`EstrellaRating - calificación cambió: ${oldVal} → ${newVal}`);
+      },
+      immediate: true
+    }
   }
 }
 </script>
+
+<style scoped>
+.text-yellow-400 {
+  color: #FBBF24 !important;
+}
+.text-gray-300 {
+  color: #D1D5DB !important;
+}
+</style>

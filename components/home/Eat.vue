@@ -1,286 +1,434 @@
-<template>
-  <section class="bg-white py-16">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Banner Taxi 488 (lado izquierdo) -->
-        <div class="lg:w-1/3 bg-indigo-50 rounded-lg p-6 h-full">
-          <div class="flex flex-col h-full">
-            <div class="mb-2">
-              <h2 class="text-3xl font-bold">
-                <span class="text-red-500 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                  </svg>
-                  Taxi <span class="text-gray-900">488</span>
-                </span>
-              </h2>
-              <p class="text-gray-600 mt-2">The best way to get wherever you're going!</p>
-            </div>
-            <div class="flex-grow flex items-center justify-center">
-              <img src="@/assets/images/taxi.svg" alt="Taxi" class="w-full max-w-xs" />
-            </div>
-          </div>
-        </div>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { usePropertyService } from '~/services/propertyService';
+
+// Inicializar el servicio de propiedades
+const propertyService = usePropertyService();
+
+// Estado para almacenar restaurantes
+const restaurants = ref([]);
+const isLoading = ref(true);
+const error = ref(null);
+
+// Para la navegación del slider
+const currentIndex = ref(0);
+const visibleCount = ref(3); // Número de elementos visibles a la vez en pantallas grandes
+
+// Función para cargar los restaurantes desde la API
+const loadRestaurants = async () => {
+  isLoading.value = true;
+  error.value = null;
+  
+  try {
+    // Llamada a la API para obtener propiedades de la categoría "Restaurante y bar"
+    const result = await propertyService.getPropertiesByCategory('Restaurante y bar', {
+      limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
+      sort: 'rating-high' // Ordenar por mayor calificación
+    });
+    
+    if (result && result.success) {
+      console.log('Resultado de la API:', result.data);
+      
+      // Transformar las propiedades al formato que necesitamos para el carrusel
+      const properties = result.data.properties || [];
+      
+      // Primero convertimos las propiedades al formato deseado
+      const transformedProperties = properties.map(property => ({
+        id: property.id,
+        name: property.title,
+        image: property.image || 'https://placehold.co/600x400?text=Sin+Imagen',
+        rating: property.average_rating !== undefined ? Number(property.average_rating) : null,
+        reviews: property.reviews_count || 0,
+        address: property.address || 'Dirección no disponible',
+        email: property.email || 'Sin correo',
+        phone: property.phone || 'Sin teléfono',
+        priceLevel: property.price_level || 1, // Nivel de precio (1-3)
+        schedule: property.schedule || 'Horario no disponible',
+        distanceFromCenter: property.distance_from_center || Math.floor(Math.random() * 30) / 10, // Distancia desde el centro en km
+        isFavorite: false // Por defecto no es favorito
+      }));
+      
+      console.log('Propiedades transformadas:', transformedProperties);
+      
+      // Si no hay propiedades, mostramos un error
+      if (transformedProperties.length === 0) {
+        console.warn('No se encontraron restaurantes en la respuesta de la API');
+        error.value = 'No se encontraron restaurantes disponibles';
+        restaurants.value = [];
+      } else {
+        // Ahora cargamos las calificaciones desde la API para cada propiedad
+        const propertiesWithRatings = await Promise.all(
+          transformedProperties.map(async (property) => {
+            // Solo consultamos la API si la calificación no está definida
+            if (property.rating === null || property.rating === undefined) {
+              try {
+                console.log(`Cargando calificación para propiedad ${property.id}`);
+                const rating = await propertyService.getPropertyRating(property.id);
+                console.log(`Calificación obtenida para ${property.name}: ${rating}`);
+                property.rating = rating;
+              } catch (err) {
+                console.error(`Error al cargar calificación para ${property.name}:`, err);
+                property.rating = 0;
+              }
+            } else {
+              console.log(`La propiedad ${property.name} ya tiene calificación: ${property.rating}`);
+            }
+            return property;
+          })
+        );
         
-        <!-- Where to eat (lado derecho) -->
-        <div class="lg:w-2/3">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-3xl font-bold text-gray-900">¿Con hambre? Aquí se come bien en La Ceiba</h2>
-            <a href="#" class="text-orange-700 font-medium flex items-center">
-              Ver todo
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+        console.log('Propiedades con calificaciones:', propertiesWithRatings);
+        
+        // Ordenamos por calificación de mayor a menor
+        const sortedProperties = [...propertiesWithRatings].sort((a, b) => 
+          (b.rating || 0) - (a.rating || 0)
+        );
+        
+        console.log('Propiedades ordenadas por calificación:', 
+          sortedProperties.map(p => `${p.name}: ${p.rating}`)
+        );
+        
+        restaurants.value = sortedProperties;
+      }
+    } else {
+      // Si hay un error en la respuesta
+      console.error('Error en la respuesta de la API:', result);
+      error.value = 'No se pudieron cargar los restaurantes';
+      restaurants.value = [];
+    }
+  } catch (err) {
+    console.error('Error al cargar restaurantes:', err);
+    error.value = 'Error al cargar los restaurantes';
+    restaurants.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Función para ir al slide anterior
+const prevSlide = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+  } else {
+    // Volver al final si estamos al principio
+    currentIndex.value = Math.max(0, restaurants.value.length - visibleCount.value);
+  }
+};
+
+// Función para ir al siguiente slide
+const nextSlide = () => {
+  if (currentIndex.value < restaurants.value.length - visibleCount.value) {
+    currentIndex.value++;
+  } else {
+    // Volver al inicio si estamos al final
+    currentIndex.value = 0;
+  }
+};
+
+// Calcular los elementos visibles según el índice actual
+const visibleItems = computed(() => {
+  // Si no hay restaurantes, devolver array vacío
+  if (restaurants.value.length === 0) {
+    return [];
+  }
+  
+  const startIndex = currentIndex.value;
+  const endIndex = Math.min(startIndex + visibleCount.value, restaurants.value.length);
+  return restaurants.value.slice(startIndex, endIndex);
+});
+
+// Función para alternar favoritos
+const toggleFavorite = (id) => {
+  const restaurant = restaurants.value.find(item => item.id === id);
+  if (restaurant) {
+    restaurant.isFavorite = !restaurant.isFavorite;
+  }
+};
+
+// Función que genera las estrellas de calificación
+const generateStars = (rating) => {
+  const stars = [];
+  const fullStars = Math.floor(rating || 0);
+  const hasHalfStar = (rating || 0) - fullStars >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+  // Agregar estrellas llenas
+  for (let i = 0; i < fullStars; i++) {
+    stars.push({ type: 'full' });
+  }
+
+  // Agregar media estrella si es necesario
+  if (hasHalfStar) {
+    stars.push({ type: 'half' });
+  }
+
+  // Agregar estrellas vacías
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push({ type: 'empty' });
+  }
+
+  return stars;
+};
+
+// Función para generar indicadores de precio ($, $$, $$$)
+const getPriceSymbols = (priceLevel) => {
+  return '$'.repeat(priceLevel || 1);
+};
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  loadRestaurants();
+  
+  // Ajustar la cantidad visible según el ancho de la pantalla
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      visibleCount.value = 1;
+    } else if (window.innerWidth < 1024) {
+      visibleCount.value = 2;
+    } else {
+      visibleCount.value = 3;
+    }
+  };
+  
+  // Configurar el listener para resize
+  handleResize();
+  window.addEventListener('resize', handleResize);
+  
+  // Limpiar listener al desmontar
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+});
+</script>
+
+<template>
+  <section class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Encabezado de la sección -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-800 mb-2 md:mb-0">
+        ¿Con hambre? Aquí se come bien en La Ceiba
+      </h2>
+      <a href="properties/food" class="text-orange-600 font-medium flex items-center hover:underline">
+        Ver todo
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    </div>
+    
+    <!-- Estado de carga -->
+    <div v-if="isLoading" class="flex justify-center items-center py-20">
+      <div class="spinner border-4 border-gray-200 border-t-orange-500 rounded-full w-10 h-10 animate-spin"></div>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div v-else-if="error" class="text-center py-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-orange-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <p class="text-lg text-gray-800 mb-4">{{ error }}</p>
+      <button 
+        @click="loadRestaurants" 
+        class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
+      >
+        Intentar de nuevo
+      </button>
+    </div>
+    
+    <!-- Mensaje si no hay resultados -->
+    <div v-else-if="restaurants.length === 0" class="text-center py-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+      </svg>
+      <p class="text-lg text-gray-800">No se encontraron restaurantes disponibles.</p>
+    </div>
+    
+    <!-- Contenedor del carrusel con controles de navegación -->
+    <div v-else class="relative">
+      <!-- Botón de navegación izquierda -->
+      <button 
+        @click="prevSlide" 
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-gray-100 focus:outline-none"
+        aria-label="Anterior"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      <!-- Grid de restaurantes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-hidden">
+        <!-- Restaurant Card - Iterate through visible items -->
+        <div v-for="restaurant in visibleItems" :key="restaurant.id" 
+             class="bg-white rounded-lg overflow-hidden shadow-md">
+          <!-- Restaurant Image -->
+          <div class="relative">
+            <img 
+              :src="restaurant.image" 
+              :alt="restaurant.name" 
+              class="w-full h-56 md:h-64 object-cover"
+              @error="$event.target.src = 'https://placehold.co/600x400?text=Sin+Imagen'"
+            />
+            <button 
+              @click="toggleFavorite(restaurant.id)" 
+              class="absolute top-3 right-3 bg-white rounded-full p-2 shadow heart-btn"
+              :class="{ 'favorite': restaurant.isFavorite }"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 heart-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
-            </a>
+            </button>
           </div>
           
-          <!-- Cuadrícula de restaurantes -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-            <!-- COLUMNA IZQUIERDA -->
-            <div>
-              <!-- Pina Pizza Restaurant -->
-              <div class="bg-gray-50 rounded-lg p-4 mb-6 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/01.svg" alt="Pina Pizza Restaurant" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">Pina Pizza Restaurant</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">5.0</span>
-                    <span class="text-gray-500 text-sm ml-1">(48)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $$
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    1.4 km from center
-                  </div>
-                </div>
-              </div>
-              
-              <!-- KFC -->
-              <div class="bg-gray-50 rounded-lg p-4 mb-6 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/02.svg" alt="KFC" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">KFC</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">4.0</span>
-                    <span class="text-gray-500 text-sm ml-1">(18)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    1.8 km from center
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Yum Restaurant -->
-              <div class="bg-gray-50 rounded-lg p-4 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/03.svg" alt="Yum Restaurant" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">Yum Restaurant</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">4.6</span>
-                    <span class="text-gray-500 text-sm ml-1">(48)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    2.4 km from center
-                  </div>
-                </div>
-              </div>
+          <!-- Restaurant Details -->
+          <div class="p-4">
+            <!-- Categoría (RESTAURANTE Y BAR) -->
+            <div class="uppercase text-sm font-medium text-orange-500 mb-1">
+              RESTAURANTE Y BAR
             </div>
             
-            <!-- COLUMNA DERECHA -->
-            <div>
-              <!-- Tosaka Sushi Bar -->
-              <div class="bg-gray-50 rounded-lg p-4 mb-6 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/04.svg" alt="Tosaka Sushi Bar" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">Tosaka Sushi Bar</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">5.0</span>
-                    <span class="text-gray-500 text-sm ml-1">(28)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $$$
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    2.5 km from center
-                  </div>
-                </div>
-              </div>
+            <!-- Nombre del restaurante -->
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+              {{ restaurant.name }}
+            </h3>
+            
+            <!-- Estrellas de calificación -->
+            <div class="flex items-center mb-3">
+              <!-- Renderizar estrellas según la calificación -->
+              <span v-for="(star, index) in generateStars(restaurant.rating)" :key="index" class="inline-block">
+                <svg v-if="star.type === 'full'" class="w-4 h-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+                <svg v-else-if="star.type === 'half'" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <defs>
+                    <linearGradient id="halfStarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="50%" stop-color="#FBBF24" />
+                      <stop offset="50%" stop-color="#D1D5DB" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="url(#halfStarGradient)" />
+                </svg>
+                <svg v-else class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              </span>
               
-              <!-- Dunkin' Donuts -->
-              <div class="bg-gray-50 rounded-lg p-4 mb-6 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/05.svg" alt="Dunkin' Donuts" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">Dunkin' Donuts</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">5.0</span>
-                    <span class="text-gray-500 text-sm ml-1">(43)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    1.8 km from center
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Spicy Bar-Restaurant -->
-              <div class="bg-gray-50 rounded-lg p-4 flex">
-                <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-                  <img src="@/assets/images/brands/06.svg" alt="Spicy Bar-Restaurant" class="w-14 h-14 object-contain" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold mb-1 text-gray-900">Spicy Bar-Restaurant</h3>
-                  <div class="flex items-center mb-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="font-bold text-sm ml-1">5.0</span>
-                    <span class="text-gray-500 text-sm ml-1">(32)</span>
-                  </div>
-                  <div class="flex items-center mb-1 text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    $$$
-                  </div>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    0.4 km from center
-                  </div>
-                </div>
-              </div>
+              <!-- Mostrar valor numérico de calificación -->
+              <span class="ml-1 text-sm text-gray-600">({{ (restaurant.rating || 0).toFixed(1) }})</span>
+              <span class="text-gray-500 text-sm ml-1">({{ restaurant.reviews }})</span>
+            </div>
+            
+            <!-- Nivel de precio -->
+            <div class="flex items-center mb-1 text-sm text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              {{ getPriceSymbols(restaurant.priceLevel) }}
+            </div>
+            
+            <!-- Dirección y distancia -->
+            <div class="flex items-center text-sm text-gray-500 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {{ restaurant.distanceFromCenter.toFixed(1) }} km from center
+            </div>
+            
+            <!-- Dirección detallada -->
+            <p class="text-sm text-gray-600 mb-2">{{ restaurant.address }}</p>
+            
+            <!-- Datos de contacto -->
+            <div v-if="restaurant.email !== 'Sin correo'" class="flex items-center mt-2">
+              <svg class="mr-2 text-gray-500 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span class="text-sm text-gray-600">{{ restaurant.email }}</span>
+            </div>
+            
+            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center mt-2">
+              <svg class="mr-2 text-gray-500 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span class="text-sm text-gray-600">{{ restaurant.phone }}</span>
             </div>
           </div>
         </div>
+      </div>
+      
+      <!-- Botón de navegación derecha -->
+      <button 
+        @click="nextSlide" 
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-gray-100 focus:outline-none"
+        aria-label="Siguiente"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      <!-- Indicador de paginación (puntos) -->
+      <div v-if="restaurants.length > visibleCount.value" class="flex justify-center mt-6">
+        <button 
+          v-for="i in Math.ceil(restaurants.length / visibleCount)" 
+          :key="i" 
+          @click="currentIndex = (i - 1) * visibleCount"
+          class="w-2 h-2 mx-1 rounded-full transition-colors duration-200"
+          :class="currentIndex >= (i - 1) * visibleCount && currentIndex < i * visibleCount ? 'bg-orange-600' : 'bg-gray-300'"
+          :aria-label="`Página ${i} de ${Math.ceil(restaurants.length / visibleCount)}`"
+        ></button>
       </div>
     </div>
   </section>
 </template>
 
-<script setup>
-// No se requiere lógica adicional para este componente
-</script>
-
 <style scoped>
-/* Fondos */
-.bg-indigo-50 {
-  background-color: #EEF2FF;
+/* Estilo para los corazones (botón de favorito) */
+.heart-icon {
+  stroke: #e53e3e; /* Borde rojo */
+  stroke-width: 1.5;
+  fill: white; /* Relleno blanco */
+  transition: fill 0.2s ease;
 }
 
-.bg-gray-50 {
-  background-color: #F9FAFB;
+/* Cuando el ratón está sobre el botón */
+.heart-btn:hover .heart-icon {
+  fill: #e53e3e; /* Relleno rojo al pasar el cursor */
 }
 
-/* Colores */
-.text-red-500 {
+/* Cuando está marcado como favorito */
+.favorite .heart-icon {
+  fill: #e53e3e; /* Relleno rojo cuando es favorito */
+}
+
+/* Animación de spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Estrellas */
+.text-yellow-400 {
+  color: #FBBF24 !important;
+}
+
+.text-gray-300 {
+  color: #D1D5DB !important;
+}
+
+/* Colores personalizados */
+.text-orange-500, .text-orange-600 {
   color: #FD5631;
 }
 
-.text-yellow-400 {
-  color: #FBBF24;
+.bg-orange-500 {
+  background-color: #FD5631;
 }
 
-.text-orange-700 {
-  color: #fd5631;
-}
-
-.text-gray-900 {
-  color: #1F2937;
-}
-
-.text-gray-600 {
-  color: #4B5563;
-}
-
-.text-gray-500 {
-  color: #6B7280;
-}
-
-/* Interactividad */
-.bg-gray-50:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-  transition: all 0.2s ease;
-}
-
-/* Bordes y espaciado */
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.py-16 {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+.bg-orange-600 {
+  background-color: #E04424;
 }
 </style>

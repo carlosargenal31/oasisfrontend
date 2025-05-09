@@ -21,7 +21,7 @@
         <div class="relative mb-3">
           <NuxtLink :to="`/blog/${blog.id}`">
             <img 
-              class="rounded-lg w-full h-56 object-cover" 
+              class="rounded-lg w-full h-60 object-cover" 
               :src="blog.image_url || getDefaultImage()" 
               :alt="blog.title" 
             />

@@ -204,15 +204,16 @@
                 <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
                 
                 <!-- Rating (Calificación) - MOVIDO AQUÍ ANTES DEL CORREO -->
-                <div class="flex items-center px-4 mt-2 mb-3">
-                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
-                  </svg>
-                  <estrella-rating 
-                    :calificacion="property.average_rating || 0"
-                    :mostrarNumero="true"
-                  />
-                </div>
+               <!-- Rating (Calificación) -->
+<div class="flex items-center px-4 mt-2 mb-3">
+  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
+  </svg>
+  <estrella-rating 
+    :calificacion="typeof property.average_rating === 'number' ? property.average_rating : 0"
+    :mostrarNumero="true"
+  />
+</div>
                 
                 <!-- Contact Information -->
                 <div class="flex items-center px-4 mt-2">
@@ -479,23 +480,49 @@ export default {
 
     // Método para cargar las calificaciones de las propiedades
     const loadPropertyRatings = async () => {
-      if (properties.value.length === 0) return;
-      
+  if (properties.value.length === 0) return;
+  
+  try {
+    console.log('Cargando calificaciones para', properties.value.length, 'propiedades');
+    
+    // Buscamos propiedades sin calificación
+    const propsToLoad = properties.value.filter(p => 
+      p.average_rating === undefined || p.average_rating === null
+    );
+    
+    console.log(`${propsToLoad.length} propiedades necesitan cargar calificación`);
+    
+    // Para cada propiedad sin calificación, obtener su calificación
+    const promises = propsToLoad.map(async (prop) => {
       try {
-        // Para cada propiedad que no tiene calificación, obtenerla
-        const promises = properties.value
-          .filter(prop => prop.average_rating === undefined || prop.average_rating === null)
-          .map(async (prop) => {
-            const rating = await propertyService.getPropertyRating(prop.id);
-            // Actualizar la propiedad directamente
-            prop.average_rating = rating;
-          });
+        const rating = await propertyService.getPropertyRating(prop.id);
+        console.log(`Propiedad ${prop.id} - ${prop.title} - Rating: ${rating}`);
         
-        await Promise.all(promises);
-      } catch (error) {
-        console.error('Error al cargar calificaciones:', error);
+        // Asegurar que rating sea un número (convertir si es necesario)
+        prop.average_rating = rating !== null && rating !== undefined ? Number(rating) : 0;
+      } catch (err) {
+        console.error(`Error al cargar rating para propiedad ${prop.id}:`, err);
+        prop.average_rating = 0;
       }
-    };
+    });
+    
+    await Promise.all(promises);
+    console.log('Calificaciones cargadas correctamente');
+    
+    // Comprobar que todas las propiedades tienen calificación ahora
+    const missingRatings = properties.value.filter(p => 
+      p.average_rating === undefined || p.average_rating === null
+    ).length;
+    
+    if (missingRatings > 0) {
+      console.warn(`Aún hay ${missingRatings} propiedades sin calificación`);
+    } else {
+      console.log('Todas las propiedades tienen calificación asignada');
+    }
+  } catch (error) {
+    console.error('Error al cargar calificaciones:', error);
+  }
+};
 
     // API URL
     const API_URL = process.env.API_URL || 'http://localhost:3000/api';
@@ -655,11 +682,41 @@ export default {
     };
 
     // Manejar cambios en la ordenación
-    const handleSortChange = () => {
-      currentPage.value = 1;
-      updateQueryParams();
-      fetchProperties();
-    };
+  const handleSortChange = async () => {
+  console.log('Cambiando ordenación a:', sortBy.value);
+  
+  // Si estamos ordenando por calificación, asegurarse de que se han cargado
+  if (sortBy.value === 'rating-high' || sortBy.value === 'rating-low') {
+    console.log('Ordenando por rating, verificando datos...');
+    
+    // Buscamos propiedades sin calificación
+    const propsWithoutRating = properties.value.filter(p => 
+      p.average_rating === undefined || p.average_rating === null
+    );
+    
+    // Solo cargamos ratings si es necesario
+    if (propsWithoutRating.length > 0) {
+      console.log(`${propsWithoutRating.length} propiedades necesitan cargar calificación`);
+      await loadPropertyRatings();
+    }
+    
+    // Solo actualizamos los parámetros de URL sin hacer fetchProperties
+    currentPage.value = 1;
+    updateQueryParams();
+    
+    // Asegurarnos de que la ordenación se refleja en la UI (aunque ya está manejada por el computed)
+    console.log('Ordenación en cliente completada');
+    
+    // Importante: aquí NO llamamos a fetchProperties() para evitar la llamada al backend
+    // El ordenamiento se maneja a través de la computed property sortedProperties
+    loading.value = false;
+  } else {
+    // Para otros tipos de ordenación, usamos el flujo normal
+    currentPage.value = 1;
+    updateQueryParams();
+    fetchProperties();
+  }
+};
     
     // Actualizar los parámetros de la URL
     const updateQueryParams = () => {
@@ -688,30 +745,34 @@ export default {
     };
 
     // Obtener propiedades de la API (MÉTODO MODIFICADO)
-    const fetchProperties = async () => {
+   const fetchProperties = async () => {
   loading.value = true;
   error.value = null;
   
   try {
-    // Convertir filtros a formato API
+    // Si estamos ordenando por rating, cargar todas las propiedades sin filtros adicionales
+    const isRatingSort = sortBy.value === 'rating-high' || sortBy.value === 'rating-low';
+    
+    // Convertir filtros a formato API (simplificamos si es ordenación por rating)
     const apiFilters = {
       page: currentPage.value,
-      limit: itemsPerPage.value,
-      sort: sortBy.value
+      limit: isRatingSort ? 100 : itemsPerPage.value, // Aumentamos el límite para obtener más propiedades
+      sort: isRatingSort ? 'newest' : sortBy.value // Usamos 'newest' como alternativa segura
     };
     
-    // Aplicar filtros adicionales
-    if (filters.value.city) {
-      apiFilters.city = filters.value.city;
-    }
-    
-    if (filters.value.amenities && filters.value.amenities.length > 0) {
-      apiFilters.amenities = filters.value.amenities;
-    }
-    
-    // Siempre incluir property_type cuando esté presente, independientemente de otros filtros
-    if (filters.value.property_type) {
-      apiFilters.property_type = filters.value.property_type;
+    // Solo agregamos filtros adicionales si no estamos ordenando por rating
+    if (!isRatingSort) {
+      if (filters.value.city) {
+        apiFilters.city = filters.value.city;
+      }
+      
+      if (filters.value.amenities && filters.value.amenities.length > 0) {
+        apiFilters.amenities = filters.value.amenities;
+      }
+      
+      if (filters.value.property_type) {
+        apiFilters.property_type = filters.value.property_type;
+      }
     }
     
     let result;
@@ -723,8 +784,6 @@ export default {
     }
     // Si no hay búsqueda, usar el método más adecuado según los filtros
     else {
-      // SOLUCIÓN CLAVE: Siempre usar getProperties con los filtros correspondientes
-      // Esto garantiza que funcione con o sin categoría
       result = await propertyService.getProperties(apiFilters);
     }
     
@@ -739,14 +798,38 @@ export default {
       
       // Aplicar filtro de categoría en el cliente si es necesario
       if (filters.value.category && properties.value.length > 0) {
-        properties.value = properties.value.filter(property => 
+        const filtered = properties.value.filter(property => 
           property.category === filters.value.category
         );
-        totalProperties.value = properties.value.length;
+        
+        console.log(`Filtrado por categoría '${filters.value.category}': ${filtered.length} propiedades`);
+        
+        properties.value = filtered;
+        totalProperties.value = filtered.length;
       }
       
       // Cargar calificaciones para las propiedades
       await loadPropertyRatings();
+      
+      // Importante: Si estamos ordenando por rating, lo hacemos directamente aquí
+      // en lugar de dejarlo solo para el computed property
+      if (isRatingSort) {
+        console.log('Aplicando ordenación por rating directamente a propiedades');
+        if (sortBy.value === 'rating-high') {
+          properties.value.sort((a, b) => {
+            const ratingA = parseFloat(a.average_rating) || 0;
+            const ratingB = parseFloat(b.average_rating) || 0;
+            return ratingB - ratingA;
+          });
+        } else { // rating-low
+          properties.value.sort((a, b) => {
+            const ratingA = parseFloat(a.average_rating) || 0;
+            const ratingB = parseFloat(b.average_rating) || 0;
+            return ratingA - ratingB;
+          });
+        }
+      }
+      
     } else {
       error.value = 'No se pudieron cargar las propiedades';
       properties.value = [];
@@ -761,33 +844,49 @@ export default {
     loading.value = false;
   }
 };
-    
     // Ordenar propiedades (actualizado para el nuevo modelo)
-    const sortedProperties = computed(() => {
-      let result = [...properties.value];
-      
-      if (sortBy.value === 'id-asc') {
-        result.sort((a, b) => a.id - b.id);
-      } else if (sortBy.value === 'newest') {
-        result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else if (sortBy.value === 'views-high') {
-        result.sort((a, b) => (b.views || 0) - (a.views || 0));
-      } else if (sortBy.value === 'views-low') {
-        result.sort((a, b) => (a.views || 0) - (b.views || 0));
-      } else if (sortBy.value === 'title-asc') {
-        result.sort((a, b) => a.title.localeCompare(b.title));
-      } else if (sortBy.value === 'title-desc') {
-        result.sort((a, b) => b.title.localeCompare(a.title));
-      } else if (sortBy.value === 'rating-high') {
-        // Nuevo orden por calificación más alta
-        result.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
-      } else if (sortBy.value === 'rating-low') {
-        // Nuevo orden por calificación más baja
-        result.sort((a, b) => (a.average_rating || 0) - (b.average_rating || 0));
-      }
-      
-      return result;
+   const sortedProperties = computed(() => {
+  let result = [...properties.value];
+  console.log('Ordenando propiedades, método:', sortBy.value);
+  
+  // Log de calificaciones para depuración
+  console.log('Calificaciones de propiedades:');
+  result.forEach(prop => {
+    console.log(`${prop.id} - ${prop.title}: ${prop.average_rating || 0}`);
+  });
+  
+  if (sortBy.value === 'id-asc') {
+    result.sort((a, b) => a.id - b.id);
+  } else if (sortBy.value === 'newest') {
+    result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  } else if (sortBy.value === 'views-high') {
+    result.sort((a, b) => (b.views || 0) - (a.views || 0));
+  } else if (sortBy.value === 'views-low') {
+    result.sort((a, b) => (a.views || 0) - (b.views || 0));
+  } else if (sortBy.value === 'title-asc') {
+    result.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  } else if (sortBy.value === 'title-desc') {
+    result.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+  } else if (sortBy.value === 'rating-high') {
+    // Mejorado: Asegurar que las calificaciones sean números y manejar nulos/undefined
+    result.sort((a, b) => {
+      const ratingA = parseFloat(a.average_rating) || 0;
+      const ratingB = parseFloat(b.average_rating) || 0;
+      return ratingB - ratingA;
     });
+    console.log('Después de ordenar por rating-high:', result.map(p => `${p.title}: ${p.average_rating || 0}`));
+  } else if (sortBy.value === 'rating-low') {
+    // Mejorado: Asegurar que las calificaciones sean números y manejar nulos/undefined
+    result.sort((a, b) => {
+      const ratingA = parseFloat(a.average_rating) || 0;
+      const ratingB = parseFloat(b.average_rating) || 0;
+      return ratingA - ratingB;
+    });
+  }
+  
+  return result;
+});
+
     
     // Paginación
     const totalPages = computed(() => {
