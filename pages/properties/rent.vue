@@ -2,94 +2,74 @@
   <div class="main-container bg-white">
     <div class="properties-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="properties-layout flex flex-col md:flex-row gap-6 pt-32 pb-10">
-        <!-- Left Sidebar with Filters and Categories -->
+        <!-- Left Sidebar with Filters (sin pestañas) -->
         <div class="filters-column w-full md:w-72 flex-shrink-0 bg-white pb-6 mt-16">
           <!-- Search Bar -->
           <div class="search-container mb-6">
-  <div class="relative flex items-center">
-    <input 
-  type="text" 
-  placeholder="Buscar por título, categoría o tipo..." 
-  class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-  v-model="searchQuery"
-  @keyup.enter="handleSearch"
->
-    <span class="absolute left-3 text-gray-400">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-      </svg>
-    </span>
-   <button 
-  class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
-  @click="handleSearch"
->
-  Buscar
-</button>
-  </div>
-</div>
-          
-          <!-- Tabs for toggling between Categories and Filters -->
-          <div class="tabs flex mb-6 border-b">
-            <button 
-              class="tab-btn flex-1 py-3 text-center font-medium"
-              :class="activeTab === 'categories' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
-              @click="activeTab = 'categories'"
-            >
-              <span class="flex items-center justify-center">
-                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
-                </svg>
-                Categories
-              </span>
-            </button>
-            <button 
-              class="tab-btn flex-1 py-3 text-center font-medium"
-              :class="activeTab === 'filters' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
-              @click="activeTab = 'filters'"
-            >
-              <span class="flex items-center justify-center">
-                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                </svg>
-                Filters
-              </span>
-            </button>
-          </div>
-          
-          <!-- Categories View -->
-          <div v-if="activeTab === 'categories'" class="categories-view">
-            <div class="grid grid-cols-2 gap-4">
-              <div 
-                v-for="category in categories" 
-                :key="category.id" 
-                class="category-card flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition"
-                @click="selectCategory(category.id)"
+            <div class="relative flex items-center">
+              <input 
+                type="text" 
+                placeholder="Buscar lugares" 
+                class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                v-model="searchQuery"
+                @keyup.enter="handleSearch"
               >
-                <div :class="['icon-circle w-12 h-12 rounded-full flex items-center justify-center mb-2', category.color]" v-html="category.icon"></div>
-                <span class="text-sm text-center font-medium text-gray-800">{{ category.name }}</span>
-              </div>
+              <span class="absolute left-3 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+              </span>
+              <button 
+                class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
+                @click="handleSearch"
+              >
+                Buscar
+              </button>
             </div>
           </div>
           
-          <!-- Filters View -->
-          <div v-else class="filters-view">
-            
-            <!-- Location -->
+          <!-- Filters View (ahora siempre visible) -->
+          <div class="filters-view">
+            <!-- Categoría con Iconos -->
             <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Ubicación</h3>
-              <div class="mb-3">
-                <select 
-                  v-model="filters.city" 
-                  class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" 
-                  @change="handleFilterChange"
+              <h3 class="filter-title text-base font-medium text-black mb-3">Categoría</h3>
+              <div class="category-icons grid grid-cols-3 gap-3 mb-3">
+                <div 
+                  class="category-card flex flex-col items-center justify-center p-3 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition"
+                  :class="{'border-orange-500 shadow-sm': filters.category === 'Alojamiento'}"
+                  @click="selectCategory('Alojamiento')"
                 >
-                  <option value="">Seleccionar ciudad</option>
-                  <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
-                </select>
+                  <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-blue-100 text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-double-icon lucide-bed-double"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>
+                  </div>
+                  <span class="text-xs text-center font-medium text-gray-800">Alojamiento</span>
+                </div>
+                
+                <div 
+                  class="category-card flex flex-col items-center justify-center p-3 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition"
+                  :class="{'border-orange-500 shadow-sm': filters.category === 'Restaurante y bar'}"
+                  @click="selectCategory('Restaurante y bar')"
+                >
+                  <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-yellow-100 text-yellow-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils-crossed-icon lucide-utensils-crossed"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg>
+                  </div>
+                  <span class="text-xs text-center font-medium text-gray-800">Restaurante y Bar</span>
+                </div>
+                
+                <div 
+                  class="category-card flex flex-col items-center justify-center p-3 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition"
+                  :class="{'border-orange-500 shadow-sm': filters.category === 'Entretenimiento'}"
+                  @click="selectCategory('Entretenimiento')"
+                >
+                  <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-red-100 text-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket-icon lucide-ticket"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+                  </div>
+                  <span class="text-xs text-center font-medium text-gray-800">Entretenimiento</span>
+                </div>
               </div>
             </div>
             
-            <!-- Business Category (antes Property Type) -->
+            <!-- Tipo de negocio -->
             <div class="filter-section mb-5">
               <h3 class="filter-title text-base font-medium text-black mb-3">Tipo de negocio</h3>
               <div class="property-types overflow-y-auto max-h-48">
@@ -107,59 +87,7 @@
               </div>
             </div>
             
-            <!-- Schedule (Horario) - Nuevo filtro para tu modelo -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Horario</h3>
-              <div class="mb-3">
-                <select 
-                  v-model="filters.schedule" 
-                  class="form-select w-full rounded-md border border-gray-300 py-2 px-3 text-black" 
-                  @change="handleFilterChange"
-                >
-                  <option value="">Cualquier horario</option>
-                  <option value="matutino">Matutino</option>
-                  <option value="vespertino">Vespertino</option>
-                  <option value="nocturno">Nocturno</option>
-                  <option value="24-horas">24 horas</option>
-                </select>
-              </div>
-            </div>
             
-            <!-- Amenities -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Comodidades</h3>
-              <div class="amenities-list overflow-y-auto max-h-48">
-                <div v-for="amenity in amenities" :key="amenity.value" class="checkbox-item flex items-center mb-2">
-                  <input 
-                    type="checkbox" 
-                    :id="amenity.value" 
-                    :value="amenity.value" 
-                    v-model="filters.amenities"
-                    @change="handleFilterChange"
-                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                  >
-                  <label :for="amenity.value" class="ml-2 text-sm text-black">{{ amenity.label }}</label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Additional Options -->
-            <div class="filter-section mb-5">
-              <h3 class="filter-title text-base font-medium text-black mb-3">Opciones adicionales</h3>
-              <div class="options-list">
-                <div v-for="option in additionalOptions" :key="option.value" class="checkbox-item flex items-center mb-2">
-                  <input 
-                    type="checkbox" 
-                    :id="option.value" 
-                    :value="option.value" 
-                    v-model="filters.additionalOptions"
-                    @change="handleFilterChange"
-                    class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                  >
-                  <label :for="option.value" class="ml-2 text-sm text-black">{{ option.label }}</label>
-                </div>
-              </div>
-            </div>
             
             <!-- Reset Filters Button -->
             <button 
@@ -180,11 +108,11 @@
           <div class="breadcrumb flex items-center mb-4 text-sm">
             <a href="/" class="text-gray-600 hover:text-orange-500">Inicio</a>
             <span class="mx-2 text-gray-500">›</span>
-            <span class="text-black">Propiedades en alquiler</span>
+            <span class="text-black">¿Qué hacer en La Ceiba?</span>
           </div>
           
           <!-- Page Title -->
-          <h1 class="text-2xl font-bold text-black mb-4">Propiedades en alquiler</h1>
+          <h1 class="text-2xl font-bold text-black mb-4">¿Qué hacer en La Ceiba?</h1>
           
           <!-- Controls and Sorting -->
           <div class="flex items-center justify-between mb-6">
@@ -260,64 +188,64 @@
                 </button>
               </div>
               
-             <!-- Property Details -->
-<div @click="navigateToProperty(property.id)" class="cursor-pointer">
-  <!-- Business Category Label -->
-  <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
-    {{ property.category || 'NEGOCIO' }}
-  </div>
-  
-  <!-- Title -->
-  <h3 class="font-medium text-black px-4 mt-1">
-    {{ property.title }}
-  </h3>
-  
-  <!-- Address -->
-  <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
-  
-  <!-- Rating (Calificación) - MOVIDO AQUÍ ANTES DEL CORREO -->
-  <div class="flex items-center px-4 mt-2 mb-3">
-    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
-    </svg>
-    <estrella-rating 
-      :calificacion="property.average_rating || 0"
-      :mostrarNumero="true"
-    />
-  </div>
-  
-  <!-- Contact Information -->
-  <div class="flex items-center px-4 mt-2">
-    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
-    </svg>
-    <span class="text-sm text-gray-600">{{ property.email || 'Sin correo' }}</span>
-  </div>
-  
-  <div class="flex items-center px-4 mt-1 mb-4">
-    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
-    </svg>
-    <span class="text-sm text-gray-600">{{ property.phone || 'Sin teléfono' }}</span>
-  </div>
-  
-  <!-- Schedule -->
-  <div class="flex items-center px-4 mt-1 mb-4">
-    <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
-      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
-    </svg>
-    <span class="text-sm text-gray-600">{{ property.schedule || 'Horario no disponible' }}</span>
-  </div>
-  
-  <!-- Views Count -->
-  <div class="flex items-center justify-end px-4 py-2 border-t border-gray-200 bg-gray-50">
-    <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
-    </svg>
-    <span class="text-xs text-gray-500">{{ property.views || 0 }} vistas</span>
-  </div>
-</div>
+              <!-- Property Details -->
+              <div @click="navigateToProperty(property.id)" class="cursor-pointer">
+                <!-- Business Category Label -->
+                <div class="uppercase text-sm font-medium text-red-500 pt-4 px-4">
+                  {{ property.category || 'NEGOCIO' }}
+                </div>
+                
+                <!-- Title -->
+                <h3 class="font-medium text-black px-4 mt-1">
+                  {{ property.title }}
+                </h3>
+                
+                <!-- Address -->
+                <p class="text-sm text-gray-600 px-4 mt-1">{{ property.address }}</p>
+                
+                <!-- Rating (Calificación) - MOVIDO AQUÍ ANTES DEL CORREO -->
+                <div class="flex items-center px-4 mt-2 mb-3">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
+                  </svg>
+                  <estrella-rating 
+                    :calificacion="property.average_rating || 0"
+                    :mostrarNumero="true"
+                  />
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="flex items-center px-4 mt-2">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-sm text-gray-600">{{ property.email || 'Sin correo' }}</span>
+                </div>
+                
+                <div class="flex items-center px-4 mt-1 mb-4">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-sm text-gray-600">{{ property.phone || 'Sin teléfono' }}</span>
+                </div>
+                
+                <!-- Schedule -->
+                <div class="flex items-center px-4 mt-1 mb-4">
+                  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
+                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-sm text-gray-600">{{ property.schedule || 'Horario no disponible' }}</span>
+                </div>
+                
+                <!-- Views Count -->
+                <div class="flex items-center justify-end px-4 py-2 border-t border-gray-200 bg-gray-50">
+                  <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+                  </svg>
+                  <span class="text-xs text-gray-500">{{ property.views || 0 }} vistas</span>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -334,7 +262,7 @@
             >
               Restablecer filtros
             </button>
-          </div>
+            </div>
           
           <!-- Error State -->
           <div v-else-if="error" class="flex flex-col items-center justify-center py-16">
@@ -391,6 +319,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -418,9 +347,6 @@ export default {
 
     // Estado de búsqueda
     const searchQuery = ref('');
-    
-    // Estado de modo de vista
-    const activeTab = ref('categories');
     
     // Estado de las propiedades y filtros
     const properties = ref([]);
@@ -498,14 +424,12 @@ export default {
     const filters = ref({
       city: '',
       property_type: null,
-      category: null, // Añadimos categoría como un filtro independiente
-      schedule: '',
+      category: null,
       amenities: [],
-      additionalOptions: [],
       status: 'active'
     });
     
-    // Categorías actualizadas para tipos de negocios
+  // Categorías actualizadas para tipos de negocios (mantenidas para referencia)
     const categories = ref([
       { 
         id: 'accommodation',
@@ -519,56 +443,11 @@ export default {
         color: 'bg-yellow-100 text-yellow-600',
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils-crossed-icon lucide-utensils-crossed"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg>'
       },
-      { 
-        id: 'shopping',
-        name: 'Compras',
-        color: 'bg-red-100 text-red-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag-icon lucide-shopping-bag"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
-      },
-      { 
-        id: 'art',
-        name: 'Arte e Historia',
-        color: 'bg-green-100 text-green-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-landmark-icon lucide-landmark"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>'
-      },
       {
         id: 'entertainment',
         name: 'Entretenimiento',
         color: 'bg-red-100 text-red-600',
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket-icon lucide-ticket"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>'
-      },
-      { 
-        id: 'medicine',
-        name: 'Salud',
-        color: 'bg-blue-100 text-blue-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase-medical-icon lucide-briefcase-medical"><path d="M12 11v4"/><path d="M14 13h-4"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M18 6v14"/><path d="M6 6v14"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>'
-      },
-      
-      {
-        id: 'beauty',
-        name: 'Belleza',
-        color: 'bg-yellow-100 text-yellow-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'
-      },
-      
-      {
-        id: 'auto',
-        name: 'Alquiler de Vehículos',
-        color: 'bg-blue-100 text-blue-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-front-icon lucide-car-front"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>'
-      },
-      { 
-        id: 'fitness',
-        name: 'Deporte y Fitness',
-        color: 'bg-red-100 text-red-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dumbbell-icon lucide-dumbbell"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z"/><path d="m2.5 21.5 1.4-1.4"/><path d="m20.1 3.9 1.4-1.4"/><path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z"/><path d="m9.6 14.4 4.8-4.8"/></svg>'
-      },
-      
-      { 
-        id: 'nightlife',
-        name: 'Vida Nocturna',
-        color: 'bg-indigo-100 text-indigo-600',
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-martini-icon lucide-martini"><path d="M8 22h8"/><path d="M12 11v11"/><path d="m19 3-7 8-7-8Z"/></svg>'
       }
     ]);
 
@@ -671,41 +550,21 @@ export default {
       }
     };
     
-    // Seleccionar categoría
-    const selectCategory = (categoryId) => {
-      console.log('Categoría seleccionada:', categoryId);
-      // Reiniciar la página al cambiar de categoría
-      currentPage.value = 1;
-      
-      // Limpiar filtros actuales
-      resetFilters();
-      
-      // Mapear el ID de categoría a la categoría real que se almacena en el backend
-      const categoryMapping = {
-        'accommodation': 'Alojamiento',
-        'food': 'Restaurante y bar',
-        'entertainment': 'Entretenimiento',
-        'shopping': 'Compras',
-        'art': 'Arte e Historia',
-        'beauty': 'Belleza',
-        'auto': 'Alquiler de Vehículos', 
-        'fitness': 'Deporte y Fitness',
-        'nightlife': 'Vida Nocturna',
-        'medicine': 'Salud'
-      };
-      
-      // Obtener la categoría real
-      const selectedCategory = categoryMapping[categoryId];
-      
-      if (selectedCategory) {
-        // Filtrar directamente por la categoría exacta en lugar de usar tipos de propiedad
-        filters.value.category = selectedCategory;
-        
-        // Actualizar parámetros de URL y buscar propiedades
-        updateQueryParams();
-        fetchProperties();
-      }
-    };
+    // Seleccionar categoría (versión modificada para trabajar directamente con el selector)
+  const selectCategory = (categoryValue) => {
+  console.log('Categoría seleccionada:', categoryValue);
+  
+  // Reiniciar la página
+  currentPage.value = 1;
+  
+  // IMPORTANTE: NO reiniciar los tipos de negocio seleccionados
+  // Simplemente actualizar la categoría
+  filters.value.category = categoryValue;
+  
+  // Actualizar parámetros de URL y buscar propiedades
+  updateQueryParams();
+  fetchProperties();
+};
     
     // Actualizar los tipos de propiedad seleccionados
     const updatePropertyTypeFilters = () => {
@@ -761,91 +620,73 @@ export default {
     };
 
     // Obtener propiedades de la API
-    const fetchProperties = async () => {
-      loading.value = true;
-      error.value = null;
-      
-      try {
-        // Convertir filtros a formato API
-        const apiFilters = {
-          page: currentPage.value,
-          limit: itemsPerPage.value,
-          // Incluir el ordenamiento
-          sort: sortBy.value
-        };
-        
-        // Aplicar filtros adicionales
-        if (filters.value.city) {
-          apiFilters.city = filters.value.city;
-        }
-        
-        if (filters.value.schedule) {
-          apiFilters.schedule = filters.value.schedule;
-        }
-        
-        if (filters.value.amenities && filters.value.amenities.length > 0) {
-          apiFilters.amenities = filters.value.amenities;
-        }
-        
-        // Aplicar opciones adicionales
-        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('verified')) {
-          apiFilters.verified = true;
-        }
-        
-        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('featured')) {
-          apiFilters.featured = true;
-        }
-        
-        if (filters.value.additionalOptions && filters.value.additionalOptions.includes('new')) {
-          apiFilters.isNew = true;
-        }
-        
-        let result;
-        
-        // Si hay término de búsqueda, usar la búsqueda
-        if (searchQuery.value.trim()) {
-          const searchFields = ['title', 'category', 'property_type'];
-          result = await propertyService.searchProperties(searchQuery.value, searchFields);
-        }
-        // Determinar qué método de servicio usar según los filtros si no hay búsqueda
-        else if (filters.value.category) {
-          // Si hay una categoría seleccionada, usar el método específico
-          result = await propertyService.getPropertiesByCategory(filters.value.category, apiFilters);
-        } else if (filters.value.property_type) {
-          // Si hay un tipo de propiedad seleccionado, usar el método general con filtro
-          apiFilters.property_type = filters.value.property_type;
-          result = await propertyService.getProperties(apiFilters);
-        } else {
-          // Si no hay filtros de categoría ni tipo, usar el método general
-          result = await propertyService.getProperties(apiFilters);
-        }
-        
-        console.log('Respuesta del API:', result);
-        
-        // Procesar resultados
-        if (result && result.success) {
-          // Asegurarse de acceder correctamente a los datos según la estructura de respuesta
-          properties.value = result.data?.properties || [];
-          totalProperties.value = result.data?.total || 0;
-          
-          console.log('Propiedades cargadas:', properties.value.length);
-          
-          // Cargar calificaciones para las propiedades
-          await loadPropertyRatings();
-        } else {
-          error.value = 'No se pudieron cargar las propiedades';
-          properties.value = [];
-          totalProperties.value = 0;
-        }
-      } catch (err) {
-        console.error('Error al obtener propiedades:', err);
-        error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
-        properties.value = [];
-        totalProperties.value = 0;
-      } finally {
-        loading.value = false;
-      }
+  const fetchProperties = async () => {
+  loading.value = true;
+  error.value = null;
+  
+  try {
+    // Preparar filtros para la API - incluir TODOS los filtros aquí
+    const apiFilters = {
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sort: sortBy.value
     };
+    
+    // Aplicar filtros adicionales
+    if (filters.value.city) {
+      apiFilters.city = filters.value.city;
+    }
+    
+    if (filters.value.amenities && filters.value.amenities.length > 0) {
+      apiFilters.amenities = filters.value.amenities;
+    }
+    
+    // IMPORTANTE: Incluir TODOS los filtros en una sola llamada
+    // Añadir tipo de propiedad si existe
+    if (filters.value.property_type) {
+      apiFilters.property_type = filters.value.property_type;
+    }
+    
+    // Añadir categoría si existe
+    if (filters.value.category) {
+      apiFilters.category = filters.value.category;
+    }
+    
+    let result;
+    
+    // Usar búsqueda específica solo para términos de búsqueda
+    if (searchQuery.value.trim()) {
+      // Si hay término de búsqueda, usar búsqueda
+      const searchFields = ['title', 'category', 'property_type'];
+      result = await propertyService.searchProperties(searchQuery.value, searchFields);
+    } 
+    else {
+      // Para todos los demás casos, usar el método general con TODOS los filtros
+      // Esto imita el comportamiento que funciona cuando solo seleccionas tipo de negocio
+      result = await propertyService.getProperties(apiFilters);
+    }
+    
+    // Procesar resultados
+    if (result && result.success) {
+      properties.value = result.data?.properties || [];
+      totalProperties.value = result.data?.total || 0;
+      
+      // Cargar calificaciones para las propiedades
+      await loadPropertyRatings();
+    } else {
+      error.value = result.message || 'No se pudieron cargar las propiedades';
+      properties.value = [];
+      totalProperties.value = 0;
+    }
+  } catch (err) {
+    console.error('Error al obtener propiedades:', err);
+    error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
+    properties.value = [];
+    totalProperties.value = 0;
+  } finally {
+    loading.value = false;
+  }
+};
     
     // Ordenar propiedades (actualizado para el nuevo modelo)
     const sortedProperties = computed(() => {
@@ -944,13 +785,10 @@ export default {
       selectedPropertyTypes.value = [];
       
       filters.value = { 
-        // Elimina el filtro de status
         city: '',
         property_type: null,
         category: null,
-        schedule: '',
         amenities: [],
-        additionalOptions: [],
         status: 'active'
       };
       
@@ -976,7 +814,7 @@ export default {
         searchQuery.value = ''; // Limpiar búsqueda si no está en URL
       }
       
-    // Establecer ordenación desde query
+      // Establecer ordenación desde query
       if (query.sort && ['id-asc', 'newest', 'views-high', 'views-low', 'title-asc', 'title-desc', 'rating-high', 'rating-low'].includes(query.sort)) {
         sortBy.value = query.sort;
       }
@@ -1004,31 +842,11 @@ export default {
       
       // Establecer otros filtros desde query
       if (query.city) filters.value.city = query.city;
-      if (query.schedule) filters.value.schedule = query.schedule;
       
       // Parsear amenidades si están en la URL
       if (query.amenities) {
         const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
         filters.value.amenities = amenitiesArray;
-      }
-      
-      // Parsear opciones adicionales
-      filters.value.additionalOptions = [];
-      
-      if (query.verified === 'true') {
-        filters.value.additionalOptions.push('verified');
-      }
-      
-      if (query.featured === 'true') {
-        filters.value.additionalOptions.push('featured');
-      }
-      
-      if (query.isNew === 'true') {
-        filters.value.additionalOptions.push('new');
-      }
-      
-      if (query.popular === 'true') {
-        filters.value.additionalOptions.push('popular');
       }
     };
 
@@ -1080,7 +898,6 @@ export default {
 
     return {
       // Estados
-      activeTab,
       searchQuery,
       properties,
       totalProperties,
@@ -1121,7 +938,6 @@ export default {
   }
 };
 </script>
-
 
 
 <style scoped>
