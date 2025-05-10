@@ -238,7 +238,7 @@ const changeMonth = (direction) => {
         </button>
         
         <!-- Ver todos los eventos -->
-        <a href="/events" class="text-orange-600 font-medium flex items-center hover:underline ml-3">
+        <a href="/events/grid" class="text-orange-600 font-medium flex items-center hover:underline ml-3">
           Ver todo
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
