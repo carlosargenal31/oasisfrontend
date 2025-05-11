@@ -15,7 +15,7 @@
         
         <!-- Logo -->
         <div class="flex justify-center mb-8">
-          <h1 class="text-3xl font-bold text-orange-600 dark:text-orange-400">OASIS</h1>
+          <h1 class="text-3xl font-bold text-orange-600 dark:text-orange-400"></h1>
         </div>
         
         <!-- Auth Content -->

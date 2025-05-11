@@ -339,10 +339,10 @@
       </div>
       
       <!-- Contenido - aumentado a 70% de ancho -->
-      <div class="w-[70%] p-6 flex flex-col justify-between">
+      <div class="w-[70%] p-4 flex flex-col justify-center">
         <div>
           <!-- Tipo de evento y precio -->
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-2">
             <span class="bg-orange-100 text-orange-500 text-xs px-2 py-1 rounded uppercase font-semibold">
               {{ translateEventType(event.event_type) }}
             </span>
@@ -359,7 +359,7 @@
           </h2>
           
           <!-- Fecha, hora y ubicación -->
-          <div class="text-sm text-gray-600 mb-3">
+          <div class="text-sm text-gray-600 mb-2">
             <div class="flex items-center flex-wrap gap-4 mb-1">
               <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -378,14 +378,14 @@
           </div>
           
           <!-- Descripción -->
-          <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2">
             {{ event.description || 'Sin descripción disponible.' }}
           </p>
         </div>
         
         <!-- Footer con información del organizador y enlace -->
-        <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-          <div class="flex items-center min-w-0 mr-6">
+        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+          <div class="flex items-center min-w-0 mr-4">
             <img 
               class="rounded-full w-8 h-8 mr-3 flex-shrink-0" 
               :src="event.profile_image || getCreatorImage(event.created_by)" 
@@ -409,7 +409,6 @@
     </div>
   </div>
 </div>
-
         <!-- Paginación -->
         <div v-if="totalPages > 1" class="flex justify-center mt-10">
           <nav class="inline-flex items-center">
