@@ -15,6 +15,8 @@ export const useAuthStore = defineStore('auth', {
     getUser: (state) => state.user,
     getToken: (state) => state.token,
     isLoggedIn: (state) => state.isAuthenticated,
+    // AGREGAR ESTE GETTER
+    isAdmin: (state) => state.user?.role === 'admin',
   },
   
   actions: {
@@ -85,7 +87,7 @@ export const useAuthStore = defineStore('auth', {
               first_name: userData.first_name,
               last_name: userData.last_name,
               email: userData.email,
-              // Nota: ya no usamos avatar de placeholder, ahora lo manejamos con el componente
+              role: 'user', // Por defecto, nuevos usuarios son 'user'
               profile_image: null
             },
             accessToken: 'mock_access_token_' + Date.now(),
@@ -134,7 +136,7 @@ export const useAuthStore = defineStore('auth', {
             first_name: userData.first_name,
             last_name: userData.last_name,
             email: userData.email,
-            // Nota: ya no usamos avatar de placeholder, ahora lo manejamos con el componente
+            role: 'user', // Por defecto, nuevos usuarios son 'user'
             profile_image: null
           };
           
@@ -196,7 +198,7 @@ export const useAuthStore = defineStore('auth', {
               first_name: 'John',
               last_name: 'Doe',
               email: credentials.email,
-              // Usamos un endpoint real para el profile_image
+              role: credentials.email === 'admin@example.com' ? 'admin' : 'user', // Si es admin por email
               profile_image: 'https://oasiscontenedor.blob.core.windows.net/users/01.jpg'
             },
             accessToken: 'mock_access_token_' + Date.now(),
@@ -249,6 +251,7 @@ export const useAuthStore = defineStore('auth', {
             first_name: 'John',
             last_name: 'Doe',
             email: credentials.email,
+            role: credentials.email === 'admin@example.com' ? 'admin' : 'user', // Si es admin por email
             profile_image: 'https://oasiscontenedor.blob.core.windows.net/users/01.jpg'
           };
           

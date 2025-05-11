@@ -870,7 +870,7 @@ const viewHostProperties = () => {
 // Obtener imagenes de la base de datos de Oasis
 const getPropertyImage = (imageNumber) => {
   const imageNum = String(imageNumber).padStart(2, '0');
-  return `https://oasiscontenedor.blob.core.windows.net/property-images/${imageNum}.jpg`;
+  return `https://oasiscontenedor.blob.core.windows.net/business-images/${imageNum}.jpg`;
 };
 
 const navigateToBooking = () => {

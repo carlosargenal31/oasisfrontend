@@ -529,7 +529,7 @@ const formatPrice = (price) => {
 
 // Obtener imagen de la propiedad
 const getPropertyImage = (index) => {
-  return `https://oasiscontenedor.blob.core.windows.net/property-images/${String(index).padStart(2, '0')}.jpg`;
+  return `https://oasiscontenedor.blob.core.windows.net/business-images/${String(index).padStart(2, '0')}.jpg`;
 };
 
 // Función para validar los datos de la reserva antes de enviarlos
