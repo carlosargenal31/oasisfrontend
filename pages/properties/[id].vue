@@ -18,17 +18,16 @@
 
     <!-- Contenido cuando los datos están cargados -->
     <div v-else-if="property">
-      <!-- Breadcrumb -->
-      <div class="breadcrumb flex items-center mb-4 text-sm">
-        <a href="/" class="text-black hover:text-orange-800">Inicio</a>
-        <span class="mx-2 text-black">›</span>
-        <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-black hover:text-orange-800">
-          {{ property.status === 'for-rent' ? 'Propiedades en alquiler' : 'Propiedades en venta' }}
-        </a>
-        <span class="mx-2 text-black">›</span>
-        <span class="text-black">{{ property.title }}</span>
-      </div>
-
+      <!-- Breadcrumb modificado -->
+<div class="breadcrumb flex items-center mb-4 text-sm">
+  <a href="/" class="text-black hover:text-orange-800">Inicio</a>
+  <span class="mx-2 text-black">›</span>
+  <a href="/properties/rent" class="text-black hover:text-orange-800">
+    Negocios
+  </a>
+  <span class="mx-2 text-black">›</span>
+  <span class="text-black">{{ property.title }}</span>
+</div>
       <div class="flex flex-col md:flex-row gap-8">
         <!-- Columna izquierda - Imágenes e información principal -->
         <div class="md:w-2/3">
@@ -74,18 +73,7 @@
           
           <!-- Características principales -->
           <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="flex items-center">
-              <span class="material-icons text-black mr-2">hotel</span>
-              <span class="text-black">{{ property.bedrooms }} Habitaciones</span>
-            </div>
-            <div class="flex items-center">
-              <span class="material-icons text-black mr-2">bathtub</span>
-              <span class="text-black">{{ property.bathrooms }} Baños</span>
-            </div>
-            <div class="flex items-center">
-              <span class="material-icons text-black mr-2">straighten</span>
-              <span class="text-black">{{ property.square_feet }} m²</span>
-            </div>
+          
           </div>
           
           <!-- Descripción de la propiedad -->
@@ -99,25 +87,17 @@
   <div class="p-6">
     <div class="flex flex-col md:flex-row items-start">
       <div class="w-full md:w-1/3">
-        <img 
-          :src="getHostImage()" 
-          alt="Host Avatar" 
-          class="w-full h-auto rounded"
-        />
+       
       </div>
       
+     
       <div class="w-full md:w-2/3 md:pl-6 mt-4 md:mt-0">
-        <div class="text-orange-500 float-right">
-          <span class="text-2xl">"</span>
-        </div>
         
         <!-- Mostrar biografía real cuando está disponible -->
         <p class="text-black mb-4" v-if="property.host_bio || (hostData && hostData.bio)">
           {{ property.host_bio || (hostData && hostData.bio) }}
         </p>
-        <p class="text-black mb-4" v-else>
-          {{ hostName }} es un anfitrión con experiencia en el sector inmobiliario. Consulta sus propiedades disponibles.
-        </p>
+        <!-- Se ha eliminado el bloque v-else que mostraba texto por defecto -->
         
         <h3 class="text-xl font-semibold mb-1">
           <a href="#" @click.prevent="viewHostProperties()" class="text-orange-800 hover:text-orange-900">
@@ -127,28 +107,7 @@
         
         <p class="text-black mb-2">{{ hostRole }}</p>
         
-        <!-- Sección de estrellas mejorada para mostrar medias estrellas -->
-<div class="flex items-center mb-4">
-  <div class="flex">
-    <!-- Iteramos 5 veces para las 5 estrellas -->
-    <template v-for="i in 5" :key="i">
-      <!-- Estrella completa si el rating es al menos i -->
-      <span v-if="hostRating >= i" class="material-icons text-sm text-yellow-400">star</span>
-      
-      <!-- Media estrella si el rating está entre i-0.75 e i-0.25 -->
-      <span v-else-if="hostRating > i-0.75 && hostRating < i-0.25" class="material-icons text-sm text-yellow-400">star_half</span>
-      
-      <!-- Estrella vacía en otros casos -->
-      <span v-else class="material-icons text-sm text-gray-300">star</span>
-    </template>
-  </div>
-  <span class="text-black ml-2">{{ hostReviews }} reseñas</span>
-</div>
-        
-        <div class="flex items-center text-sm text-black mb-3">
-          <span class="material-icons text-orange-800 mr-1">home</span>
-          <span>{{ hostProperties.length || property.host_properties_count || 0 }} propiedades</span>
-        </div>
+  
         
         <!-- Corrección enlaces de redes sociales -->
         <div class="flex space-x-3 mt-2" v-if="hasSocialLinks">
@@ -300,72 +259,38 @@
             </button>
           </div>
           
-          <!-- Precio mensual o precio de venta -->
-          <div class="mb-6">
-            <h2 class="rent-title text-xl font-bold text-black mb-2">
-              {{ property.status === 'for-rent' ? 'Renta mensual:' : 'Precio:' }}
-            </h2>
-            <p class="rent-price text-3xl font-bold text-black">
-              L {{ formatPrice(property.price) }} 
-              <span v-if="property.status === 'for-rent'" class="text-base font-normal text-black">/mes</span>
-            </p>
-          </div>
           
           <!-- Detalles de la propiedad -->
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="details-title text-xl font-bold text-black mb-4">Detalles de la Propiedad</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-black">Tipo:</span>
-                <span class="font-medium text-black">{{ translatePropertyType(property.property_type) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-black">Área:</span>
-                <span class="font-medium text-black">{{ property.square_feet }} m²</span>
-              </div>
-              
-              <div class="flex justify-between">
-                <span class="text-black">Habitaciones:</span>
-                <span class="font-medium text-black">{{ property.bedrooms }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-black">Baños:</span>
-                <span class="font-medium text-black">{{ property.bathrooms }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-black">Estacionamientos:</span>
-                <span class="font-medium text-black">{{ property.parkingSpaces || '0' }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-black">Mascotas permitidas:</span>
-                <span class="font-medium text-black">{{ translatePetsAllowed(property.pets_allowed) }}</span>
-              </div>
-            </div>
-          </div>
+         <div class="bg-gray-50 rounded-lg p-6 mb-6">
+  <h3 class="details-title text-xl font-bold text-black mb-4">Detalles de {{ property.category }}</h3>
+  <div class="space-y-3">
+    <div class="flex justify-between">
+      <span class="text-black">Tipo:</span>
+      <span class="font-medium text-black">{{ property.property_type }}</span>
+    </div>
+    
+    <!-- Solo mostrar estos campos si es alojamiento -->
+ 
+    <!-- Mostrar horario si existe -->
+    <div v-if="property.schedule" class="flex justify-between">
+      <span class="text-black">Horario:</span>
+      <span class="font-medium text-black">{{ formatSchedule(property.schedule) }}</span>
+    </div>
+    
+    <!-- Datos de contacto -->
+    <div v-if="property.phone" class="flex justify-between">
+      <span class="text-black">Teléfono:</span>
+      <span class="font-medium text-black">{{ property.phone }}</span>
+    </div>
+    
+    <div v-if="property.email" class="flex justify-between">
+      <span class="text-black">Email:</span>
+      <span class="font-medium text-black">{{ property.email }}</span>
+    </div>
+  </div>
+</div>
           
-          <!-- Botón de reserva/contacto -->
-<button @click="navigateToBooking" class="w-full bg-orange-800 hover:bg-orange-900 text-white font-medium py-3 px-4 rounded mb-4 transition">
-  {{ property.status === 'for-rent' ? 'Renta Ya' : 'Compra Ya' }}
-</button>
-          
-          <!-- Enlace a FAQ -->
-          <a href="#" class="flex items-center justify-center text-orange-800 hover:text-orange-900 mb-6">
-            <span class="material-icons mr-2">help</span>
-            Preguntas frecuentes
-          </a>
-          
-          <!-- Comodidades -->
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="amenities-title text-xl font-bold text-black mb-4">Comodidades</h3>
-            <div class="grid grid-cols-2 gap-y-3">
-              <div v-for="(amenity, index) in property.amenities" :key="index" class="flex items-center">
-                <span class="material-icons mr-2 text-orange-800">{{ getAmenityIcon(amenity) }}</span>
-                <span class="text-black">{{ translateAmenity(amenity) }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Ubicación en mapa -->
+ <!-- Ubicación en mapa -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
             <div class="relative mb-3">
@@ -386,6 +311,19 @@
             </p>
           </div>
           
+          <!-- Comodidades -->
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="amenities-title text-xl font-bold text-black mb-4">Comodidades</h3>
+            <div class="grid grid-cols-2 gap-y-3">
+              <div v-for="(amenity, index) in property.amenities" :key="index" class="flex items-center">
+                <span class="material-icons mr-2 text-orange-800">{{ getAmenityIcon(amenity) }}</span>
+                <span class="text-black">{{ translateAmenity(amenity) }}</span>
+              </div>
+            </div>
+          </div>
+          
+         
+          
           <!-- Detalles de publicación -->
           <div class="flexflex-wrap text-sm text-black">
   <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
@@ -401,11 +339,11 @@
       <!-- Sección de Propiedades Similares -->
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
-          <a :href="property.status === 'for-rent' ? '/properties/rent' : '/properties/sale'" class="text-orange-800 flex items-center">
-            Ver todas <span class="ml-1">→</span>
-          </a>
-        </div>
+  <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
+  <a href="/properties/rent" class="text-orange-800 flex items-center">
+    Ver todas <span class="ml-1">→</span>
+  </a>
+</div>
         
         <div v-if="isLoadingSimilar" class="flex justify-center py-8">
           <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-8 h-8 animate-spin"></div>
@@ -415,37 +353,75 @@
           No se encontraron propiedades similares.
         </div>
         
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div v-for="(listing, i) in similarProperties" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
-            <div class="relative">
-              <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
-              <div class="absolute top-3 left-3">
-                <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
-                <span v-if="listing.isNew" class="bg-orange-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
-                <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div v-for="(listing, i) in similarProperties" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
+    <div class="relative">
+      <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
+      <div class="absolute top-3 left-3">
+        <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
+        <span v-if="listing.isNew" class="bg-orange-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
+        <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
+      </div>
+    </div>
             
-            <div class="p-4">
-              <div class="text-sm font-medium uppercase mb-1" :class="listing.status === 'for-rent' ? 'text-orange-800' : 'text-green-500'">
-                {{ listing.status === 'for-sale' ? 'EN VENTA' : 'EN RENTA' }}
-              </div>
-              <h3 class="font-medium text-black mb-1">
-                {{ listing.title }} | {{ listing.square_feet }} m²
-              </h3>
-              <p class="text-sm text-black mb-2">{{ listing.address }}</p>
-              <div class="font-bold text-black mb-2">
-                L {{ formatPrice(listing.price) }}
-                <span v-if="listing.status === 'for-rent'" class="text-sm font-normal text-black">/mes</span>
-              </div>
-              <div class="flex justify-between text-sm text-black">
-                <span>{{ listing.bedrooms }} hab</span>
-                <span>{{ listing.bathrooms }} baños</span>
-                <span>{{ listing.parkingSpaces || '0' }} est</span>
-              </div>
-            </div>
-          </div>
+   <!-- Implementación alternativa con 5 estrellas para propiedades similares -->
+ <div class="p-4">
+      <!-- Categoría del negocio -->
+      <div class="uppercase text-sm font-medium text-green-500 mb-1">
+        {{ listing.category }}
+      </div>
+      
+      <!-- Nombre del negocio -->
+      <h3 class="font-medium text-black mb-1">
+        {{ listing.title }}
+      </h3>
+      
+      <!-- Dirección -->
+      <p class="text-sm text-gray-600 mb-2">{{ listing.address }}</p>
+      
+      <!-- Calificación con estrellas -->
+      <div class="flex items-center mb-4">
+        <div class="flex text-yellow-400">
+          <span 
+            v-for="i in 5" 
+            :key="i" 
+            class="material-icons text-sm" 
+            :class="i <= Math.round(parseFloat(listing.average_rating) || 0) ? 'text-yellow-400' : 'text-gray-300'"
+          >
+            star
+          </span>
         </div>
+        <span class="ml-2 text-sm font-bold text-black">
+          {{ listing.average_rating ? parseFloat(listing.average_rating).toFixed(1) : '0.0' }}
+        </span>
+      </div>
+      
+      <!-- Información de contacto -->
+      <div class="flex items-center mb-2">
+        <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+        </svg>
+        <span class="text-sm text-gray-600">{{ listing.email || 'Sin correo' }}</span>
+      </div>
+      
+      <!-- Teléfono -->
+      <div class="flex items-center mb-2">
+        <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+        </svg>
+        <span class="text-sm text-gray-600">{{ listing.phone || 'Sin teléfono' }}</span>
+      </div>
+      
+      <!-- Contador de vistas -->
+      <div class="flex items-center justify-end py-2 border-t border-gray-200 bg-gray-50 mt-2">
+        <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+        </svg>
+        <span class="text-xs text-gray-500">{{ listing.views || 0 }} vistas</span>
+      </div>
+    </div>
+  </div>
+</div>
       </div>
       
       <!-- Modal de Reseñas (Oculto por defecto) -->
@@ -512,6 +488,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useReviewStore } from '../store/review';
 import { useFavoritesStore } from '~/store/favorites';
+
 
 // Definir la URL base de la API
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';
@@ -621,26 +598,7 @@ const getReviewerAvatar = (review) => {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_name)}&background=random`;
 };
 
-// Obtener imagen del anfitrión
-const getHostImage = () => {
-  // Si tenemos datos del anfitrión y tiene imagen
-  if (hostData.value && hostData.value.profile_image) {
-    return hostData.value.profile_image;
-  }
-  
-  // Si el anfitrión tiene credenciales de usuario, usamos su imagen de perfil
-  if (property.value && property.value.host_id && property.value.host_profile_image) {
-    return property.value.host_profile_image;
-  }
-  
-  // Generar avatar basado en el nombre del anfitrión
-  if (hostName.value) {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(hostName.value)}&background=random`;
-  }
-  
-  // Imagen por defecto como último recurso
-  return 'https://randomuser.me/api/portraits/men/68.jpg';
-};
+
 
 // Segunda parte: Agregar estas computed properties y funciones a la sección de script
 
@@ -1042,6 +1000,22 @@ const translatePropertyType = (type) => {
   return translations[type] || type;
 };
 
+const getStarsText = (rating) => {
+  if (rating === undefined || rating === null) return "★ 0.0 (0 reseñas)";
+  
+  const numericRating = parseFloat(rating) || 0;
+  const formattedRating = numericRating.toFixed(1);
+  return `★ ${formattedRating}`;
+};
+
+// Función para obtener array de estrellas (llenas o vacías)
+const getStarsArray = (rating) => {
+  if (rating === undefined || rating === null) return [false, false, false, false, false];
+  
+  const numericRating = Math.round(parseFloat(rating) || 0);
+  return Array(5).fill(false).map((_, index) => index < numericRating);
+};
+
 const translatePetsAllowed = (petsAllowed) => {
   if (!petsAllowed || petsAllowed.length === 0) return 'No permitidas';
   
@@ -1254,6 +1228,31 @@ const fetchPropertyData = async () => {
   }
 };
 
+const formatSchedule = (schedule) => {
+  if (!schedule) return "No disponible";
+  // Convierte el texto del horario "Lunes Martes" en "Lun, Mar"
+  return schedule
+    .split(' ')
+    .map(day => {
+      const firstThree = day.substring(0, 3);
+      return firstThree.charAt(0).toUpperCase() + firstThree.slice(1).toLowerCase();
+    })
+    .join(', ');
+};
+
+// Agregar esta función en el script
+const getActionButtonText = () => {
+  if (property.value.category === 'Alojamiento') {
+    return property.value.status === 'for-rent' ? 'Reservar Ahora' : 'Contactar';
+  } else if (property.value.category === 'Restaurante y bar') {
+    return 'Reservar Mesa';
+  } else if (property.value.category === 'Entretenimiento') {
+    return 'Más Información';
+  }
+  return 'Contactar';
+};
+
+// Cargar propiedades similares
 // Cargar propiedades similares
 const fetchSimilarProperties = async () => {
   isLoadingSimilar.value = true;
@@ -1263,15 +1262,13 @@ const fetchSimilarProperties = async () => {
     
     // Construir parámetros de filtro para propiedades similares
     const filters = {
-      status: property.value.status,
+      category: property.value.category,
       property_type: property.value.property_type,
+      include_ratings: true, // Asegurarse de incluir los ratings
       limit: 4
     };
     
-    // Opcional: añadir filtros adicionales como rango de precio similar, ciudad, etc.
-    if (property.value.city) {
-      filters.city = property.value.city;
-    }
+    // Opcional: añadir filtros adicionales como ciudad, etc.
     
     // Armar la URL con los parámetros
     const queryString = Object.entries(filters)
@@ -1282,9 +1279,29 @@ const fetchSimilarProperties = async () => {
     
     if (response.data && response.data.success) {
       // Filtrar para no incluir la propiedad actual
-      similarProperties.value = response.data.data.properties
+      const filteredProperties = response.data.data.properties
         .filter(p => p.id !== property.value.id)
         .slice(0, 4);
+      
+      // Para cada propiedad, si no tiene average_rating, obtenerlo
+      for (const prop of filteredProperties) {
+        if (!prop.average_rating || !prop.review_count) {
+          try {
+            const ratingResponse = await axios.get(`${API_URL}/reviews/property/${prop.id}/rating`);
+            if (ratingResponse.data && ratingResponse.data.success) {
+              prop.average_rating = ratingResponse.data.data.averageRating;
+              prop.review_count = ratingResponse.data.data.reviewCount || 0;
+            }
+          } catch (err) {
+            console.warn(`No se pudo obtener rating para propiedad ${prop.id}:`, err);
+            // Si falla, asignar valores por defecto
+            prop.average_rating = prop.average_rating || 0;
+            prop.review_count = prop.review_count || 0;
+          }
+        }
+      }
+      
+      similarProperties.value = filteredProperties;
     } else {
       similarProperties.value = [];
     }
@@ -1294,6 +1311,25 @@ const fetchSimilarProperties = async () => {
   } finally {
     isLoadingSimilar.value = false;
   }
+};
+
+// Función para formatear calificación
+const formatRating = (rating) => {
+  if (!rating || isNaN(parseFloat(rating))) return '0.0';
+  return parseFloat(rating).toFixed(1);
+};
+
+// Función para obtener array de estrellas llenas/vacías basado en rating
+const getRatingStars = (rating) => {
+  const numericRating = Math.round(parseFloat(rating) || 0);
+  return Array(5).fill(false).map((_, index) => index < numericRating);
+};
+
+// Función para obtener el texto de calificación con número de reseñas
+const getRatingText = (rating, reviewCount) => {
+  const formattedRating = formatRating(rating);
+  const count = reviewCount || 0;
+  return `${formattedRating} (${count} ${count === 1 ? 'reseña' : 'reseñas'})`;
 };
 
 // Cargar reseñas de la propiedad
