@@ -290,6 +290,7 @@
   </div>
 </div>
           
+
  <!-- Ubicación en mapa -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
