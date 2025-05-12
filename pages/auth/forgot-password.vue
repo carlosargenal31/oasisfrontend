@@ -14,19 +14,19 @@
         </div>
         
         <!-- Instructions -->
-        <p class="text-gray-600 dark:text-gray-400">
+        <p class="text-gray-600 ">
           Enter your email address below and we'll send you a link to reset your password.
         </p>
         
         <!-- Email Input -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input 
             id="email" 
             v-model="email" 
             type="email" 
             required 
-            class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="w-full px-4 py-2 border rounded-lg focus:ring-orange-500 focus:border-orange-500"
             placeholder="your@email.com"
           />
         </div>
@@ -50,7 +50,7 @@
         <!-- Back to Login -->
         <div class="text-center text-sm">
           Remember your password? 
-          <NuxtLink to="/auth/login" class="text-orange-600 dark:text-orange-400 hover:underline font-medium">
+          <NuxtLink to="/auth/login" class="text-orange-600 hover:underline font-medium">
             Log in
           </NuxtLink>
         </div>
