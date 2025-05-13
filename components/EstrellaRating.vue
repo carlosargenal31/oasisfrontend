@@ -69,18 +69,19 @@ export default {
     }
   },
   methods: {
-    getStarClass(position) {
-      // Usar la propiedad computada para asegurar que siempre es un número
-      const rating = this.calificacionNumerica;
-      
-      if (rating >= position) {
-        return "estrella-llena"; // Estrella completa
-      } else if (rating >= position - 0.5) {
-        return "estrella-media"; // Media estrella
-      } else {
-        return "estrella-vacia"; // Estrella vacía
-      }
-    }
+    // Dentro del componente EstrellaRating
+getStarClass(position) {
+  // Asegurarse de que la calificación es un número
+  const rating = this.calificacionNumerica;
+  
+  if (rating >= position) {
+    return "estrella-llena"; // Estrella completa
+  } else if (rating >= position - 0.5) {
+    return "estrella-media"; // Media estrella
+  } else {
+    return "estrella-vacia"; // Estrella vacía
+  }
+}
   },
   watch: {
     // Observar cambios en la calificación para debugging

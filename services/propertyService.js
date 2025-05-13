@@ -3,7 +3,7 @@ export const usePropertyService = () => {
   const config = useRuntimeConfig();
   const { $axios } = useNuxtApp();
   
-  // Fetch properties from API
+  // Fetch properties from API - MODIFICADO
   const getProperties = async (params = {}) => {
     try {
       const response = await $axios.get('/properties', { params });
@@ -14,7 +14,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Nuevo método para obtener propiedades por categoría
+  // Obtener propiedades por categoría
   const getPropertiesByCategory = async (category, params = {}) => {
     try {
       const response = await $axios.get(`/properties/categories/${category}`, { params });
@@ -25,7 +25,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Nuevo método para obtener propiedades por categoría Y tipo
+  // Obtener propiedades por categoría Y tipo
   const getPropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
     try {
       // Clonar los parámetros básicos
@@ -148,17 +148,18 @@ export const usePropertyService = () => {
     }
   };
   
-  // Search properties by query
-  const searchProperties = async (query, fields = []) => {
+  // Search properties by query - MODIFICADO
+  const searchProperties = async (query, fields = [], params = {}) => {
     try {
-      const params = { q: query };
+      // Combinar parámetros de búsqueda con sort, page, limit, etc.
+      const queryParams = { q: query, ...params };
       
       // Si se proporcionan campos específicos para buscar
       if (fields && fields.length > 0) {
-        params.searchFields = fields.join(',');
+        queryParams.searchFields = fields.join(',');
       }
       
-      const response = await $axios.get('/properties/search', { params });
+      const response = await $axios.get('/properties/search', { params: queryParams });
       return response.data;
     } catch (error) {
       console.error('Error searching properties:', error);
@@ -189,25 +190,24 @@ export const usePropertyService = () => {
   };
   
   // Obtener la calificación promedio de una propiedad
-const getPropertyRating = async (propertyId) => {
-  try {
-    console.log(`Solicitando rating para propiedad ${propertyId}`);
-    const response = await $axios.get(`/reviews/property/${propertyId}/rating`);
-    console.log('Respuesta rating:', response.data);
-    
-    if (response.data && response.data.success) {
-      // Asegurar que se retorne un número
-      const rating = response.data.data.averageRating;
-      return rating !== null && rating !== undefined ? Number(rating) : 0;
+  const getPropertyRating = async (propertyId) => {
+    try {
+      console.log(`Solicitando rating para propiedad ${propertyId}`);
+      const response = await $axios.get(`/reviews/property/${propertyId}/rating`);
+      console.log('Respuesta rating:', response.data);
+      
+      if (response.data && response.data.success) {
+        // Asegurar que se retorne un número
+        const rating = response.data.data.averageRating;
+        return rating !== null && rating !== undefined ? Number(rating) : 0;
+      }
+      console.log(`No se encontró rating para propiedad ${propertyId}, retornando 0`);
+      return 0;
+    } catch (error) {
+      console.error(`Error al obtener calificación para propiedad ${propertyId}:`, error);
+      return 0;
     }
-    console.log(`No se encontró rating para propiedad ${propertyId}, retornando 0`);
-    return 0;
-  } catch (error) {
-    console.error(`Error al obtener calificación para propiedad ${propertyId}:`, error);
-    return 0;
-  }
-};
-
+  };
   
   // Obtener todas las reseñas de una propiedad
   const getPropertyReviews = async (propertyId) => {
@@ -232,7 +232,7 @@ const getPropertyRating = async (propertyId) => {
   return {
     getProperties,
     getPropertiesByCategory,
-    getPropertiesByCategoryAndType, // Nuevo método añadido
+    getPropertiesByCategoryAndType,
     getMainCategories,
     getProperty,
     createProperty,
