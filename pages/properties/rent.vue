@@ -5,28 +5,29 @@
         <!-- Left Sidebar with Filters (sin pestañas) -->
         <div class="filters-column w-full md:w-72 flex-shrink-0 bg-white pb-6 mt-16">
           <!-- Search Bar -->
-          <div class="search-container mb-6">
-            <div class="relative flex items-center">
-              <input 
-                type="text" 
-                placeholder="Buscar lugares" 
-                class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
-              >
-              <span class="absolute left-3 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                </svg>
-              </span>
-              <button 
-                class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
-                @click="handleSearch"
-              >
-                Buscar
-              </button>
-            </div>
-          </div>
+          <!-- Reemplaza el div de search-container en tu template por este: -->
+<div class="search-container mb-6">
+  <div class="relative flex items-center">
+    <input 
+      type="text" 
+      placeholder="Buscar lugares" 
+      class="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+      v-model="searchQuery"
+      @keyup.enter="handleSearch"
+    >
+    <span class="absolute left-3 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+    </span>
+    <button 
+      class="absolute right-0 bg-orange-500 text-white px-4 py-2 rounded-r-full hover:bg-orange-600 transition"
+      @click="handleSearch"
+    >
+      Buscar
+    </button>
+  </div>
+</div>
           
           <!-- Filters View (ahora siempre visible) -->
           <div class="filters-view">
@@ -203,9 +204,7 @@
                 
                 <!-- Rating (Calificación) -->
 <div class="flex items-center px-4 mt-2 mb-3">
-  <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
-  </svg>
+  
   <estrella-rating 
     :calificacion="parseFloat(property.average_rating) || 0"
     :mostrarNumero="true"
@@ -474,6 +473,10 @@ export default {
     });
 
     // Método para cargar las calificaciones de las propiedades
+// Actualización para la función loadPropertyRatings en rent.vue
+// Reemplaza la función existente por esta:
+
+// Método para cargar las calificaciones de las propiedades
 const loadPropertyRatings = async () => {
   if (properties.value.length === 0) return;
   
@@ -500,6 +503,13 @@ const loadPropertyRatings = async () => {
     // Para cada propiedad sin calificación, obtener su calificación
     const promises = propsToLoad.map(async (prop) => {
       try {
+        // Validar que prop.id sea válido antes de hacer la solicitud
+        if (!prop.id) {
+          console.error('Propiedad sin ID válido:', prop);
+          prop.average_rating = 0;
+          return;
+        }
+        
         const rating = await propertyService.getPropertyRating(prop.id);
         console.log(`Propiedad ${prop.id} - ${prop.title} - Rating: ${rating}`);
         
@@ -523,59 +533,209 @@ const loadPropertyRatings = async () => {
     const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
     // Manejar la búsqueda
-    const handleSearch = () => {
-      if (searchQuery.value.trim()) {
-        console.log('Buscando:', searchQuery.value);
-        currentPage.value = 1;
-        loading.value = true;
-        
-        // Crear apiFilters para incluir parámetros de ordenación y paginación
-        const apiFilters = {
-          page: currentPage.value,
-          limit: itemsPerPage.value,
-          sort: sortBy.value
-        };
-        
-        // Especificar los campos donde queremos buscar
-        const searchFields = ['title', 'category', 'property_type'];
-        
-        propertyService.searchProperties(searchQuery.value, searchFields, apiFilters)
-          .then(result => {
-            console.log('Resultado de búsqueda:', result);
-            
-            if (result && result.success) {
-              properties.value = result.data?.properties || [];
-              totalProperties.value = result.data?.total || properties.value.length;
-              console.log('Propiedades encontradas:', properties.value.length);
-              
-              // Cargar calificaciones para las propiedades encontradas
-              loadPropertyRatings();
-            } else {
-              error.value = 'No se pudieron cargar los resultados de búsqueda';
-              properties.value = [];
-              totalProperties.value = 0;
-            }
-          })
-          .catch(err => {
-            console.error('Error en búsqueda:', err);
-            error.value = 'Error al buscar propiedades';
-            properties.value = [];
-            totalProperties.value = 0;
-          })
-          .finally(() => {
-            loading.value = false;
-          });
-        
-        // Actualizar la URL para reflejar la búsqueda
-        router.replace({ 
-          query: { 
-            ...route.query,
-            q: searchQuery.value,
-            page: 1
-          }
-        });
+    // Dentro del componente rent.vue, modificar la función handleSearch como sigue:
+
+// Manejar la búsqueda
+// Actualización para la función handleSearch en rent.vue
+
+// Manejar la búsqueda
+const handleSearch = async () => {
+  if (searchQuery.value.trim()) {
+    console.log('Buscando:', searchQuery.value);
+    currentPage.value = 1;
+    loading.value = true;
+    error.value = null;
+    
+    try {
+      // Crear apiFilters para incluir parámetros de ordenación, paginación y filtros actuales
+      const apiFilters = {
+        page: currentPage.value,
+        limit: itemsPerPage.value,
+        sort: sortBy.value
+      };
+      
+      // Incluir filtros de categoría y tipo si están establecidos
+      if (filters.value.category) {
+        apiFilters.category = filters.value.category;
+        console.log('Incluyendo filtro de categoría en búsqueda:', filters.value.category);
       }
+      
+      if (filters.value.property_type) {
+        apiFilters.property_type = filters.value.property_type;
+        console.log('Incluyendo filtro de tipo en búsqueda:', filters.value.property_type);
+      }
+      
+      if (filters.value.amenities && filters.value.amenities.length > 0) {
+        apiFilters.amenities = filters.value.amenities;
+      }
+      
+      // Especificar los campos donde queremos buscar
+      const searchFields = ['title', 'description', 'address', 'category', 'property_type'];
+      
+      console.log('Realizando búsqueda con filtros:', apiFilters);
+      const result = await propertyService.searchProperties(searchQuery.value, searchFields, apiFilters);
+      
+      if (result && result.success) {
+        properties.value = result.data?.properties || [];
+        totalProperties.value = result.data?.total || properties.value.length;
+        console.log('Propiedades encontradas:', properties.value.length);
+        
+        // Cargar calificaciones para las propiedades encontradas
+        await loadPropertyRatings();
+      } else {
+        error.value = result.error || 'No se pudieron cargar los resultados de búsqueda';
+        properties.value = [];
+        totalProperties.value = 0;
+      }
+    } catch (err) {
+      console.error('Error en búsqueda:', err);
+      error.value = 'Error al buscar propiedades';
+      properties.value = [];
+      totalProperties.value = 0;
+    } finally {
+      loading.value = false;
+    }
+    
+    // Actualizar la URL para reflejar la búsqueda, manteniendo filtros
+    const query = { ...route.query, q: searchQuery.value, page: 1 };
+    router.replace({ query });
+  } else if (searchQuery.value === '' && route.query.q) {
+    // Si se borra la búsqueda pero hay una búsqueda activa en la URL,
+    // limpiar y recargar con los filtros actuales
+    console.log('Búsqueda borrada, recargando con filtros actuales');
+    
+    // Construir nueva query sin el parámetro q
+    const { q, ...restQuery } = route.query;
+    router.replace({ 
+      query: { 
+        ...restQuery,
+        page: 1
+      }
+    });
+    
+    // Cargar propiedades con los filtros actuales
+    currentPage.value = 1;
+    fetchProperties();
+  }
+};
+// Actualización mejorada para la función fetchProperties
+
+const fetchProperties = async () => {
+  loading.value = true;
+  error.value = null;
+  
+  try {
+    // Convertir filtros a formato API
+    const apiFilters = {
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sort: sortBy.value
     };
+    
+    // Agregar otros filtros
+    if (filters.value.city) {
+      apiFilters.city = filters.value.city;
+    }
+    
+    if (filters.value.amenities && filters.value.amenities.length > 0) {
+      apiFilters.amenities = filters.value.amenities;
+    }
+    
+    // IMPORTANTE: Establecer correctamente los filtros de tipo y categoría
+    if (filters.value.category) {
+      apiFilters.category = filters.value.category;
+      console.log(`Filtrando por categoría: ${filters.value.category}`);
+    }
+    
+    // Claramente establecer el filtro de tipo de propiedad si existe
+    if (selectedPropertyTypes.value && selectedPropertyTypes.value.length > 0) {
+      // Si hay tipos seleccionados, usar estos tipos específicos
+      if (selectedPropertyTypes.value.length === 1) {
+        apiFilters.property_type = selectedPropertyTypes.value[0];
+      } else {
+        apiFilters.property_type = selectedPropertyTypes.value;
+      }
+      console.log(`Filtrando por tipo(s) específico(s): ${JSON.stringify(selectedPropertyTypes.value)}`);
+    }
+    
+    let result;
+    
+    // Lógica mejorada para manejar la combinación de filtros
+    if (searchQuery.value.trim()) {
+      // Caso 1: Búsqueda de texto con filtros adicionales
+      const searchFields = ['title', 'description', 'address', 'category', 'property_type'];
+      result = await propertyService.searchProperties(searchQuery.value, searchFields, apiFilters);
+    } 
+    else if (filters.value.category && selectedPropertyTypes.value.length > 0) {
+      // Caso 2: Categoría seleccionada y tipos de propiedad específicos seleccionados
+      console.log(`Filtrando por categoría ${filters.value.category} y tipos específicos: ${JSON.stringify(selectedPropertyTypes.value)}`);
+      // Usar getPropertiesByCategoryAndType para obtener resultados más precisos
+      result = await propertyService.getPropertiesByCategoryAndType(
+        filters.value.category,
+        selectedPropertyTypes.value.length === 1 ? selectedPropertyTypes.value[0] : selectedPropertyTypes.value,
+        apiFilters
+      );
+    }
+    else if (filters.value.category) {
+      // Caso 3: Solo categoría seleccionada (sin tipos específicos)
+      console.log(`Filtrando solo por categoría: ${filters.value.category}`);
+      result = await propertyService.getPropertiesByCategory(
+        filters.value.category,
+        apiFilters
+      );
+    }
+    else if (selectedPropertyTypes.value.length > 0) {
+      // Caso 4: Solo tipos de propiedad seleccionados (sin categoría)
+      console.log(`Filtrando solo por tipos: ${JSON.stringify(selectedPropertyTypes.value)}`);
+      // Asegurar que property_type esté correctamente establecido
+      result = await propertyService.getProperties(apiFilters);
+    }
+    else {
+      // Caso 5: Sin filtros específicos
+      console.log('Sin filtros específicos, obteniendo todas las propiedades');
+      result = await propertyService.getProperties(apiFilters);
+    }
+    
+    console.log('Respuesta del API:', result);
+    
+    // Procesar resultados
+    if (result && result.success) {
+      properties.value = result.data?.properties || [];
+      totalProperties.value = result.data?.total || 0;
+      
+      // Debug: Mostrar qué tipos de propiedades se han cargado
+      if (properties.value.length > 0) {
+        console.log('Propiedades cargadas por tipo:');
+        const tiposPropiedades = {};
+        properties.value.forEach(p => {
+          if (!tiposPropiedades[p.property_type]) {
+            tiposPropiedades[p.property_type] = 0;
+          }
+          tiposPropiedades[p.property_type]++;
+        });
+        console.log(tiposPropiedades);
+      } else {
+        console.log('No se encontraron propiedades con los filtros actuales');
+      }
+      
+      // Cargar calificaciones para las propiedades si es necesario
+      if (properties.value.some(p => p.average_rating === undefined || p.average_rating === null)) {
+        await loadPropertyRatings();
+      }
+    } else {
+      error.value = result?.error || 'No se pudieron cargar las propiedades';
+      properties.value = [];
+      totalProperties.value = 0;
+    }
+  } catch (err) {
+    console.error('Error al obtener propiedades:', err);
+    error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
+    properties.value = [];
+    totalProperties.value = 0;
+  } finally {
+    loading.value = false;
+  }
+};
     
     // Navegación a la página de detalles de propiedad
     const navigateToProperty = (propertyId) => {
@@ -607,23 +767,32 @@ const loadPropertyRatings = async () => {
     
  // Seleccionar categoría
 // Seleccionar categoría
+// Seleccionar categoría
 const selectCategory = (categoryValue) => {
   console.log('Categoría seleccionada:', categoryValue);
   
+  // Verificar qué tipos de propiedades son compatibles con la categoría
+  const alojamientoTypes = ['Hotel', 'Motel'];
+  const restauranteTypes = ['Cafetería', 'Restaurante', 'Bar y restaurante', 
+                          'Comida rápida', 'Repostería', 'Heladería', 
+                          'Bebidas', 'Bar', 'Otro'];
+  const entretenimientoTypes = ['Gym', 'Balneario', 'Belleza', 'Futbol', 
+                              'Motocross', 'Casino', 'Cine', 'Videojuegos', 'Otro'];
+  
   // Si se hace clic en la categoría ya seleccionada, deseleccionarla
   if (filters.value.category === categoryValue) {
+    console.log('Deseleccionando categoría:', categoryValue);
     filters.value.category = null;
-    selectedPropertyTypes.value = [];
-    filters.value.property_type = null;
-  } else {
-    // Verificar qué tipos de propiedades son compatibles con la nueva categoría
-    const alojamientoTypes = ['Hotel', 'Motel'];
-    const restauranteTypes = ['Cafetería', 'Restaurante', 'Bar y restaurante', 
-                            'Comida rápida', 'Repostería', 'Heladería', 
-                            'Bebidas', 'Bar', 'Otro'];
-    const entretenimientoTypes = ['Gym', 'Balneario', 'Belleza', 'Futbol', 
-                                'Motocross', 'Casino', 'Cine', 'Videojuegos'];
     
+    // Mantener los tipos seleccionados sin restricción de categoría
+    // (ya que no hay categoría seleccionada)
+    filters.value.property_type = selectedPropertyTypes.value.length > 0 
+      ? (selectedPropertyTypes.value.length === 1 
+        ? selectedPropertyTypes.value[0] 
+        : selectedPropertyTypes.value)
+      : null;
+  } else {
+    // Definir los tipos compatibles según la nueva categoría seleccionada
     let tiposCompatibles = [];
     if (categoryValue === 'Alojamiento') {
       tiposCompatibles = alojamientoTypes;
@@ -638,18 +807,27 @@ const selectCategory = (categoryValue) => {
     
     // Filtrar los tipos seleccionados para mantener solo los compatibles
     if (selectedPropertyTypes.value.length > 0) {
-      selectedPropertyTypes.value = selectedPropertyTypes.value.filter(
+      const tiposFiltrados = selectedPropertyTypes.value.filter(
         tipo => tiposCompatibles.includes(tipo)
       );
       
+      console.log(`Tipos compatibles con ${categoryValue}:`, tiposCompatibles);
+      console.log('Tipos seleccionados filtrados:', tiposFiltrados);
+      
+      // Actualizar tipos seleccionados
+      selectedPropertyTypes.value = tiposFiltrados;
+      
       // Actualizar el filtro de property_type según los tipos que quedaron
-      if (selectedPropertyTypes.value.length === 0) {
+      if (tiposFiltrados.length === 0) {
         filters.value.property_type = null;
-      } else if (selectedPropertyTypes.value.length === 1) {
-        filters.value.property_type = selectedPropertyTypes.value[0];
+      } else if (tiposFiltrados.length === 1) {
+        filters.value.property_type = tiposFiltrados[0];
       } else {
-        filters.value.property_type = selectedPropertyTypes.value;
+        filters.value.property_type = tiposFiltrados;
       }
+    } else {
+      // Si no había tipos seleccionados, mantener property_type como null
+      filters.value.property_type = null;
     }
   }
   
@@ -661,11 +839,12 @@ const selectCategory = (categoryValue) => {
   fetchProperties();
 };
     
-    // Actualizar los tipos de propiedad seleccionados
-    // Actualizar los tipos de propiedad seleccionados
-// Actualizar los tipos de propiedad seleccionados
+   // Actualización corregida para updatePropertyTypeFilters que maneja correctamente las selecciones
+
 const updatePropertyTypeFilters = () => {
-  // Si hay tipos seleccionados
+  console.log('Tipos seleccionados:', selectedPropertyTypes.value);
+  
+  // Actualizar el filtro de tipo de propiedad basado en las selecciones
   if (selectedPropertyTypes.value.length > 0) {
     // Si solo hay un tipo seleccionado, usamos string
     if (selectedPropertyTypes.value.length === 1) {
@@ -674,13 +853,58 @@ const updatePropertyTypeFilters = () => {
       // Si hay múltiples tipos, usamos array
       filters.value.property_type = selectedPropertyTypes.value;
     }
+    
+    // Verificar compatibilidad con la categoría si hay una seleccionada
+    if (filters.value.category) {
+      const alojamientoTypes = ['Hotel', 'Motel'];
+      const restauranteTypes = ['Cafetería', 'Restaurante', 'Bar y restaurante', 
+                            'Comida rápida', 'Repostería', 'Heladería', 
+                            'Bebidas', 'Bar', 'Otro'];
+      const entretenimientoTypes = ['Gym', 'Balneario', 'Belleza', 'Futbol', 
+                                'Motocross', 'Casino', 'Cine', 'Videojuegos', 'Otro'];
+      
+      // Lista de tipos compatibles según la categoría seleccionada
+      let tiposCompatibles = [];
+      if (filters.value.category === 'Alojamiento') {
+        tiposCompatibles = alojamientoTypes;
+      } else if (filters.value.category === 'Restaurante y bar') {
+        tiposCompatibles = restauranteTypes;
+      } else if (filters.value.category === 'Entretenimiento') {
+        tiposCompatibles = entretenimientoTypes;
+      }
+      
+      // Filtrar tipos seleccionados para mantener solo los compatibles
+      if (tiposCompatibles.length > 0) {
+        const tiposFiltrados = selectedPropertyTypes.value.filter(tipo => 
+          tiposCompatibles.includes(tipo)
+        );
+        
+        // Actualizar selectedPropertyTypes con los compatibles
+        if (tiposFiltrados.length !== selectedPropertyTypes.value.length) {
+          selectedPropertyTypes.value = tiposFiltrados;
+          console.log('Tipos ajustados para compatibilidad con categoría:', tiposFiltrados);
+          
+          // Actualizar filters.value.property_type con los tipos compatibles
+          if (tiposFiltrados.length === 0) {
+            filters.value.property_type = null;
+          } else if (tiposFiltrados.length === 1) {
+            filters.value.property_type = tiposFiltrados[0];
+          } else {
+            filters.value.property_type = tiposFiltrados;
+          }
+        }
+      }
+    }
   } else {
     // Si no hay tipos seleccionados, establecer a null
     filters.value.property_type = null;
   }
   
-  console.log('Tipos de propiedad seleccionados:', selectedPropertyTypes.value);
-  console.log('Filtro property_type actualizado:', filters.value.property_type);
+  console.log('Filtros actualizados:', {
+    category: filters.value.category,
+    property_type: filters.value.property_type,
+    selectedTypes: selectedPropertyTypes.value
+  });
   
   // Actualizar URL y refrescar resultados
   handleFilterChange();
@@ -730,105 +954,7 @@ const updatePropertyTypeFilters = () => {
     // Obtener propiedades de la API - CORREGIDO
     // Obtener propiedades de la API
 // Obtener propiedades de la API
-const fetchProperties = async () => {
-  loading.value = true;
-  error.value = null;
-  
-  try {
-    // Convertir filtros a formato API
-    const apiFilters = {
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      sort: sortBy.value
-    };
-    
-    // Agregar otros filtros
-    if (filters.value.city) {
-      apiFilters.city = filters.value.city;
-    }
-    
-    if (filters.value.amenities && filters.value.amenities.length > 0) {
-      apiFilters.amenities = filters.value.amenities;
-    }
-    
-    // Agregar filtro de tipo de propiedad
-    if (filters.value.property_type) {
-      apiFilters.property_type = filters.value.property_type;
-      console.log(`Filtrando por tipo(s): ${JSON.stringify(filters.value.property_type)}`);
-    }
-    
-    // Añadir el filtro de categoría
-    if (filters.value.category) {
-      apiFilters.category = filters.value.category;
-      console.log(`Filtrando por categoría: ${filters.value.category}`);
-    }
-    
-    let result;
-    
-    // Si hay término de búsqueda, usar la búsqueda
-    if (searchQuery.value.trim()) {
-      const searchFields = ['title', 'category', 'property_type'];
-      result = await propertyService.searchProperties(searchQuery.value, searchFields, apiFilters);
-    } 
-    // Si hay filtro de categoría o tipo, usar el endpoint adecuado
-    else if (filters.value.category || filters.value.property_type) {
-      if (filters.value.category && !filters.value.property_type) {
-        // Solo filtro de categoría
-        console.log(`Llamando al API para categoría: ${filters.value.category}`);
-        result = await propertyService.getPropertiesByCategory(
-          filters.value.category,
-          apiFilters
-        );
-      } else {
-        // Filtro por categoría y/o tipo (el API debe manejar ambos casos)
-        console.log(`Llamando al API con filtros combinados: `, apiFilters);
-        result = await propertyService.getProperties(apiFilters);
-      }
-    }
-    // Si no hay ningún filtro, usar el método general
-    else {
-      result = await propertyService.getProperties(apiFilters);
-    }
-    
-    console.log('Respuesta del API:', result);
-    
-    // Procesar resultados
-    if (result && result.success) {
-      properties.value = result.data?.properties || [];
-      totalProperties.value = result.data?.total || 0;
-      
-      console.log(`Propiedades cargadas: ${properties.value.length}`);
-      
-      if (properties.value.length > 0) {
-        console.log('Propiedades cargadas por tipo:');
-        const tiposPropiedades = {};
-        properties.value.forEach(p => {
-          if (!tiposPropiedades[p.property_type]) {
-            tiposPropiedades[p.property_type] = 0;
-          }
-          tiposPropiedades[p.property_type]++;
-        });
-        console.log(tiposPropiedades);
-      }
-      
-      // Cargar calificaciones para las propiedades si es necesario
-      if (properties.value.some(p => p.average_rating === undefined || p.average_rating === null)) {
-        await loadPropertyRatings();
-      }
-    } else {
-      error.value = 'No se pudieron cargar las propiedades';
-      properties.value = [];
-      totalProperties.value = 0;
-    }
-  } catch (err) {
-    console.error('Error al obtener propiedades:', err);
-    error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
-    properties.value = [];
-    totalProperties.value = 0;
-  } finally {
-    loading.value = false;
-  }
-};
+
 
     // Paginación
     const totalPages = computed(() => {
@@ -919,51 +1045,76 @@ const fetchProperties = async () => {
     };
 
     // Inicializar filtros desde parámetros de URL
-    const initFromQueryParams = () => {
-      const query = route.query;
-      
-      // Establecer búsqueda desde query
-      if (query.q) {
-        searchQuery.value = query.q;
-      } else {
-        searchQuery.value = ''; // Limpiar búsqueda si no está en URL
-      }
-      
-      // Establecer ordenación desde query
-      if (query.sort && ['id-asc', 'newest', 'views-high', 'views-low', 'title-asc', 'title-desc', 'rating-high', 'rating-low'].includes(query.sort)) {
-        sortBy.value = query.sort;
-      }
-      
-      // Establecer página desde query
-      if (query.page && !isNaN(parseInt(query.page))) {
-        currentPage.value = parseInt(query.page);
-      }
-      
-      // Establecer categoría desde query
-      if (query.category) {
-        filters.value.category = query.category;
-      }
-      
-      // Establecer tipo de propiedad/categoría desde query
-      if (query.property_type) {
-        if (typeof query.property_type === 'string') {
-          filters.value.property_type = query.property_type;
-          selectedPropertyTypes.value = [query.property_type];
-        } else if (Array.isArray(query.property_type)) {
-          filters.value.property_type = query.property_type;
-          selectedPropertyTypes.value = query.property_type;
-        }
-      }
-      
-      // Establecer otros filtros desde query
-      if (query.city) filters.value.city = query.city;
-      
-      // Parsear amenidades si están en la URL
-      if (query.amenities) {
-        const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
-        filters.value.amenities = amenitiesArray;
-      }
-    };
+    // Mejorar la función initFromQueryParams en rent.vue
+
+// Inicializar filtros desde parámetros de URL
+const initFromQueryParams = () => {
+  const query = route.query;
+  
+  // Establecer búsqueda desde query
+  if (query.q) {
+    searchQuery.value = query.q;
+  } else {
+    searchQuery.value = ''; // Limpiar búsqueda si no está en URL
+  }
+  
+  // Establecer ordenación desde query
+  if (query.sort && ['newest', 'views-high', 'views-low', 'title-asc', 'title-desc', 'rating-high', 'rating-low'].includes(query.sort)) {
+    sortBy.value = query.sort;
+  }
+  
+  // Establecer página desde query
+  if (query.page && !isNaN(parseInt(query.page))) {
+    currentPage.value = parseInt(query.page);
+  } else {
+    currentPage.value = 1;
+  }
+  
+  // Establecer categoría desde query
+  if (query.category) {
+    filters.value.category = query.category;
+  } else {
+    filters.value.category = null;
+  }
+  
+  // Establecer tipo de propiedad/categoría desde query
+  if (query.property_type) {
+    if (typeof query.property_type === 'string') {
+      filters.value.property_type = query.property_type;
+      selectedPropertyTypes.value = [query.property_type];
+    } else if (Array.isArray(query.property_type)) {
+      filters.value.property_type = query.property_type;
+      selectedPropertyTypes.value = query.property_type;
+    }
+  } else {
+    filters.value.property_type = null;
+    selectedPropertyTypes.value = [];
+  }
+  
+  // Establecer otros filtros desde query
+  if (query.city) {
+    filters.value.city = query.city;
+  } else {
+    filters.value.city = '';
+  }
+  
+  // Parsear amenidades si están en la URL
+  if (query.amenities) {
+    const amenitiesArray = Array.isArray(query.amenities) ? query.amenities : [query.amenities];
+    filters.value.amenities = amenitiesArray;
+  } else {
+    filters.value.amenities = [];
+  }
+  
+  console.log('Inicialización desde URL:', {
+    search: searchQuery.value,
+    sort: sortBy.value,
+    page: currentPage.value,
+    category: filters.value.category,
+    propertyTypes: filters.value.property_type,
+    selectedTypes: selectedPropertyTypes.value
+  });
+};
 
     // Aplicar correcciones de color para estilo consistente
     const applyColorFix = () => {
@@ -991,25 +1142,50 @@ const fetchProperties = async () => {
     };
 
     // Inicializar componente
-    onMounted(async () => {
-      // Inicializar desde parámetros de URL
-      initFromQueryParams();
-      
-      // Obtener datos
-      await Promise.all([
-        fetchProperties(),
-        favoritesStore.fetchFavorites()
-      ]);
-      
-      // Aplicar corrección de colores
-      applyColorFix();
-    });
+onMounted(async () => {
+  // Inicializar desde parámetros de URL
+  initFromQueryParams();
+  
+  // Si hay un término de búsqueda en los parámetros URL, ejecutar la búsqueda
+  if (searchQuery.value) {
+    await handleSearch();
+  } else {
+    // De lo contrario, obtener datos según los filtros
+    await fetchProperties();
+  }
+  
+  // Cargar favoritos en paralelo
+  await favoritesStore.fetchFavorites();
+  
+  // Aplicar corrección de colores
+  applyColorFix();
+});
 
     // Observar cambios en los parámetros de la URL
-    watch(() => route.query, () => {
-      initFromQueryParams();
+    // Observar cambios en los parámetros de la URL
+watch(() => route.query, (newQuery) => {
+  if (newQuery.q !== searchQuery.value) {
+    // Si el parámetro de búsqueda cambió, actualizar estado local
+    initFromQueryParams();
+    
+    // Si hay búsqueda nueva, ejecutarla
+    if (searchQuery.value) {
+      handleSearch();
+    } else {
+      // Si no hay búsqueda, cargar propiedades normales
       fetchProperties();
-    }, { deep: true });
+    }
+  } else if (
+    newQuery.page !== undefined || 
+    newQuery.sort !== undefined || 
+    newQuery.category !== undefined || 
+    newQuery.property_type !== undefined
+  ) {
+    // Si cambiaron otros parámetros relevantes, actualizar estado y recargar
+    initFromQueryParams();
+    fetchProperties();
+  }
+}, { deep: true });
 
     return {
       // Estados
