@@ -29,7 +29,7 @@ const loadRestaurants = async () => {
   
   try {
     // Llamada a la API para obtener propiedades de la categoría "Restaurante y bar"
-    const result = await propertyService.getPropertiesByCategory('Restaurante y bar', {
+    const result = await propertyService.getPropertiesByCategoryFeatured('Restaurante y bar', {
       limit: 6, // Solo necesitamos 6 para el grid estático
       sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero
     });
@@ -44,6 +44,7 @@ const loadRestaurants = async () => {
         console.warn('No se encontraron restaurantes en la respuesta de la API');
         error.value = 'No se encontraron restaurantes disponibles';
         restaurants.value = [];
+        
       } else {
         // Primero convertimos las propiedades al formato deseado
         const transformedProperties = properties.map(property => ({
@@ -76,6 +77,7 @@ const loadRestaurants = async () => {
       restaurants.value = [];
     }
   } catch (err) {
+    
     console.error('Error al cargar restaurantes:', err);
     error.value = 'Error al cargar los restaurantes';
     restaurants.value = [];
@@ -149,7 +151,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="max-w-7xl mx-auto px-4 py-8">
+  <section class="max-w-7xl mx-auto px-4 py-8"  v-if="restaurants.length > 0" >
     <!-- Encabezado de la sección -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800 mb-2 md:mb-0">
