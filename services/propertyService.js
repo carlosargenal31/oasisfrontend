@@ -27,10 +27,11 @@ export const usePropertyService = () => {
 
     const getPropertiesByCategoryFeatured = async (category, params = {}) => {
     try {
-      const response = await $axios.get(`/properties/categories/featured`);
+      const response = await $axios.get(`/properties/categories/featured/${category}`, { params });
+      
       return response.data;
     } catch (error) {
-      alert(error)
+      
       console.error(`Error fetching properties by category ${category}:`, error);
       return { success: false, data: { properties: [], total: 0 } };
     }
