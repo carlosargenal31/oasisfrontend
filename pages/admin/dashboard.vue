@@ -673,32 +673,49 @@ const removeAdditionalImage = (index) => {
 };
 
 // Métodos
+// En la función loadUserData del dashboard
 const loadUserData = async () => {
- try {
-   const token = localStorage.getItem('access_token');
-   if (!token) {
-     router.push('/auth/login');
-     return;
-   }
-   
-   const response = await axios.get('/api/users/profile', {
-     headers: { 'Authorization': `Bearer ${token}` }
-   });
-   
-   if (response.data?.success) {
-     user.value = response.data.data.user;
-     
-     // Verificar que el usuario es admin
-     if (user.value.role !== 'admin') {
-       showNotification('error', 'Acceso denegado', 'Se requieren privilegios de administrador.');
-       router.push('/');
-       return;
-     }
-   }
- } catch (error) {
-   console.error('Error al cargar datos del usuario:', error);
-   router.push('/auth/login');
- }
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
+    
+    // Decodificar el token para verificar el rol antes de hacer la petición
+    // Esto es opcional pero puede ayudar a diagnosticar problemas
+    try {
+      const tokenParts = token.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        console.log('Token payload:', payload);  // Verifica si el rol está en el token
+        
+        if (!payload.role || payload.role !== 'admin') {
+          console.warn('Token no tiene rol de admin');
+        }
+      }
+    } catch (e) {
+      console.error('Error decodificando token:', e);
+    }
+    
+    const response = await axios.get('/api/users/profile', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (response.data?.success) {
+      user.value = response.data.data.user || response.data.data;
+      
+      // Verificar que el usuario es admin
+      if (user.value.role !== 'admin') {
+        showNotification('error', 'Acceso denegado', 'Se requieren privilegios de administrador.');
+        setTimeout(() => router.push('/'), 1500);
+        return;
+      }
+    }
+  } catch (error) {
+    console.error('Error al cargar datos del usuario:', error);
+    router.push('/auth/login');
+  }
 };
 
 const loadBusinesses = async () => {
