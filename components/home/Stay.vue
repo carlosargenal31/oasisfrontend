@@ -22,13 +22,16 @@ const loadAccommodations = async () => {
   
   try {
     // Llamada a la API para obtener propiedades de la categoría "Alojamiento"
-    const result = await propertyService.getPropertiesByCategory('Alojamiento', {
+    
+    const result = await propertyService.getPropertiesByCategoryFeatured('Alojamiento', {
       limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
       sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero (ya que ordenaremos por rating después)
     });
     
+    console.log('Resultado de la API****************:');
+    
     if (result && result.success) {
-      console.log('Resultado de la API:', result.data);
+      console.log('Resultado de la API****************:', result.data);
       
       // Transformar las propiedades al formato que necesitamos para el carrusel
       const properties = result.data.properties || [];

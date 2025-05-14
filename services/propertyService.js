@@ -24,6 +24,17 @@ export const usePropertyService = () => {
       return { success: false, data: { properties: [], total: 0 } };
     }
   };
+
+    const getPropertiesByCategoryFeatured = async (category, params = {}) => {
+    try {
+      const response = await $axios.get(`/properties/categories/featured`);
+      return response.data;
+    } catch (error) {
+      alert(error)
+      console.error(`Error fetching properties by category ${category}:`, error);
+      return { success: false, data: { properties: [], total: 0 } };
+    }
+  };
   
   // Mejora del método getPropertiesByCategoryAndType en propertyService.js
 
@@ -329,6 +340,7 @@ const searchProperties = async (query, fields = [], params = {}) => {
   return {
     getProperties,
     getPropertiesByCategory,
+    getPropertiesByCategoryFeatured,
     getPropertiesByCategoryAndType,
     getMainCategories,
     getProperty,
