@@ -77,6 +77,10 @@ const checkSearchLength = () => {
       }
     };
 
+      const navigateToProperty = (propertyId) => {
+      router.push(`/properties/${propertyId}`);
+    };
+
     const searchContainer = ref(null);
 
 const handleClickOutside = (event) => {
@@ -137,7 +141,7 @@ onBeforeUnmount(() => {
         
         <!-- Botón de búsqueda -->
         <button
-          @click="handleSearch"
+          @click="searchProperties"
           class="bg-orange-500 text-white font-medium py-3 md:py-4 px-6 md:px-8 w-full md:w-auto"
         >
           Buscar
@@ -152,9 +156,9 @@ onBeforeUnmount(() => {
           
           <!-- Grid de resultados: 2 filas de 3 elementos -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div v-for="(property, index) in properties.slice(0, 6)" :key="property.id" 
+            <div v-for="(property, index) in properties.slice(0, 3)" :key="property.id" 
                  class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow cursor-pointer"
-                 @click="selectProperty(property)">
+                 @click="navigateToProperty(property.id)">
               
               <!-- Imagen de la propiedad -->
               <div class="h-40 overflow-hidden bg-gray-200">
@@ -203,7 +207,7 @@ onBeforeUnmount(() => {
           
           <!-- Mostrar más resultados si hay más de 6 propiedades -->
           <div v-if="properties.length > 6" class="mt-3 text-center">
-            <button @click="viewAllResults" class="text-orange-500 hover:text-orange-600 text-sm font-medium">
+            <button @click="searchProperties" class="text-orange-500 hover:text-orange-600 text-sm font-medium">
               Ver todos los resultados ({{ properties.length }})
             </button>
           </div>
