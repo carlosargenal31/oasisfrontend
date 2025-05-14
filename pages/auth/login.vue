@@ -274,7 +274,7 @@ const handleLogin = async () => {
         let redirectUrl = '';
         
         if (isAdmin) {
-          redirectUrl = 'http://localhost:3001/admin/my-businesses';
+          redirectUrl = 'http://localhost:3001/admin/dashboard';
           success.value = '¡Inicio de sesión exitoso! Bienvenido administrador. Redirigiendo...';
         } else {
           redirectUrl = 'http://localhost:3001/';
@@ -302,7 +302,6 @@ definePageMeta({
 <style>
 /* Estilos adicionales para garantizar fondo blanco y texto negro */
 body {
-  background-color: white;
-  color: black;
+  background-color: white
 }
 </style>

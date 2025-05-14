@@ -166,12 +166,7 @@
             </template>
           </div>
           
-          <!-- Tags -->
-          <div class="mb-8">
-            <span class="text-gray-700 mr-2">Etiquetas:</span>
-            <a href="#" class="text-orange-500 hover:underline">Viajes</a>,
-            <a href="#" class="text-orange-500 hover:underline">Turismo</a>
-          </div>
+         
           
           <!-- Share Options -->
           <div class="mb-10">

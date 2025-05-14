@@ -19,15 +19,15 @@
     <!-- Contenido cuando los datos están cargados -->
     <div v-else-if="property">
       <!-- Breadcrumb modificado -->
-<div class="breadcrumb flex items-center mb-4 text-sm">
-  <a href="/" class="text-black hover:text-orange-800">Inicio</a>
-  <span class="mx-2 text-black">›</span>
-  <a href="/properties/rent" class="text-black hover:text-orange-800">
-    Negocios
-  </a>
-  <span class="mx-2 text-black">›</span>
-  <span class="text-black">{{ property.title }}</span>
-</div>
+      <div class="breadcrumb flex items-center mb-4 text-sm">
+        <a href="/" class="text-black hover:text-orange-800">Inicio</a>
+        <span class="mx-2 text-black">›</span>
+        <a href="/properties/rent" class="text-black hover:text-orange-800">
+          Negocios
+        </a>
+        <span class="mx-2 text-black">›</span>
+        <span class="text-black">{{ property.title }}</span>
+      </div>
       <div class="flex flex-col md:flex-row gap-8">
         <!-- Columna izquierda - Imágenes e información principal -->
         <div class="md:w-2/3">
@@ -83,67 +83,67 @@
           </div>
 
           <!-- Sección de anfitrión corregida -->
-<div class="rental-agent bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-  <div class="p-6">
-    <div class="flex flex-col md:flex-row items-start">
-      <div class="w-full md:w-1/3">
-       
-      </div>
-      
-     
-      <div class="w-full md:w-2/3 md:pl-6 mt-4 md:mt-0">
-        
-        <!-- Mostrar biografía real cuando está disponible -->
-        <p class="text-black mb-4" v-if="property.host_bio || (hostData && hostData.bio)">
-          {{ property.host_bio || (hostData && hostData.bio) }}
-        </p>
-        <!-- Se ha eliminado el bloque v-else que mostraba texto por defecto -->
-        
-        <h3 class="text-xl font-semibold mb-1">
-          <a href="#" @click.prevent="viewHostProperties()" class="text-orange-800 hover:text-orange-900">
-            {{ hostName }}
-          </a>
-        </h3>
-        
-        <p class="text-black mb-2">{{ hostRole }}</p>
-        
-  
-        
-        <!-- Corrección enlaces de redes sociales -->
-        <div class="flex space-x-3 mt-2" v-if="hasSocialLinks">
-          <a v-if="getSocialLink('facebook')" :href="`https://${getSocialLink('facebook')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a v-if="getSocialLink('twitter')" :href="`https://${getSocialLink('twitter')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
-            <i class="fab fa-twitter"></i>
-          </a>
-          <a v-if="getSocialLink('instagram')" :href="`https://${getSocialLink('instagram')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a v-if="getSocialLink('linkedin')" :href="`https://${getSocialLink('linkedin')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
-          <a v-if="getSocialLink('pinterest')" :href="`https://${getSocialLink('pinterest')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
-            <i class="fab fa-pinterest-p"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+          <div class="rental-agent bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+            <div class="p-6">
+              <div class="flex flex-col md:flex-row items-start">
+                <div class="w-full md:w-1/3">
+                
+                </div>
+                
+              
+                <div class="w-full md:w-2/3 md:pl-6 mt-4 md:mt-0">
+                  
+                  <!-- Mostrar biografía real cuando está disponible -->
+                  <p class="text-black mb-4" v-if="property.host_bio || (hostData && hostData.bio)">
+                    {{ property.host_bio || (hostData && hostData.bio) }}
+                  </p>
+                  <!-- Se ha eliminado el bloque v-else que mostraba texto por defecto -->
+                  
+                  <h3 class="text-xl font-semibold mb-1">
+                    <a href="#" @click.prevent="viewHostProperties()" class="text-orange-800 hover:text-orange-900">
+                      {{ hostName }}
+                    </a>
+                  </h3>
+                  
+                  <p class="text-black mb-2">{{ hostRole }}</p>
+                  
+            
+                  
+                  <!-- Corrección enlaces de redes sociales -->
+                  <div class="flex space-x-3 mt-2" v-if="hasSocialLinks">
+                    <a v-if="getSocialLink('facebook')" :href="`https://${getSocialLink('facebook')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+                      <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a v-if="getSocialLink('twitter')" :href="`https://${getSocialLink('twitter')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+                      <i class="fab fa-twitter"></i>
+                    </a>
+                    <a v-if="getSocialLink('instagram')" :href="`https://${getSocialLink('instagram')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+                      <i class="fab fa-instagram"></i>
+                    </a>
+                    <a v-if="getSocialLink('linkedin')" :href="`https://${getSocialLink('linkedin')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+                      <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a v-if="getSocialLink('pinterest')" :href="`https://${getSocialLink('pinterest')}`" target="_blank" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-300">
+                      <i class="fab fa-pinterest-p"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           
           <!-- Sección de reseñas -->
           <div class="reviews-section mt-8">
             <div class="flex items-center mb-4">
-  <span class="text-yellow-400 material-icons mr-2">star</span>
-  <span class="text-2xl font-bold text-black">{{ averageRating }} ({{ reviews.length }} reseñas)</span>
-  <div class="ml-auto">
-    <button @click="openReviewModal" class="bg-orange-800 hover:bg-orange-900 text-white py-2 px-4 rounded flex items-center">
-      <span class="material-icons mr-1 text-white">edit</span>
-      <span class="text-white">Añadir reseña</span>
-    </button>
-  </div>
-</div>
+              <span class="text-yellow-400 material-icons mr-2">star</span>
+              <span class="text-2xl font-bold text-black">{{ averageRating }} ({{ reviews.length }} reseñas)</span>
+              <div class="ml-auto">
+                <button @click="openReviewModal" class="bg-orange-800 hover:bg-orange-900 text-white py-2 px-4 rounded flex items-center">
+                  <span class="material-icons mr-1 text-white">edit</span>
+                  <span class="text-white">Añadir reseña</span>
+                </button>
+              </div>
+            </div>
             
             <div class="flex justify-between items-center mb-4">
               <div class="text-black">
@@ -262,36 +262,36 @@
           
           <!-- Detalles de la propiedad -->
          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-  <h3 class="details-title text-xl font-bold text-black mb-4">Detalles de {{ property.category }}</h3>
-  <div class="space-y-3">
-    <div class="flex justify-between">
-      <span class="text-black">Tipo:</span>
-      <span class="font-medium text-black">{{ property.property_type }}</span>
-    </div>
-    
-    <!-- Solo mostrar estos campos si es alojamiento -->
- 
-    <!-- Mostrar horario si existe -->
-    <div v-if="property.schedule" class="flex justify-between">
-      <span class="text-black">Horario:</span>
-      <span class="font-medium text-black">{{ formatSchedule(property.schedule) }}</span>
-    </div>
-    
-    <!-- Datos de contacto -->
-    <div v-if="property.phone" class="flex justify-between">
-      <span class="text-black">Teléfono:</span>
-      <span class="font-medium text-black">{{ property.phone }}</span>
-    </div>
-    
-    <div v-if="property.email" class="flex justify-between">
-      <span class="text-black">Email:</span>
-      <span class="font-medium text-black">{{ property.email }}</span>
-    </div>
-  </div>
-</div>
+            <h3 class="details-title text-xl font-bold text-black mb-4">Detalles de {{ property.category }}</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-black">Tipo:</span>
+                <span class="font-medium text-black">{{ property.property_type }}</span>
+              </div>
+              
+              <!-- Solo mostrar estos campos si es alojamiento -->
+          
+              <!-- Mostrar horario si existe -->
+              <div v-if="property.schedule" class="flex justify-between">
+                <span class="text-black">Horario:</span>
+                <span class="font-medium text-black">{{ formatSchedule(property.schedule) }}</span>
+              </div>
+              
+              <!-- Datos de contacto -->
+              <div v-if="property.phone" class="flex justify-between">
+                <span class="text-black">Teléfono:</span>
+                <span class="font-medium text-black">{{ property.phone }}</span>
+              </div>
+              
+              <div v-if="property.email" class="flex justify-between">
+                <span class="text-black">Email:</span>
+                <span class="font-medium text-black">{{ property.email }}</span>
+              </div>
+            </div>
+          </div>
           
 
- <!-- Ubicación en mapa -->
+          <!-- Ubicación en mapa -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
             <div class="relative mb-3">
@@ -327,24 +327,24 @@
           
           <!-- Detalles de publicación -->
           <div class="flexflex-wrap text-sm text-black">
-  <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
-  <div class="mr-4 pr-4 border-r border-gray-200">Nº anuncio: <b class="text-black">{{ property.id }}</b></div>
-  <div class="flex items-center">
-    <span class="material-icons mr-1 text-orange-800">visibility</span>
-    Vistas: <b class="text-black ml-1">{{ property.views || viewCount }}</b>
-  </div>
-</div>
+            <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
+            <div class="mr-4 pr-4 border-r border-gray-200">Nº anuncio: <b class="text-black">{{ property.id }}</b></div>
+            <div class="flex items-center">
+              <span class="material-icons mr-1 text-orange-800">visibility</span>
+              Vistas: <b class="text-black ml-1">{{ property.views || viewCount }}</b>
+            </div>
+          </div>
         </div>
       </div>
       
       <!-- Sección de Propiedades Similares -->
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
-  <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
-  <a href="/properties/rent" class="text-orange-800 flex items-center">
-    Ver todas <span class="ml-1">→</span>
-  </a>
-</div>
+          <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
+          <a href="/properties/rent" class="text-orange-800 flex items-center">
+            Ver todas <span class="ml-1">→</span>
+          </a>
+        </div>
         
         <div v-if="isLoadingSimilar" class="flex justify-center py-8">
           <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-8 h-8 animate-spin"></div>
@@ -355,74 +355,74 @@
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-  <div v-for="(listing, i) in similarProperties" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
-    <div class="relative">
-      <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
-      <div class="absolute top-3 left-3">
-        <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
-        <span v-if="listing.isNew" class="bg-orange-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
-        <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
-      </div>
-    </div>
-            
-   <!-- Implementación alternativa con 5 estrellas para propiedades similares -->
- <div class="p-4">
-      <!-- Categoría del negocio -->
-      <div class="uppercase text-sm font-medium text-green-500 mb-1">
-        {{ listing.category }}
-      </div>
-      
-      <!-- Nombre del negocio -->
-      <h3 class="font-medium text-black mb-1">
-        {{ listing.title }}
-      </h3>
-      
-      <!-- Dirección -->
-      <p class="text-sm text-gray-600 mb-2">{{ listing.address }}</p>
-      
-      <!-- Calificación con estrellas -->
-      <div class="flex items-center mb-4">
-        <div class="flex text-yellow-400">
-          <span 
-            v-for="i in 5" 
-            :key="i" 
-            class="material-icons text-sm" 
-            :class="i <= Math.round(parseFloat(listing.average_rating) || 0) ? 'text-yellow-400' : 'text-gray-300'"
-          >
-            star
-          </span>
+          <div v-for="(listing, i) in similarProperties" :key="i" @click="navigateToProperty(listing.id)" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300 cursor-pointer">
+            <div class="relative">
+              <img :src="listing.image || getRandomPropertyImage()" alt="Propiedad" class="w-full h-48 object-cover" />
+              <div class="absolute top-3 left-3">
+                <span v-if="listing.isVerified" class="bg-green-500 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Verificado</span>
+                <span v-if="listing.isNew" class="bg-orange-800 text-white px-2 py-1 text-xs font-medium rounded block mb-1">Nuevo</span>
+                <span v-if="listing.isFeatured" class="bg-red-500 text-white px-2 py-1 text-xs font-medium rounded block">Destacado</span>
+              </div>
+            </div>
+                  
+            <!-- Implementación alternativa con 5 estrellas para propiedades similares -->
+            <div class="p-4">
+              <!-- Categoría del negocio -->
+              <div class="uppercase text-sm font-medium text-green-500 mb-1">
+                {{ listing.category }}
+              </div>
+              
+              <!-- Nombre del negocio -->
+              <h3 class="font-medium text-black mb-1">
+                {{ listing.title }}
+              </h3>
+              
+              <!-- Dirección -->
+              <p class="text-sm text-gray-600 mb-2">{{ listing.address }}</p>
+              
+              <!-- Calificación con estrellas -->
+              <div class="flex items-center mb-4">
+                <div class="flex text-yellow-400">
+                  <span 
+                    v-for="i in 5" 
+                    :key="i" 
+                    class="material-icons text-sm" 
+                    :class="i <= Math.round(parseFloat(listing.average_rating) || 0) ? 'text-yellow-400' : 'text-gray-300'"
+                  >
+                    star
+                  </span>
+                </div>
+                <span class="ml-2 text-sm font-bold text-black">
+                  {{ listing.average_rating ? parseFloat(listing.average_rating).toFixed(1) : '0.0' }}
+                </span>
+              </div>
+              
+              <!-- Información de contacto -->
+              <div class="flex items-center mb-2">
+                <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+                </svg>
+                <span class="text-sm text-gray-600">{{ listing.email || 'Sin correo' }}</span>
+              </div>
+              
+              <!-- Teléfono -->
+              <div class="flex items-center mb-2">
+                <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+                </svg>
+                <span class="text-sm text-gray-600">{{ listing.phone || 'Sin teléfono' }}</span>
+              </div>
+              
+              <!-- Contador de vistas -->
+              <div class="flex items-center justify-end py-2 border-t border-gray-200 bg-gray-50 mt-2">
+                <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
+                </svg>
+                <span class="text-xs text-gray-500">{{ listing.views || 0 }} vistas</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="ml-2 text-sm font-bold text-black">
-          {{ listing.average_rating ? parseFloat(listing.average_rating).toFixed(1) : '0.0' }}
-        </span>
-      </div>
-      
-      <!-- Información de contacto -->
-      <div class="flex items-center mb-2">
-        <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
-        </svg>
-        <span class="text-sm text-gray-600">{{ listing.email || 'Sin correo' }}</span>
-      </div>
-      
-      <!-- Teléfono -->
-      <div class="flex items-center mb-2">
-        <svg class="mr-2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
-        </svg>
-        <span class="text-sm text-gray-600">{{ listing.phone || 'Sin teléfono' }}</span>
-      </div>
-      
-      <!-- Contador de vistas -->
-      <div class="flex items-center justify-end py-2 border-t border-gray-200 bg-gray-50 mt-2">
-        <svg class="mr-1 text-gray-500" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
-        </svg>
-        <span class="text-xs text-gray-500">{{ listing.views || 0 }} vistas</span>
-      </div>
-    </div>
-  </div>
-</div>
       </div>
       
       <!-- Modal de Reseñas (Oculto por defecto) -->
@@ -434,42 +434,61 @@
               <span class="text-2xl">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="submitReview">
-            <div class="mb-4">
-              <label class="block text-black mb-2">Nombre <span class="text-red-500">*</span></label>
-              <input type="text" v-model="newReview.reviewer_name" class="w-full px-3 py-2 border rounded-md text-black" required>
-            </div>
-            <div class="mb-4">
-              <label class="block text-black mb-2">Email <span class="text-red-500">*</span></label>
-              <input type="email" v-model="newReview.email" class="w-full px-3 py-2 border rounded-md text-black" required>
-            </div>
-            <div class="mb-4">
-              <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
-              <div class="flex space-x-2">
-                <button 
-                  type="button"
-                  v-for="star in 5"
-                  :key="star"
-                  @click="newReview.rating = star"
-                  class="text-3xl focus:outline-none"
-                >
-                  <span class="material-icons" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
-                </button>
-              </div>
-            </div>
-            <div class="mb-4">
-              <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
-              <textarea v-model="newReview.comment" rows="4" class="w-full px-3 py-2 border rounded-md text-black" required></textarea>
-            </div>
+          
+          <!-- BLOQUE PARA USUARIOS NO AUTENTICADOS -->
+          <div v-if="!isAuthenticated" class="mb-4 p-4 bg-orange-100 rounded-md text-black">
+            <p>Debes iniciar sesión para dejar una reseña.</p>
             <button 
-  type="submit" 
-  class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
-  :disabled="submittingReview"
->
-  <span v-if="submittingReview" class="text-white">Enviando...</span>
-  <span v-else class="text-white">Enviar Reseña</span>
-</button>
-          </form>
+              @click="goToLogin" 
+              class="mt-2 bg-orange-800 text-white py-2 px-4 rounded hover:bg-orange-900"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+
+          <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
+          <div v-else>
+            <!-- Información del usuario -->
+            <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+              Comentando como: {{ userData.first_name }} {{ userData.last_name }}
+            </div>
+            
+            <!-- Formulario de reseña -->
+            <form @submit.prevent="submitReview">
+              <div class="mb-4">
+                <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
+                <div class="flex space-x-2">
+                  <button 
+                    type="button"
+                    v-for="star in 5"
+                    :key="star"
+                    @click="newReview.rating = star"
+                    class="text-3xl focus:outline-none"
+                  >
+                    <span class="material-icons" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
+                  </button>
+                </div>
+              </div>
+              <div class="mb-4">
+                <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
+                <textarea 
+                  v-model="newReview.comment" 
+                  rows="4" 
+                  class="w-full px-3 py-2 border rounded-md text-black"
+                  placeholder="Comparte tu experiencia con este negocio"
+                  required
+                ></textarea>
+              </div>
+              <button 
+                type="submit" 
+                class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
+                :disabled="submittingReview"
+              >
+                <span v-if="submittingReview" class="text-white">Enviando...</span>
+                <span v-else class="text-white">Enviar Reseña</span>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -489,6 +508,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useReviewStore } from '../store/review';
 import { useFavoritesStore } from '~/store/favorites';
+import { useAuthStore } from '@/store/auth'
 
 
 // Definir la URL base de la API
@@ -498,6 +518,7 @@ const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 const route = useRoute();
 const router = useRouter();
 const propertyId = route.params.id;
+const authStore = useAuthStore();
 
 // Inicializar stores
 const reviewStore = useReviewStore();
@@ -544,8 +565,6 @@ const toggleFavorite = async () => {
 // Datos para nuevo formulario de reseña
 const newReview = ref({
   property_id: null,
-  reviewer_name: '',
-  email: '',
   rating: 0,
   comment: ''
 });
@@ -641,17 +660,19 @@ const getSocialLink = (socialNetwork) => {
 // Tercera parte: La función modificada fetchHostData
 
 // Modificar la función para obtener el token de autenticación
-const getAuthToken = () => {
-  if (process.client) {
-    return localStorage.getItem('token') || sessionStorage.getItem('token') || '';
-  }
-  return '';
-};
+const userData = computed(() => authStore.user)
 
 // Verificar si el usuario está autenticado
-const isAuthenticated = () => {
-  return !!getAuthToken();
-};
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+
+// Redirigir a la página de inicio de sesión
+const goToLogin = () => {
+  // Guardamos la URL actual para redirigir de vuelta después del login
+  localStorage.setItem('redirect_after_login', window.location.pathname)
+  
+  // Redirigir a la página de login
+  router.push('/login?redirect=' + encodeURIComponent(router.currentRoute.value.fullPath))
+}
 
 // Cargar datos del propietario
 const fetchHostData = async () => {
@@ -1254,7 +1275,6 @@ const getActionButtonText = () => {
 };
 
 // Cargar propiedades similares
-// Cargar propiedades similares
 const fetchSimilarProperties = async () => {
   isLoadingSimilar.value = true;
   
@@ -1402,46 +1422,57 @@ const openReviewModal = () => {
   newReview.value.property_id = parseInt(propertyId);
 };
 
-// Función arreglada para submitReview
+// Función actualizada para enviar reseña con autenticación
 const submitReview = async () => {
+  // Verificar si el usuario está autenticado usando el store
+  if (!isAuthenticated.value) {
+    goToLogin()
+    return
+  }
+  
   // Validación básica
-  if (!newReview.value.reviewer_name || !newReview.value.rating || !newReview.value.comment) {
-    alert('Por favor complete todos los campos requeridos.');
-    return;
+   if (!newReview.value.rating) {
+    alert('Por favor asigne una calificación')
+    return
   }
   
   submittingReview.value = true;
   
-  try {
-    // Preparar los datos correctos para la API
+   try {
+    // Preparar los datos para la API
     const reviewData = {
       property_id: parseInt(propertyId),
-      reviewer_name: newReview.value.reviewer_name,
-      email: newReview.value.email, // Asegurarse de enviar el email
       rating: parseInt(newReview.value.rating),
-      comment: newReview.value.comment
-    };
+      comment: newReview.value.comment || ''
+    }
     
-    console.log('Enviando reseña:', reviewData);
+    // Obtener token de autenticación desde el store
+    const token = authStore.token
     
-    // Enviar la reseña a través de la API directamente
-    const response = await axios.post(`${API_URL}/reviews`,reviewData);
+    // Enviar la reseña con autenticación
+    const response = await axios.post(
+      `${API_URL}/reviews`,
+      reviewData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
     
     if (response.data && response.data.success) {
       // Cerrar modal y limpiar formulario
       showReviewModal.value = false;
       newReview.value = {
         property_id: parseInt(propertyId),
-        reviewer_name: '',
-        email: '',
         rating: 0,
         comment: ''
       };
       
-      // Recargar reseñas y propiedad para actualizar el rating
+      // Recargar reseñas y actualizar vista
       await fetchReviews();
       
-      // No recargar toda la propiedad, sólo actualizar el promedio si es necesario
+      // Actualizar el rating promedio si es necesario
       if (property.value) {
         try {
           const ratingResponse = await axios.get(`${API_URL}/reviews/property/${propertyId}/rating`);
@@ -1458,10 +1489,10 @@ const submitReview = async () => {
       throw new Error(response.data?.message || 'Error al crear la reseña');
     }
   } catch (err) {
-    console.error('Error al enviar reseña:', err);
-    alert('Error al enviar la reseña. Por favor intente de nuevo más tarde.');
+    console.error('Error al enviar reseña:', err)
+    alert('Error al enviar la reseña. Por favor intente de nuevo más tarde.')
   } finally {
-    submittingReview.value = false;
+    submittingReview.value = false
   }
 };
 
@@ -1488,6 +1519,10 @@ watch(() => property.value, (newProperty) => {
 onMounted(async () => {
   // Cargar los datos de la propiedad específica
   await fetchPropertyData();
+
+    if (!authStore.isInitialized) {
+    authStore.initialize()
+  }
   
   // Cargar favoritos
   await favoritesStore.fetchFavorites();
