@@ -22,19 +22,20 @@ const loadAccommodations = async () => {
   
   try {
     // Llamada a la API para obtener propiedades de la categoría "Alojamiento"
-    const result = await propertyService.getPropertiesByCategory('Alojamiento', {
+    
+    const result = await propertyService.getPropertiesByCategoryFeatured('Alojamiento', {
       limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
       sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero (ya que ordenaremos por rating después)
     });
     
     if (result && result.success) {
-      console.log('Resultado de la API:', result.data);
+      
       
       // Transformar las propiedades al formato que necesitamos para el carrusel
       const properties = result.data.properties || [];
       
       if (properties.length === 0) {
-        console.warn('No se encontraron alojamientos en la respuesta de la API');
+        
         error.value = 'No se encontraron alojamientos disponibles';
         accommodations.value = [];
       } else {
@@ -52,7 +53,7 @@ const loadAccommodations = async () => {
           isFavorite: false // Por defecto no es favorito
         }));
         
-        console.log('Propiedades transformadas:', transformedProperties);
+        
         
         // Guardamos las propiedades en el estado
         accommodations.value = transformedProperties;
@@ -65,12 +66,12 @@ const loadAccommodations = async () => {
       }
     } else {
       // Si hay un error en la respuesta
-      console.error('Error en la respuesta de la API:', result);
+      
       error.value = 'No se pudieron cargar los alojamientos';
       accommodations.value = [];
     }
   } catch (err) {
-    console.error('Error al cargar alojamientos:', err);
+    
     error.value = 'Error al cargar los alojamientos';
     accommodations.value = [];
   } finally {
