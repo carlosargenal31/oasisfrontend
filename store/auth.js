@@ -15,7 +15,6 @@ export const useAuthStore = defineStore('auth', {
     getUser: (state) => state.user,
     getToken: (state) => state.token,
     isLoggedIn: (state) => state.isAuthenticated,
-    // AGREGAR ESTE GETTER
     isAdmin: (state) => state.user?.role === 'admin',
   },
   
@@ -61,6 +60,23 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('refreshToken', refreshToken);
         }
       }
+    },
+    
+    // Nuevo método para validar la sesión actual
+    validateSession() {
+      if (!process.client) return false;
+      
+      const token = localStorage.getItem('token');
+      const userJson = localStorage.getItem('user');
+      
+      // Si hay alguna inconsistencia entre el estado de la tienda y localStorage
+      if ((!token && this.isAuthenticated) || (token && !this.isAuthenticated)) {
+        console.warn('Estado de autenticación inconsistente, reinicializando...');
+        this.initialize();
+        return this.isAuthenticated;
+      }
+      
+      return this.isAuthenticated;
     },
     
     async register(userData) {
@@ -231,6 +247,9 @@ export const useAuthStore = defineStore('auth', {
             localStorage.setItem('rememberedEmail', credentials.email);
           }
           
+          // Verificar que el token se guardó correctamente
+          console.log('Token guardado correctamente:', !!localStorage.getItem('token'));
+          
           return { success: true };
         } else {
           return { 
@@ -305,32 +324,64 @@ export const useAuthStore = defineStore('auth', {
       return { success: true };
     },
     
+    // Versión mejorada del método initialize
     initialize() {
-      if (process.client) {
-        const token = localStorage.getItem('token');
-        const refreshToken = localStorage.getItem('refreshToken');
-        const userJson = localStorage.getItem('user');
+      if (!process.client) return false;
+      
+      console.log('Inicializando store de autenticación');
+      
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const userJson = localStorage.getItem('user');
+      
+      let isValid = false;
+      
+      if (token) {
+        console.log('Token encontrado en localStorage');
+        this.token = token;
+        this.refreshToken = refreshToken || null;
         
-        if (token) {
-          this.token = token;
-          this.refreshToken = refreshToken;
-          this.isAuthenticated = true;
-          
-          // Si tenemos el usuario en localStorage, lo cargamos
-          if (userJson) {
-            try {
-              this.user = JSON.parse(userJson);
-            } catch (e) {
-              console.error('Error parsing user from localStorage', e);
+        // Si tenemos el usuario en localStorage, lo cargamos
+        if (userJson) {
+          try {
+            const parsedUser = JSON.parse(userJson);
+            if (parsedUser && parsedUser.id) {
+              this.user = parsedUser;
+              isValid = true;
+              console.log('Usuario cargado desde localStorage:', this.user.first_name);
+            } else {
+              console.warn('Datos de usuario inválidos en localStorage');
+              isValid = false;
             }
-          } else {
-            // Si no tenemos el usuario, lo obtenemos del servidor
-            this.fetchCurrentUser();
+          } catch (e) {
+            console.error('Error al parsear usuario desde localStorage:', e);
+            isValid = false;
           }
+        } else {
+          console.warn('No hay datos de usuario en localStorage');
+          isValid = false;
+          // Intentar obtener el usuario del servidor
+          this.fetchCurrentUser();
         }
         
-        this.isInitialized = true;
+        // Solo establecer como autenticado si tenemos datos válidos
+        this.isAuthenticated = isValid;
+        
+        if (!isValid) {
+          console.warn('Datos de autenticación incompletos o inválidos');
+          // No hacer logout automáticamente para evitar círculos viciosos
+        }
+      } else {
+        console.warn('No se encontró token en localStorage');
+        // Asegurarnos de que el estado es consistente con localStorage
+        if (this.isAuthenticated) {
+          console.warn('Estado inconsistente: autenticado en store pero sin token en localStorage');
+          this.logout();
+        }
       }
+      
+      this.isInitialized = true;
+      return isValid;
     },
     
     async fetchCurrentUser() {

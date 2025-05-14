@@ -270,6 +270,16 @@
                     {{ commentSubmitting ? 'Enviando...' : 'Publicar Comentario' }}
                   </button>
                 </div>
+
+                <!-- Añadir después del formulario de comentarios, dentro del div v-if="isAuthenticated" -->
+<div class="mt-4 text-center">
+  <button 
+    @click="reloadSession" 
+    class="text-sm text-gray-500 hover:text-orange-500 underline"
+  >
+    ¿Problemas para comentar? Haz clic aquí para refrescar tu sesión
+  </button>
+</div>
               </form>
             </div>
             
@@ -535,24 +545,37 @@ const translateCategory = (category) => {
 
 // Inicializar el store de autenticación si no lo está ya
 onMounted(() => {
+  console.log('Componente de blog montado');
+  
   // Asegurarse de que el store de autenticación esté inicializado
   if (!authStore.isInitialized) {
-    authStore.initialize()
+    console.log('Inicializando store de autenticación');
+    authStore.initialize();
+  } else {
+    // Validar la sesión actual para evitar inconsistencias
+    console.log('Validando sesión existente');
+    authStore.validateSession();
+  }
+  
+  // Comprobar estado de autenticación
+  console.log('Estado de autenticación:', authStore.isAuthenticated ? 'Autenticado' : 'No autenticado');
+  if (authStore.isAuthenticated) {
+    console.log('Usuario actual:', authStore.user?.first_name);
   }
   
   // Cargar datos del blog
-  loadData()
+  loadData();
   
   // Cargar email recordado si existe
-  const rememberedEmail = localStorage.getItem('rememberedEmail')
+  const rememberedEmail = localStorage.getItem('rememberedEmail');
   if (rememberedEmail) {
-    loginForm.value.email = rememberedEmail
-    loginForm.value.remember = true
+    loginForm.value.email = rememberedEmail;
+    loginForm.value.remember = true;
   }
   
   // Agregar event listener para cerrar el modal con Escape
-  document.addEventListener('keydown', handleEscapeKey)
-})
+  document.addEventListener('keydown', handleEscapeKey);
+});
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleEscapeKey)
@@ -573,10 +596,29 @@ const handleClickOutside = (event) => {
   }
 }
 
+const reloadSession = () => {
+  console.log('Refrescando sesión...');
+  // Guardar datos temporalmente
+  const currentEmail = authStore.user?.email;
+  
+  // Forzar logout
+  authStore.logout();
+  
+  // Mostrar modal de login si es necesario
+  showLoginModal.value = true;
+  
+  // Prellenar el email si estaba disponible
+  if (currentEmail) {
+    loginForm.value.email = currentEmail;
+  }
+  
+  showNotification('Por favor, inicia sesión nuevamente para refrescar tu sesión', 'info');
+};
+
 // Función para manejar el inicio de sesión
 const handleLogin = async () => {
-  loginError.value = ''
-  loginSubmitting.value = true
+  loginError.value = '';
+  loginSubmitting.value = true;
   
   try {
     // Llamar a la función de login del store de autenticación
@@ -584,32 +626,44 @@ const handleLogin = async () => {
       email: loginForm.value.email,
       password: loginForm.value.password,
       remember: loginForm.value.remember
-    })
+    });
     
     if (result.success) {
+      // Verificar que el token se guardó correctamente
+      const token = localStorage.getItem('token');
+      console.log('Token guardado correctamente:', !!token);
+      
+      // Forzar una re-validación del estado
+      authStore.validateSession();
+      
       // Cerrar el modal si el login es exitoso
-      showLoginModal.value = false
+      showLoginModal.value = false;
+      
+      // Recargar los comentarios
+      if (blog.value && blog.value.id) {
+        fetchComments(blog.value.id);
+      }
       
       // Mostrar notificación de éxito
-      showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes comentar en este blog.`, 'success')
+      showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes comentar en este blog.`, 'success');
       
       // Limpiar el formulario
       loginForm.value = {
         email: '',
         password: '',
         remember: loginForm.value.remember // Mantener la preferencia de "recordar"
-      }
+      };
     } else {
       // Mostrar error específico si está disponible
-      loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.'
+      loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
     }
   } catch (err) {
-    console.error('Error al iniciar sesión:', err)
-    loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.'
+    console.error('Error al iniciar sesión:', err);
+    loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
   } finally {
-    loginSubmitting.value = false
+    loginSubmitting.value = false;
   }
-}
+};
 
 // Función para cargar todos los datos necesarios
 const loadData = async () => {
@@ -780,50 +834,71 @@ const fetchComments = async (blogId) => {
 
 // Función para enviar un comentario
 const submitComment = async () => {
-  // Verificar autenticación
-  if (!isAuthenticated.value) {
-    redirectToLogin()
-    return
+  // Verificar que la sesión es válida
+  if (!authStore.validateSession()) {
+    console.error('Sesión inválida o inconsistente');
+    showNotification('Tu sesión necesita ser renovada. Por favor, inicia sesión nuevamente.', 'error');
+    reloadSession();
+    return;
   }
   
-  commentSubmitting.value = true
+  commentSubmitting.value = true;
   
   try {
     // Validación básica
     if (!newComment.value.content) {
-      showNotification('Por favor escribe tu comentario.', 'error')
-      commentSubmitting.value = false
-      return
+      showNotification('Por favor escribe tu comentario.', 'error');
+      commentSubmitting.value = false;
+      return;
+    }
+    
+    // Verificar token directamente
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para enviar el comentario');
+      showNotification('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'error');
+      reloadSession();
+      commentSubmitting.value = false;
+      return;
     }
     
     // Preparar datos del comentario
     const commentData = {
       blog_id: blog.value.id,
       content: newComment.value.content
-    }
+    };
+    
+    console.log('Enviando comentario con autenticación');
     
     // Llamar a la API para guardar el comentario
-    const response = await blogService.addComment(commentData)
+    const response = await blogService.addComment(commentData);
     
     if (response && response.data && response.data.success) {
       // Refrescar todos los comentarios
-      await fetchComments(blog.value.id)
+      await fetchComments(blog.value.id);
       
       // Limpiar el formulario
-      newComment.value.content = ''
+      newComment.value.content = '';
       
       // Mostrar mensaje de éxito
-      showNotification('Comentario enviado con éxito', 'success')
+      showNotification('Comentario enviado con éxito', 'success');
     } else {
-      throw new Error('Error al guardar comentario')
+      throw new Error('Error al guardar comentario');
     }
   } catch (err) {
-    console.error('Error al enviar comentario:', err)
-    showNotification('Error al enviar el comentario. Por favor, intenta de nuevo.', 'error')
+    console.error('Error al enviar comentario:', err);
+    
+    // Verificar si es un error de autenticación
+    if (err.response && err.response.status === 401) {
+      showNotification('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'error');
+      reloadSession();
+    } else {
+      showNotification('Error al enviar el comentario. Por favor, intenta de nuevo.', 'error');
+    }
   } finally {
-    commentSubmitting.value = false
+    commentSubmitting.value = false;
   }
-}
+};
 
 // Función para dar like a un comentario
 const handleLikeComment = async (comment) => {

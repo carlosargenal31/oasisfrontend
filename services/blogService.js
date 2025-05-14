@@ -1,19 +1,61 @@
 // src/services/blogService.js
 import axios from 'axios';
+import { useAuthStore } from '@/store/auth'; // Importamos el store de autenticación
 const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000/api';
 
 // Crear dos instancias de axios: una con autenticación y otra sin ella
 // Instancia para peticiones que requieren autenticación
 const axiosAuth = axios.create();
+
+// Interceptor para añadir el token de autenticación a las peticiones
 axiosAuth.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('✅ Token encontrado y añadido a la petición');
+    } else {
+      console.warn('⚠️ No se encontró token para la solicitud autenticada');
     }
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Interceptor de respuesta para manejar errores de autenticación
+axiosAuth.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si el error es 401 (No autorizado)
+    if (error.response && error.response.status === 401) {
+      console.error('Error de autenticación:', error.response.data);
+      // Cerrar sesión si hay error de autenticación
+      try {
+        const authStore = useAuthStore();
+        if (authStore) {
+          console.log('Cerrando sesión debido a error de autenticación');
+          authStore.logout();
+        }
+      } catch (e) {
+        console.error('Error al intentar cerrar sesión:', e);
+      }
+      
+      // Redirigir a login
+      if (window.location.pathname !== '/login') {
+        localStorage.setItem('redirect_after_login', window.location.pathname);
+        // Usar router si está disponible, o redirección manual si no
+        try {
+          const router = window.router; // Asumiendo que el router está disponible globalmente
+          if (router) router.push('/login');
+          else window.location.href = '/login';
+        } catch (e) {
+          console.error('Error al redirigir:', e);
+          window.location.href = '/login';
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
 );
 
 // Instancia para peticiones públicas (sin autenticación)
@@ -74,26 +116,61 @@ export default {
 
   // Crear un nuevo blog (requiere autenticación)
   createBlog(blogData) {
+    // Verificar autenticación antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para crear el blog');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.post(`${API_URL}/blogs`, blogData);
   },
 
   // Actualizar un blog existente (requiere autenticación)
   updateBlog(id, blogData) {
+    // Verificar autenticación antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para actualizar el blog');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.put(`${API_URL}/blogs/${id}`, blogData);
   },
 
   // Eliminar un blog (requiere autenticación)
   deleteBlog(id) {
+    // Verificar autenticación antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para eliminar el blog');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.delete(`${API_URL}/blogs/${id}`);
   },
 
   // Actualizar el estado de destacado de un blog (requiere autenticación)
   updateFeaturedStatus(id, isFeatured) {
+    // Verificar autenticación antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para actualizar el estado destacado');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.put(`${API_URL}/blogs/${id}/featured`, { is_featured: isFeatured });
   },
 
   // Subir imagen para un blog (requiere autenticación)
   uploadImage(formData) {
+    // Verificar autenticación antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para subir la imagen');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.post(`${API_URL}/blogs/image`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -129,7 +206,23 @@ export default {
   
   // Añadir comentario a un blog (requiere autenticación)
   addComment(commentData) {
-    return axiosAuth.post(`${API_URL}/comments`, commentData);
+    // Verificar si hay token disponible
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para enviar el comentario');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
+    // Imprimir información detallada para depuración
+    console.log('Enviando comentario con token:', token.substring(0, 10) + '...');
+    console.log('Datos del comentario:', JSON.stringify(commentData));
+    
+    // Llamar a la API con autenticación
+    return axiosAuth.post(`${API_URL}/comments`, commentData)
+      .catch(error => {
+        console.error('Error al enviar comentario:', error.response ? error.response.data : error.message);
+        throw error;
+      });
   },
   
   // Dar like a un comentario (público, no requiere autenticación)
@@ -144,22 +237,44 @@ export default {
   
   // Eliminar un comentario (requiere autenticación)
   deleteComment(commentId) {
+    // Verificar si hay token disponible
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para eliminar el comentario');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.delete(`${API_URL}/comments/${commentId}`);
   },
   
   // Actualizar un comentario (requiere autenticación)
   updateComment(commentId, commentData) {
+    // Verificar si hay token disponible
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No hay token disponible para actualizar el comentario');
+      return Promise.reject(new Error('No hay token de autenticación. Por favor, inicia sesión nuevamente.'));
+    }
+    
     return axiosAuth.put(`${API_URL}/comments/${commentId}`, commentData);
   },
 
   // Quitar like a un comentario (público, no requiere autenticación)
-unlikeComment(commentId) {
-  return axiosPublic.post(`${API_URL}/comments/${commentId}/unlike`);
-},
+  unlikeComment(commentId) {
+    return axiosPublic.post(`${API_URL}/comments/${commentId}/unlike`);
+  },
 
-// Quitar dislike a un comentario (público, no requiere autenticación)
-undislikeComment(commentId) {
-  return axiosPublic.post(`${API_URL}/comments/${commentId}/undislike`);
-}
+  // Quitar dislike a un comentario (público, no requiere autenticación)
+  undislikeComment(commentId) {
+    return axiosPublic.post(`${API_URL}/comments/${commentId}/undislike`);
+  },
+  
+  // Verificar token (función de utilidad para comprobar el estado de autenticación)
+  verifyAuthToken() {
+    const token = localStorage.getItem('token');
+    return {
+      isValid: !!token,
+      token: token ? `${token.substring(0, 10)}...` : null
+    };
+  }
 };
-
