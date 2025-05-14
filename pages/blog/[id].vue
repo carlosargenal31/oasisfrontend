@@ -195,12 +195,12 @@
             </div>
           </div>
           
-          <!-- Comentarios y Reseñas -->
+          <!-- Comentarios - SECCIÓN MODIFICADA -->
           <div class="mb-10">
             <h3 class="text-xl font-bold mb-4">Comentarios ({{ commentCount }})</h3>
             
             <div v-if="comments.length > 0">
-              <div v-for="(comment, index) in comments" :key="index" class="mb-6 border-b pb-6 last:border-b-0">
+              <div v-for="(comment, index) in comments" :key="comment.id || index" class="mb-6 border-b pb-6 last:border-b-0">
                 <div class="flex">
                   <div class="mr-4">
                     <div class="rounded-full w-10 h-10 overflow-hidden">
@@ -214,21 +214,29 @@
                   <div class="flex-1">
                     <div class="flex items-center mb-1">
                       <h5 class="font-medium mr-2">{{ comment.name }}</h5>
-                      <span class="text-xs text-gray-500">{{ formatDate(comment.date) }}</span>
+                      <span class="text-xs text-gray-500">{{ formatDate(comment.created_at || comment.date) }}</span>
                     </div>
                     <p class="text-gray-600 mb-2">{{ comment.content }}</p>
                     <div class="flex items-center space-x-4 text-sm">
-                      <button class="text-gray-500 hover:text-orange-500 flex items-center">
+                      <button 
+                        @click="handleLikeComment(comment)" 
+                        class="text-gray-500 hover:text-orange-500 flex items-center"
+                        :class="{ 'text-orange-500': hasUserInteracted(comment.id, 'like') }"
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
-                        Me gusta
+                        <span>{{ comment.likes || 0 }}</span>
                       </button>
-                      <button class="text-gray-500 hover:text-orange-500 flex items-center">
+                      <button 
+                        @click="handleDislikeComment(comment)" 
+                        class="text-gray-500 hover:text-orange-500 flex items-center"
+                        :class="{ 'text-orange-500': hasUserInteracted(comment.id, 'dislike') }"
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L13 13V3" />
                         </svg>
-                        Responder
+                        <span>{{ comment.dislikes || 0 }}</span>
                       </button>
                     </div>
                   </div>
@@ -236,32 +244,18 @@
               </div>
             </div>
             
-            <!-- Formulario de comentarios -->
-            <div class="bg-gray-50 p-6 rounded-lg mt-6">
+            <div v-else class="py-4 text-center text-gray-500">
+              No hay comentarios aún. ¡Sé el primero en comentar!
+            </div>
+            
+            <!-- Formulario de comentarios solo para usuarios autenticados -->
+            <div v-if="isAuthenticated" class="bg-gray-50 p-6 rounded-lg mt-6">
               <h4 class="font-medium mb-4">Deja tu comentario</h4>
+              <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+                Comentando como: {{ userData.first_name }} {{ userData.last_name }}
+              </div>
+              
               <form @submit.prevent="submitComment" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label for="name" class="block text-sm text-gray-600 mb-1">Nombre</label>
-                    <input 
-                      type="text" 
-                      id="name"
-                      v-model="newComment.name"
-                      class="w-full p-2 text-sm border rounded" 
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label for="email" class="block text-sm text-gray-600 mb-1">Correo (no será publicado)</label>
-                    <input 
-                      type="email" 
-                      id="email"
-                      v-model="newComment.email"
-                      class="w-full p-2 text-sm border rounded" 
-                      required
-                    />
-                  </div>
-                </div>
                 <div>
                   <label for="comment" class="block text-sm text-gray-600 mb-1">Comentario</label>
                   <textarea 
@@ -282,6 +276,18 @@
                   </button>
                 </div>
               </form>
+            </div>
+            
+            <!-- Mensaje para usuarios no autenticados -->
+            <div v-else class="bg-gray-50 p-6 rounded-lg mt-6 text-center">
+              <h4 class="font-medium mb-4">¿Quieres dejar un comentario?</h4>
+              <p class="text-gray-600 mb-4">Debes iniciar sesión para poder comentar en este blog.</p>
+              <button 
+                @click="showLoginModal = true" 
+                class="px-4 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition"
+              >
+                Iniciar Sesión
+              </button>
             </div>
           </div>
           
@@ -317,49 +323,204 @@
                 </div>
               </div>
             </div>
-            
-            
           </div>
         </template>
       </div>
     </div>
     
+    <!-- Notificación Toast -->
+    <div 
+      v-if="notification.show" 
+      class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-300"
+      :class="{
+        'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
+        'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
+        'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
+      }"
+    >
+      <div class="flex items-center">
+        <div 
+          class="w-6 h-6 mr-2 flex items-center justify-center rounded-full"
+          :class="{
+            'bg-green-200 text-green-600': notification.type === 'success',
+            'bg-red-200 text-red-600': notification.type === 'error',
+            'bg-blue-200 text-blue-600': notification.type === 'info'
+          }"
+        >
+          <svg v-if="notification.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <svg v-if="notification.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <svg v-if="notification.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p>{{ notification.message }}</p>
+      </div>
+    </div>
     
+    <!-- Modal de inicio de sesión -->
+    <div 
+      v-if="showLoginModal" 
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal-overlay"
+      @click="handleClickOutside"
+    >
+      <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+        <!-- Botón de cerrar -->
+        <button 
+          @click="showLoginModal = false" 
+          class="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        
+        <!-- Encabezado -->
+        <h3 class="text-xl font-semibold mb-4 text-center text-gray-800">Iniciar Sesión</h3>
+        
+        <!-- Formulario de login -->
+        <form @submit.prevent="handleLogin" class="space-y-4">
+          <!-- Campo de correo electrónico -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+            <input 
+              type="email" 
+              id="email" 
+              v-model="loginForm.email"
+              placeholder="tucorreo@ejemplo.com"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              required
+            />
+          </div>
+          
+          <!-- Campo de contraseña -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <input 
+              type="password" 
+              id="password" 
+              v-model="loginForm.password"
+              placeholder="Contraseña"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+              required
+            />
+          </div>
+          
+          <!-- Checkbox para recordar email -->
+          <div class="flex items-center">
+            <input 
+              type="checkbox" 
+              id="remember" 
+              v-model="loginForm.remember"
+              class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+            />
+            <label for="remember" class="ml-2 block text-sm text-gray-700">
+              Recordar mi correo
+            </label>
+          </div>
+          
+          <!-- Mensaje de error -->
+          <div v-if="loginError" class="text-red-500 text-sm py-2 px-3 bg-red-50 rounded">
+            {{ loginError }}
+          </div>
+          
+          <!-- Botones -->
+          <div class="flex flex-col space-y-3">
+            <button 
+              type="submit" 
+              class="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition"
+              :disabled="loginSubmitting"
+            >
+              <span v-if="loginSubmitting" class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Iniciando sesión...
+              </span>
+              <span v-else>Iniciar sesión</span>
+            </button>
+            
+            <div class="text-center text-sm text-gray-500 mt-2">
+              ¿No tienes cuenta? 
+              <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
+            </div>
+            
+            <div class="text-center text-xs text-gray-400 mt-1">
+              <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth' // Importar el store de autenticación
 import blogService from '@/services/blogService'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore() // Usar el store de autenticación
 
 // Variables reactivas
 const blog = ref({})
 const loading = ref(true)
 const error = ref(null)
 
+// Usar el estado de autenticación directamente desde el store
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const userData = computed(() => authStore.user)
+
 // Variables para comentarios
 const comments = ref([])
 const commentCount = ref(0)
 const commentSubmitting = ref(false)
 const newComment = ref({
-  name: '',
-  email: '',
   content: ''
+})
+
+// Variables para notificaciones
+const notification = ref({
+  show: false,
+  message: '',
+  type: 'success' // 'success', 'error', 'info'
 })
 
 // Para los blogs relacionados
 const relatedBlogs = ref([])
 const popularTags = ref([])
 const categories = ref([])
-const newsletter = ref({
+
+// Variables para el modal de login
+const showLoginModal = ref(false)
+const loginForm = ref({
   email: '',
-  loading: false,
-  success: false,
-  error: null
+  password: '',
+  remember: false
 })
+const loginError = ref('')
+const loginSubmitting = ref(false)
+
+// Función para mostrar notificación
+const showNotification = (message, type = 'success') => {
+  notification.value = {
+    show: true,
+    message,
+    type
+  }
+  
+  // Ocultar después de 3 segundos
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
+}
 
 // Función para traducir categorías al español
 const translateCategory = (category) => {
@@ -377,8 +538,86 @@ const translateCategory = (category) => {
   return translations[category] || category
 }
 
-// Cargar datos al montar el componente
-onMounted(async () => {
+// Inicializar el store de autenticación si no lo está ya
+onMounted(() => {
+  // Asegurarse de que el store de autenticación esté inicializado
+  if (!authStore.isInitialized) {
+    authStore.initialize()
+  }
+  
+  // Cargar datos del blog
+  loadData()
+  
+  // Cargar email recordado si existe
+  const rememberedEmail = localStorage.getItem('rememberedEmail')
+  if (rememberedEmail) {
+    loginForm.value.email = rememberedEmail
+    loginForm.value.remember = true
+  }
+  
+  // Agregar event listener para cerrar el modal con Escape
+  document.addEventListener('keydown', handleEscapeKey)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKey)
+})
+
+// Función para cerrar el modal con la tecla Escape
+const handleEscapeKey = (event) => {
+  if (event.key === 'Escape' && showLoginModal.value) {
+    showLoginModal.value = false
+  }
+}
+
+// Función para cerrar el modal si se hace clic fuera de él
+const handleClickOutside = (event) => {
+  // Si se hace clic fuera del contenido del modal (en el overlay), cerrar el modal
+  if (event.target.classList.contains('modal-overlay')) {
+    showLoginModal.value = false
+  }
+}
+
+// Función para manejar el inicio de sesión
+const handleLogin = async () => {
+  loginError.value = ''
+  loginSubmitting.value = true
+  
+  try {
+    // Llamar a la función de login del store de autenticación
+    const result = await authStore.login({
+      email: loginForm.value.email,
+      password: loginForm.value.password,
+      remember: loginForm.value.remember
+    })
+    
+    if (result.success) {
+      // Cerrar el modal si el login es exitoso
+      showLoginModal.value = false
+      
+      // Mostrar notificación de éxito
+      showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes comentar en este blog.`, 'success')
+      
+      // Limpiar el formulario
+      loginForm.value = {
+        email: '',
+        password: '',
+        remember: loginForm.value.remember // Mantener la preferencia de "recordar"
+      }
+    } else {
+      // Mostrar error específico si está disponible
+      loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.'
+    }
+  } catch (err) {
+    console.error('Error al iniciar sesión:', err)
+    loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.'
+  } finally {
+    loginSubmitting.value = false
+  }
+}
+
+// Función para cargar todos los datos necesarios
+const loadData = async () => {
   try {
     // Cargar todo en paralelo para mejor rendimiento
     await Promise.all([
@@ -387,9 +626,26 @@ onMounted(async () => {
       fetchPopularTags()
     ])
   } catch (err) {
-    console.error('Error inicializando página de blog:', err)
+    console.error('Error cargando datos:', err)
   }
-})
+}
+
+// Vigilar cambios en la ruta o en el estado de autenticación
+watch([
+  () => route.params.id,
+  () => authStore.isAuthenticated
+], () => {
+  loadData()
+}, { immediate: true })
+
+// Modificar la función redirectToLogin para mostrar el modal en lugar de redirigir
+const redirectToLogin = () => {
+  // Guardar la URL actual para redirigir de vuelta después del login (por si acaso)
+  localStorage.setItem('redirect_after_login', window.location.pathname)
+  
+  // Mostrar el modal de login
+  showLoginModal.value = true
+}
 
 // Obtener blog desde la API
 const fetchBlog = async () => {
@@ -496,26 +752,58 @@ const fetchComments = async (blogId) => {
   try {
     const response = await blogService.getComments(blogId)
     
-    if (response && response.data && response.data.data) {
-      comments.value = response.data.data
+    if (response && response.data && response.data.success) {
+      // Actualizado para coincidir con nuestro formato de API
+      comments.value = response.data.data || []
       commentCount.value = comments.value.length
+    } else if (response && Array.isArray(response.data)) {
+      // Fallback para otros formatos de respuesta
+      comments.value = response.data
+      commentCount.value = comments.value.length
+    } else {
+      // Si no hay datos, inicializar como array vacío
+      comments.value = []
+      commentCount.value = 0
+    }
+    
+    // También podemos obtener la cuenta desde un endpoint separado
+    try {
+      const countResponse = await blogService.getCommentCount(blogId)
+      if (countResponse && countResponse.data && countResponse.data.success) {
+        commentCount.value = countResponse.data.data.commentCount || 0
+      }
+    } catch (countError) {
+      console.warn('Error al obtener conteo de comentarios:', countError)
+      // Usamos el valor calculado anteriormente como fallback
     }
   } catch (err) {
     console.error('Error al obtener comentarios:', err)
-    // No establecemos comentarios de fallback para mantener todo dinámico
+    comments.value = []
+    commentCount.value = 0
   }
 }
 
 // Función para enviar un comentario
 const submitComment = async () => {
+  // Verificar autenticación
+  if (!isAuthenticated.value) {
+    redirectToLogin()
+    return
+  }
+  
   commentSubmitting.value = true
   
   try {
+    // Validación básica
+    if (!newComment.value.content) {
+      showNotification('Por favor escribe tu comentario.', 'error')
+      commentSubmitting.value = false
+      return
+    }
+    
     // Preparar datos del comentario
     const commentData = {
       blog_id: blog.value.id,
-      name: newComment.value.name,
-      email: newComment.value.email,
       content: newComment.value.content
     }
     
@@ -523,42 +811,130 @@ const submitComment = async () => {
     const response = await blogService.addComment(commentData)
     
     if (response && response.data && response.data.success) {
-      // Si la API devuelve el comentario creado, usamos ese
-      if (response.data.data) {
-        comments.value.unshift(response.data.data)
-      } else {
-        // Si no devuelve el comentario, creamos uno para la UI
-        const newCommentObj = {
-          id: Date.now(), // ID temporal
-          name: newComment.value.name,
-          date: new Date(),
-          content: newComment.value.content,
-          profile_image: null
-        }
-        comments.value.unshift(newCommentObj)
-      }
-      
-      // Actualizar contador
-      commentCount.value = comments.value.length
+      // Refrescar todos los comentarios
+      await fetchComments(blog.value.id)
       
       // Limpiar el formulario
-      newComment.value = {
-        name: '',
-        email: '',
-        content: ''
-      }
+      newComment.value.content = ''
       
       // Mostrar mensaje de éxito
-      alert('Comentario enviado con éxito')
+      showNotification('Comentario enviado con éxito', 'success')
     } else {
       throw new Error('Error al guardar comentario')
     }
   } catch (err) {
     console.error('Error al enviar comentario:', err)
-    alert('Error al enviar el comentario. Por favor, intenta de nuevo.')
+    showNotification('Error al enviar el comentario. Por favor, intenta de nuevo.', 'error')
   } finally {
     commentSubmitting.value = false
   }
+}
+
+// Función para dar like a un comentario
+const handleLikeComment = async (comment) => {
+  try {
+    // Obtener comentarios con like del localStorage
+    const likedComments = JSON.parse(localStorage.getItem('likedComments') || '[]')
+    const commentIndex = likedComments.indexOf(comment.id)
+    
+    // Si ya dio like, quitarlo (toggle)
+    if (commentIndex !== -1) {
+      // Quitar del localStorage
+      likedComments.splice(commentIndex, 1)
+      localStorage.setItem('likedComments', JSON.stringify(likedComments))
+      
+      // Actualizar UI inmediatamente
+      comment.likes = Math.max(0, (comment.likes || 1) - 1)
+      
+      // Llamar a la API para quitar like
+      await blogService.unlikeComment(comment.id)
+    } 
+    // Si no ha dado like, agregarlo
+    else {
+      // Guardar en localStorage
+      likedComments.push(comment.id)
+      localStorage.setItem('likedComments', JSON.stringify(likedComments))
+      
+      // Actualizar UI inmediatamente
+      comment.likes = (comment.likes || 0) + 1
+      
+      // Llamar a la API
+      await blogService.likeComment(comment.id)
+      
+      // Si tenía dislike, quitarlo (opcional: no dejar like y dislike al mismo tiempo)
+      const dislikedComments = JSON.parse(localStorage.getItem('dislikedComments') || '[]')
+      const dislikeIndex = dislikedComments.indexOf(comment.id)
+      if (dislikeIndex !== -1) {
+        dislikedComments.splice(dislikeIndex, 1)
+        localStorage.setItem('dislikedComments', JSON.stringify(dislikedComments))
+        comment.dislikes = Math.max(0, (comment.dislikes || 1) - 1)
+      }
+    }
+  } catch (err) {
+    console.error('Error al interactuar con el comentario:', err)
+    showNotification('Error al procesar tu reacción', 'error')
+    
+    // Revertir cambios en caso de error (lógica más compleja)
+    // Esta parte es opcional pero ayuda a mantener consistencia
+  }
+}
+
+// Función para dar/quitar dislike a un comentario
+const handleDislikeComment = async (comment) => {
+  try {
+    // Obtener comentarios con dislike del localStorage
+    const dislikedComments = JSON.parse(localStorage.getItem('dislikedComments') || '[]')
+    const commentIndex = dislikedComments.indexOf(comment.id)
+    
+    // Si ya dio dislike, quitarlo (toggle)
+    if (commentIndex !== -1) {
+      // Quitar del localStorage
+      dislikedComments.splice(commentIndex, 1)
+      localStorage.setItem('dislikedComments', JSON.stringify(dislikedComments))
+      
+      // Actualizar UI inmediatamente
+      comment.dislikes = Math.max(0, (comment.dislikes || 1) - 1)
+      
+      // Llamar a la API para quitar dislike
+      await blogService.undislikeComment(comment.id)
+    } 
+    // Si no ha dado dislike, agregarlo
+    else {
+      // Guardar en localStorage
+      dislikedComments.push(comment.id)
+      localStorage.setItem('dislikedComments', JSON.stringify(dislikedComments))
+      
+      // Actualizar UI inmediatamente
+      comment.dislikes = (comment.dislikes || 0) + 1
+      
+      // Llamar a la API
+      await blogService.dislikeComment(comment.id)
+      
+      // Si tenía like, quitarlo (opcional: no dejar like y dislike al mismo tiempo)
+      const likedComments = JSON.parse(localStorage.getItem('likedComments') || '[]')
+      const likeIndex = likedComments.indexOf(comment.id)
+      if (likeIndex !== -1) {
+        likedComments.splice(likeIndex, 1)
+        localStorage.setItem('likedComments', JSON.stringify(likedComments))
+        comment.likes = Math.max(0, (comment.likes || 1) - 1)
+      }
+    }
+  } catch (err) {
+    console.error('Error al interactuar con el comentario:', err)
+    showNotification('Error al procesar tu reacción', 'error')
+    
+    // Revertir cambios en caso de error (lógica más compleja)
+    // Esta parte es opcional pero ayuda a mantener consistencia
+  }
+}
+
+// Función para verificar si el usuario ya ha interactuado con un comentario
+const hasUserInteracted = (commentId, type) => {
+  if (!commentId) return false
+  
+  const key = type === 'like' ? 'likedComments' : 'dislikedComments'
+  const interactedComments = JSON.parse(localStorage.getItem(key) || '[]')
+  return interactedComments.includes(commentId)
 }
 
 // Eliminar el blog actual de los relacionados y mostrar solo 3
@@ -605,34 +981,6 @@ const getAuthorImage = (authorId) => {
   // Usamos un método simple para obtener una imagen de autor basada en el ID
   // En producción, se recomienda tener una imagen de fallback en el servidor
   return `/images/authors/fallback${(authorId ? (parseInt(authorId) % 3) : 0) + 1}.jpg`
-}
-
-// Suscribirse al newsletter
-const subscribeToNewsletter = async () => {
-  newsletter.value.loading = true
-  newsletter.value.error = null
-  
-  try {
-    // Llamar a la API para suscribirse
-    const response = await blogService.subscribeNewsletter(newsletter.value.email)
-    
-    if (response && response.data && response.data.success) {
-      newsletter.value.success = true
-      newsletter.value.email = ''
-      
-      // Mostrar mensaje de éxito por un tiempo
-      setTimeout(() => {
-        newsletter.value.success = false
-      }, 3000)
-    } else {
-      throw new Error('Error al suscribirse')
-    }
-  } catch (err) {
-    console.error('Error al suscribirse al newsletter:', err)
-    newsletter.value.error = 'Error al suscribirse. Por favor, intenta de nuevo.'
-  } finally {
-    newsletter.value.loading = false
-  }
 }
 
 // Métodos para compartir
