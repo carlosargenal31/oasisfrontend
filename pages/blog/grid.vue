@@ -343,6 +343,42 @@ onMounted(async () => {
   }
 })
 
+// Obtener conteo de comentarios para cada blog
+const fetchCommentCounts = async () => {
+  try {
+    // Obtener el conteo de comentarios para cada blog en la lista actual
+    for (const blog of blogs.value) {
+      if (!blog.comments_count) {
+        try {
+          const countResponse = await blogService.getCommentCount(blog.id)
+          if (countResponse && countResponse.data && countResponse.data.success) {
+            blog.comments_count = countResponse.data.data.commentCount || 0
+          }
+        } catch (countError) {
+          console.warn(`Error al obtener conteo de comentarios para blog ${blog.id}:`, countError)
+          // Si falla, dejamos el valor por defecto (0 o el valor existente)
+        }
+      }
+    }
+    
+    // También obtener conteos para blogs destacados si no tienen
+    for (const featuredBlog of featuredBlogs.value) {
+      if (!featuredBlog.comments_count) {
+        try {
+          const countResponse = await blogService.getCommentCount(featuredBlog.id)
+          if (countResponse && countResponse.data && countResponse.data.success) {
+            featuredBlog.comments_count = countResponse.data.data.commentCount || 0
+          }
+        } catch (countError) {
+          console.warn(`Error al obtener conteo de comentarios para blog destacado ${featuredBlog.id}:`, countError)
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error al obtener conteos de comentarios:', err)
+  }
+}
+
 const fetchBlogs = async () => {
   loading.value = true
   error.value = null
@@ -410,6 +446,11 @@ const fetchBlogs = async () => {
       totalBlogsCount.value = blogs.value.length > 0 ? blogs.value.length : itemsPerPage.value
     }
     
+    // Obtener conteo de comentarios para cada blog
+    if (blogs.value.length > 0) {
+      await fetchCommentCounts()
+    }
+    
   } catch (err) {
     console.error('Error fetching blogs:', err)
     
@@ -459,6 +500,11 @@ const fetchBlogs = async () => {
       // Asegúrate de que tenemos al menos 1 página
       if (totalBlogsCount.value < itemsPerPage.value) {
         totalBlogsCount.value = blogs.value.length > 0 ? blogs.value.length : itemsPerPage.value
+      }
+      
+      // Obtener conteo de comentarios para cada blog
+      if (blogs.value.length > 0) {
+        await fetchCommentCounts()
       }
       
     } catch (serviceErr) {
@@ -533,6 +579,11 @@ const fetchAllBlogs = async () => {
     blogs.value = filteredBlogs.slice(startIndex, endIndex)
     totalBlogsCount.value = filteredBlogs.length
     
+    // Obtener conteo de comentarios para cada blog
+    if (blogs.value.length > 0) {
+      await fetchCommentCounts()
+    }
+    
   } catch (err) {
     console.error('Error fetching all blogs:', err)
     error.value = 'Error al cargar todos los blogs. Por favor, intenta de nuevo más tarde.'
@@ -554,6 +605,11 @@ const fetchFeaturedBlogs = async () => {
       featuredBlogs.value = response.data
     } else {
       featuredBlogs.value = []
+    }
+    
+    // Obtener conteo de comentarios para blogs destacados
+    if (featuredBlogs.value.length > 0) {
+      await fetchCommentCounts()
     }
   } catch (err) {
     console.error('Error fetching featured blogs:', err)

@@ -221,29 +221,6 @@
               </div>
             </div>
             
-            <!-- Organizer Info -->
-            <div class="mb-8">
-              <h3 class="text-lg font-bold mb-3">Organizador</h3>
-              <div class="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-                  <img 
-                    :src="event.profile_image || getCreatorImage(event.created_by)" 
-                    alt="Organizador" 
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 class="text-md font-semibold">{{ event.first_name }} {{ event.last_name }}</h4>
-                  <p class="text-sm text-gray-600">Organizador de eventos</p>
-                  <button 
-                    @click="contactOrganizer"
-                    class="mt-1 text-sm text-orange-500 hover:text-orange-600 hover:underline"
-                  >
-                    Contactar organizador
-                  </button>
-                </div>
-              </div>
-            </div>
             
             <!-- Related Events -->
             <div v-if="relatedEvents.length > 0" class="mb-8">
@@ -284,118 +261,7 @@
           
           <!-- Right Column - Sidebar -->
           <div class="w-full lg:w-1/3">
-            <!-- Book Event Card -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden mb-6">
-              <div class="p-4 bg-orange-50 border-b border-orange-100">
-                <h3 class="text-xl font-bold text-gray-800">Reserva tu lugar</h3>
-                <p class="text-sm text-gray-600">Asegura tu participación en este evento</p>
-              </div>
-              <div class="p-4">
-                <div class="flex justify-between items-center mb-4">
-                  <div>
-                    <span class="text-sm text-gray-500">Precio</span>
-                    <p class="text-xl font-bold text-gray-800">{{ formatPrice(event.price) }}</p>
-                  </div>
-                  <div class="bg-green-100 rounded-full px-3 py-1 text-xs text-green-800 font-medium">
-                    {{ event.status === 'activo' ? 'Disponible' : capitalizeFirst(event.status) }}
-                  </div>
-                </div>
-                
-                <div class="space-y-4 mb-4">
-                  <div>
-                    <label for="attendees" class="block text-sm font-medium text-gray-700 mb-1">Número de asistentes</label>
-                    <div class="flex items-center">
-                      <button 
-                        @click="decrementAttendees" 
-                        class="w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-600 rounded-l-md"
-                        :disabled="attendees <= 1"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                        </svg>
-                      </button>
-                      <input 
-                        type="number" 
-                        id="attendees" 
-                        v-model="attendees"
-                        min="1" 
-                        max="10" 
-                        class="w-full border-gray-200 border-l-0 border-r-0 text-center"
-                        @change="validateAttendees"
-                      />
-                      <button 
-                        @click="incrementAttendees" 
-                        class="w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-600 rounded-r-md"
-                        :disabled="attendees >= 10"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      v-model="bookingForm.name"
-                      class="w-full p-2 border border-gray-300 rounded-md" 
-                      placeholder="Tu nombre completo"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      v-model="bookingForm.email"
-                      class="w-full p-2 border border-gray-300 rounded-md" 
-                      placeholder="tu@email.com"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                    <input 
-                      type="tel" 
-                      id="phone" 
-                      v-model="bookingForm.phone"class="w-full p-2 border border-gray-300 rounded-md" 
-                      placeholder="+504 9999-9999"
-                    />
-                  </div>
-                </div>
-                
-                <div class="mb-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm text-gray-600">Subtotal</span>
-                    <span class="text-sm font-medium">{{ formatPrice(calculateSubtotal()) }}</span>
-                  </div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm text-gray-600">Impuesto (15%)</span>
-                    <span class="text-sm font-medium">{{ formatPrice(calculateTax()) }}</span>
-                  </div>
-                  <div class="flex items-center justify-between text-base font-bold">
-                    <span>Total</span>
-                    <span>{{ formatPrice(calculateTotal()) }}</span>
-                  </div>
-                </div>
-                
-                <button 
-                  @click="submitBooking" 
-                  class="w-full py-3 bg-orange-500 text-white font-medium rounded-md hover:bg-orange-600 transition"
-                  :disabled="event.status !== 'activo' || isBookingSubmitting"
-                >
-                  {{ isBookingSubmitting ? 'Procesando...' : 'Reservar ahora' }}
-                </button>
-                
-                <div class="mt-4 text-xs text-gray-500 text-center">
-                  Al reservar, aceptas nuestros <a href="#" class="text-orange-500 hover:underline">términos y condiciones</a>.
-                </div>
-              </div>
-            </div>
+       
             
             <!-- Add to Calendar Card -->
             <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden mb-6">
@@ -443,40 +309,7 @@
               </div>
             </div>
             
-            <!-- Map Location -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden mb-6">
-              <div class="p-4 border-b">
-                <h3 class="text-lg font-bold text-gray-800">Ubicación</h3>
-              </div>
-              <div class="h-52 bg-gray-200 relative">
-                <!-- Aquí iría un mapa real, pero para este ejemplo usamos una imagen placeholder -->
-                <img 
-                   
-                  alt="Mapa de ubicación" 
-                  class="w-full h-full object-cover"
-                  @click="openMap"
-                />
-                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 hover:bg-opacity-30 transition-all cursor-pointer" @click="openMap">
-                  <div class="bg-white px-3 py-1 rounded-full text-sm font-medium">
-                    Ver mapa completo
-                  </div>
-                </div>
-              </div>
-              <div class="p-4">
-                <p class="text-sm text-gray-700 mb-2">{{ event.location }}</p>
-                <a 
-                  :href="getDirectionsUrl(event.location)" 
-                  target="_blank" 
-                  class="text-sm text-orange-500 hover:underline flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                  </svg>
-                  Obtener indicaciones
-                </a>
-              </div>
-            </div>
+           
           </div>
         </div>
       </template>
