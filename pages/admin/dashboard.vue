@@ -126,6 +126,27 @@
           <div class="flex flex-col md:flex-row justify-between items-center mb-6">
             <h2 class="text-lg font-semibold text-gray-900">Gestión de Comercios</h2>
             
+            <!-- Buscador -->
+            <div class="w-full md:w-auto mb-4 md:mb-0">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  v-model="searchQuery" 
+                  placeholder="Buscar comercios..." 
+                  class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm"
+                  @keyup.enter="searchBusinesses"
+                />
+                <button 
+                  @click="searchBusinesses" 
+                  class="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
             <!-- Filtros -->
             <div class="flex flex-col md:flex-row gap-4 mt-4 md:mt-0 w-full md:w-auto">
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
@@ -161,13 +182,13 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                  <select v-model="filters.status" class="w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="">Todos</option>
-                    <option value="for-rent">Activo</option>
-                    <option value="archived">Archivado</option>
-                  </select>
-                </div>
+  <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+  <select v-model="filters.status" class="w-full border-gray-300 rounded-md shadow-sm">
+    <option value="">Todos</option>
+    <option value="active">Activo</option>
+    <option value="archived">Inactivo</option>
+  </select>
+</div>
               </div>
               
               <div class="flex items-end">
@@ -214,13 +235,13 @@
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Comercio</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Categoría/Tipo</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Estado</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Destacado</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Calificación</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Vistas</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Acciones</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="business in filteredBusinesses" :key="business.id" :class="{'bg-gray-50': business.archived}">
+                <tr v-for="business in paginatedBusinesses" :key="business.id" :class="{'bg-gray-50': business.archived}">
                   <td class="px-4 py-4">
                     <div class="flex items-center">
                       <img :src="business.image || '/img/business-placeholder.jpg'" alt="" class="h-10 w-10 rounded object-cover">
@@ -241,16 +262,16 @@
                     </div>
                   </td>
                   <td class="px-4 py-4">
-                    <span :class="[
-                      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                      getBusinessStatusClass(business.status)
-                    ]">
-                      {{ getStatusText(business.status) }}
-                    </span>
-                  </td>
+  <span :class="[
+    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+    business.archived ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+  ]">
+    {{ business.archived ? 'Inactivo' : 'Activo' }}
+  </span>
+</td>
                   <td class="px-4 py-4 text-sm text-gray-500">
                     <div class="flex items-center">
-                      <span :class="['text-yellow-400', {'opacity-30': !business.isFeatured}]">★</span>
+                      <span :class="['text-yellow-400', {'opacity-30': !business.average_rating}]">★</span>
                       <span class="ml-1">{{ business.average_rating || '0.0' }}</span>
                     </div>
                   </td>
@@ -272,6 +293,7 @@
                         @click="toggleBusinessFeatured(business)"
                         :class="[business.isFeatured ? 'text-purple-600 hover:text-purple-900' : 'text-gray-400 hover:text-gray-600']"
                         v-tooltip="business.isFeatured ? 'Quitar destacado' : 'Destacar'"
+                        :disabled="!canBeHighlighted(business)"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -279,20 +301,31 @@
                       </button>
                       <button
                         @click="toggleBusinessStatus(business)"
-                        :class="[business.status === 'for-rent' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900']"
-                        v-tooltip="business.status === 'for-rent' ? 'Desactivar' : 'Activar'"
+                        :class="[!business.archived ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900']"
+                        v-tooltip="!business.archived ? 'Desactivar' : 'Activar'"
                       >
-                        <svg v-if="business.status === 'for-rent'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg v-if="!business.archived" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </button>
+                      <!-- Nuevo botón para ver razón de archivo, solo visible si el comercio está archivado -->
+    <button
+      v-if="business.archived"
+      @click="showArchiveReason(business)"
+      class="text-blue-600 hover:text-blue-900"
+      v-tooltip="'Ver razón'"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
                     </div>
                   </td>
                 </tr>
-                <tr v-if="filteredBusinesses.length === 0">
+                <tr v-if="paginatedBusinesses.length === 0">
                   <td colspan="6" class="px-4 py-4 text-center text-gray-500">
                     No se encontraron comercios con los filtros seleccionados
                   </td>
@@ -305,8 +338,43 @@
           <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
             <div>
               <p class="text-sm text-gray-700">
-                Mostrando <span class="font-medium">1</span> a <span class="font-medium">{{ filteredBusinesses.length }}</span> de <span class="font-medium">{{ filteredBusinesses.length }}</span> resultados
+                Mostrando <span class="font-medium">{{ paginationStart }}</span> a <span class="font-medium">{{ paginationEnd }}</span> de <span class="font-medium">{{ filteredBusinesses.length }}</span> resultados
               </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button 
+                @click="changePage(currentPage - 1)" 
+                :disabled="currentPage === 1"
+                :class="[
+                  'px-3 py-1 border border-gray-300 rounded-md',
+                  currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'
+                ]"
+              >
+                Anterior
+              </button>
+              <div class="flex space-x-1">
+                <button 
+                  v-for="page in displayPages" 
+                  :key="page"
+                  @click="changePage(page)"
+                  :class="[
+                    'px-3 py-1 border border-gray-300 rounded-md',
+                    currentPage === page ? 'bg-orange-600 text-white' : 'hover:bg-gray-50'
+                  ]"
+                >
+                  {{ page }}
+                </button>
+              </div>
+              <button 
+                @click="changePage(currentPage + 1)" 
+                :disabled="currentPage >= totalPages"
+                :class="[
+                  'px-3 py-1 border border-gray-300 rounded-md',
+                  currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50'
+                ]"
+              >
+                Siguiente
+              </button>
             </div>
           </div>
         </div>
@@ -388,100 +456,159 @@
                     <option v-for="type in propertyTypes.Alojamiento" :key="type" :value="type">{{ type }}</option>
                   </template>
                   <template v-else-if="businessForm.category === 'Restaurante y bar'">
-                    <option v-for="type in propertyTypes['Restaurante y bar']" :key="type" :value="type">{{ type }}</option>
-                  </template>
-                  <template v-else-if="businessForm.category === 'Entretenimiento'">
-                    <option v-for="type in propertyTypes.Entretenimiento" :key="type" :value="type">{{ type }}</option>
-                  </template>
-                </select>
-              </div>
+                   <option v-for="type in propertyTypes['Restaurante y bar']" :key="type" :value="type">{{ type }}</option>
+                 </template>
+                 <template v-else-if="businessForm.category === 'Entretenimiento'">
+                   <option v-for="type in propertyTypes.Entretenimiento" :key="type" :value="type">{{ type }}</option>
+                 </template>
+               </select>
+             </div>
 
-              <!-- Ubicación en mapa -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación en Mapa</label>
-                <div class="border border-gray-300 rounded-md p-1 h-40 mb-2" ref="mapContainer">
-                  <!-- Aquí irá el mapa -->
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-xs text-gray-500">Latitud</label>
-                    <input v-model.number="businessForm.lat" type="number" step="0.000001" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                  </div>
-                  <div>
-                    <label class="block text-xs text-gray-500">Longitud</label>
-                    <input v-model.number="businessForm.lng" type="number" step="0.000001" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                  </div>
+             <!-- Ubicación en mapa -->
+             <div>
+               <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación en Mapa</label>
+               <div class="border border-gray-300 rounded-md p-1 h-40 mb-2" ref="mapContainer">
+                 <!-- Aquí irá el mapa -->
+               </div>
+               <div class="grid grid-cols-2 gap-4">
+                 <div>
+                   <label class="block text-xs text-gray-500">Latitud</label>
+                   <input v-model.number="businessForm.lat" type="number" step="0.000001" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+                 </div>
+                 <div>
+                   <label class="block text-xs text-gray-500">Longitud</label>
+                   <input v-model.number="businessForm.lng" type="number" step="0.000001" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+                 </div>
+               </div>
+             </div>
+             
+             <!-- Sección de imágenes -->
+             <div>
+               <label class="block text-sm font-medium text-gray-700 mb-2">Imágenes</label>
+               <div class="mb-3">
+                 <label class="block text-sm font-medium text-gray-700 mb-1">Imagen Principal</label>
+                 <input type="file" accept="image/*" @change="handleMainImageUpload" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+                <div v-if="mainImagePreview" class="mt-2">
+                  <img :src="mainImagePreview" alt="Vista previa" class="h-20 w-20 object-cover rounded">
                 </div>
               </div>
               
-              <!-- Sección de imágenes -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Imágenes</label>
-                <div class="mb-3">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Imagen Principal</label>
-                  <input type="file" accept="image/*" @change="handleMainImageUpload" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
-                 <div v-if="mainImagePreview" class="mt-2">
-                   <img :src="mainImagePreview" alt="Vista previa" class="h-20 w-20 object-cover rounded">
-                 </div>
-               </div>
-               
-               <div>
-                 <label class="block text-sm font-medium text-gray-700 mb-1">Imágenes Adicionales (hasta 9)</label>
-                 <input type="file" accept="image/*" multiple @change="handleAdditionalImagesUpload" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
-                 <div v-if="additionalImagePreviews.length > 0" class="mt-2 grid grid-cols-3 gap-2">
-                   <div v-for="(image, index) in additionalImagePreviews" :key="index" class="relative">
-                     <img :src="image" alt="Vista previa" class="h-20 w-20 object-cover rounded">
-                     <button type="button" @click="removeAdditionalImage(index)" class="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200">
-                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                       </svg>
-                     </button>
-                   </div>
-                 </div>
-                 <p class="mt-1 text-sm text-gray-500">{{ additionalImagePreviews.length }}/9 imágenes seleccionadas</p>
-               </div>
-             </div>
-           </div>
-         </div>
-         <div class="mt-6 flex justify-end space-x-3">
-           <button type="button" @click="closeBusinessModal" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-             Cancelar
-           </button>
-           <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">
-             {{ isEditingBusiness ? 'Actualizar' : 'Crear' }}
-           </button>
-         </div>
-       </form>
-     </div>
-   </div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Imágenes Adicionales (hasta 9)</label>
+                <input type="file" accept="image/*" multiple @change="handleAdditionalImagesUpload" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+                <div v-if="additionalImagePreviews.length > 0" class="mt-2 grid grid-cols-3 gap-2">
+                  <div v-for="(image, index) in additionalImagePreviews" :key="index" class="relative">
+                    <img :src="image" alt="Vista previa" class="h-20 w-20 object-cover rounded">
+                    <button type="button" @click="removeAdditionalImage(index)" class="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p class="mt-1 text-sm text-gray-500">{{ additionalImagePreviews.length }}/9 imágenes seleccionadas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button type="button" @click="closeBusinessModal" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">
+            {{ isEditingBusiness ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-   <!-- Notification -->
-   <div v-if="notification.show" 
-     class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 flex items-start max-w-sm"
-     :class="{'bg-green-50': notification.type === 'success', 'bg-red-50': notification.type === 'error'}"
-   >
-     <div v-if="notification.type === 'success'" class="text-green-500 mr-3">
-       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-       </svg>
-     </div>
-     <div v-if="notification.type === 'error'" class="text-red-500 mr-3">
-       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-       </svg>
-     </div>
-     <div>
-       <div class="font-medium" :class="{'text-green-800': notification.type === 'success', 'text-red-800': notification.type === 'error'}">{{ notification.title }}
-       </div>
-       <div class="text-sm text-gray-600">{{ notification.message }}</div>
-     </div>
-     <button @click="notification.show = false" class="ml-auto text-gray-400 hover:text-gray-500">
-       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-       </svg>
-     </button>
-   </div>
- </div>
+  <!-- Notification -->
+  <div v-if="notification.show" 
+    class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 flex items-start max-w-sm"
+    :class="{'bg-green-50': notification.type === 'success', 'bg-red-50': notification.type === 'error'}"
+  >
+    <div v-if="notification.type === 'success'" class="text-green-500 mr-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <div v-if="notification.type === 'error'" class="text-red-500 mr-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    <div>
+      <div class="font-medium" :class="{'text-green-800': notification.type === 'success', 'text-red-800': notification.type === 'error'}">{{ notification.title }}
+      </div>
+      <div class="text-sm text-gray-600">{{ notification.message }}</div>
+    </div>
+    <button @click="notification.show = false" class="ml-auto text-gray-400 hover:text-gray-500">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  <!-- Añadir este componente al final del template, antes del cierre de la etiqueta principal -->
+<div v-if="showArchiveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+    <h3 class="text-lg font-semibold mb-4">
+      Desactivar Comercio
+    </h3>
+    <p class="text-gray-600 mb-4">Por favor, ingrese el motivo por el cual desea desactivar este comercio:</p>
+    <textarea 
+      v-model="archiveReason" 
+      rows="3" 
+      class="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 mb-4"
+      placeholder="Motivo de desactivación..."
+    ></textarea>
+    <div class="flex justify-end space-x-3">
+      <button 
+        @click="cancelArchive" 
+        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+      >
+        Cancelar
+      </button>
+      <button 
+        @click="confirmArchive" 
+        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+      >
+        Desactivar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Modal para mostrar razón de archivo -->
+<div v-if="showArchiveReasonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+    <h3 class="text-lg font-semibold mb-2">
+      Razón de Desactivación
+    </h3>
+    <div class="mb-4 mt-3">
+      <p class="text-sm text-gray-600 mb-1">Comercio:</p>
+      <p class="font-medium">{{ selectedBusiness?.title || 'N/A' }}</p>
+    </div>
+    <div class="mb-4">
+      <p class="text-sm text-gray-600 mb-1">Fecha de desactivación:</p>
+      <p class="font-medium">{{ formatArchiveDate(selectedBusiness?.archived_at) }}</p>
+    </div>
+    <div class="mb-4">
+      <p class="text-sm text-gray-600 mb-1">Motivo:</p>
+      <div class="mt-1 p-3 bg-gray-50 rounded-md border border-gray-200">
+        <p>{{ selectedBusiness?.archived_reason || 'No se especificó un motivo' }}</p>
+      </div>
+    </div>
+    <div class="flex justify-end">
+      <button 
+        @click="showArchiveReasonModal = false" 
+        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+</div>
 </template>
 
 <script setup>
@@ -494,11 +621,11 @@ const router = useRouter();
 
 // Estado del usuario
 const user = ref({
- id: null,
- first_name: '',
- last_name: '',
- email: '',
- role: 'admin' // Valor por defecto para desarrollo
+  id: null,
+  first_name: '',
+  last_name: '',
+  email: '',
+  role: 'admin' // Valor por defecto para desarrollo
 });
 
 // Estado de las tabs
@@ -506,14 +633,21 @@ const activeTab = ref('comercios');
 
 // Estado de datos
 const stats = ref({
- totalBusinesses: 0,
- totalEvents: 0,
- totalBlogs: 0
+  totalBusinesses: 0,
+  totalEvents: 0,
+  totalBlogs: 0
 });
 
 const businesses = ref([]);
 const events = ref([]);
 const blogs = ref([]);
+
+// Búsqueda
+const searchQuery = ref('');
+
+// Paginación
+const itemsPerPage = 10;
+const currentPage = ref(1);
 
 // Estados de loading
 const isLoading = ref(false);
@@ -522,6 +656,8 @@ const isLoading = ref(false);
 const showBusinessModal = ref(false);
 const showEventModal = ref(false);
 const showBlogModal = ref(false);
+const showArchiveModal = ref(false); // ¡Añadido!
+const showArchiveReasonModal = ref(false); // Añadido para ver razones
 
 // Estados de edición
 const isEditingBusiness = ref(false);
@@ -533,33 +669,39 @@ const mapContainer = ref(null);
 let map = null;
 let marker = null;
 
+// Variables para archivar
+const archiveReason = ref('');
+const businessToArchive = ref(null);
+const selectedBusiness = ref(null); // Para el modal de razón
+
 // Formularios
 const businessForm = ref({
- id: null,
- title: '',
- description: '',
- address: '',
- phone: '',
- email: '',
- category: 'Restaurante y bar',
- schedule: '',
- property_type: 'Restaurante',
- status: 'for-rent',
- image: '',
- isFeatured: false,
- host_id: null,
- views: 0,
- average_rating: 0,
- lat: 15.5046, // Default a San Pedro Sula
- lng: -88.0248,
+  id: null,
+  title: '',
+  description: '',
+  address: '',
+  phone: '',
+  email: '',
+  category: 'Restaurante y bar',
+  schedule: '',
+  property_type: 'Restaurante',
+  status: 'for-rent',
+  image: '',
+  isFeatured: false,
+  host_id: null,
+  views: 0,
+  average_rating: 0,
+  lat: 15.5046, // Default a San Pedro Sula
+  lng: -88.0248,
+  archived: false
 });
 
 // Formulario para horario
 const scheduleForm = ref({
- days: 'Lun-Vie',
- startTime: '09:00',
- endTime: '18:00',
- customDays: ''
+  days: 'Lun-Vie',
+  startTime: '09:00',
+  endTime: '18:00',
+  customDays: ''
 });
 
 // Referencias para imágenes
@@ -570,106 +712,257 @@ const additionalImagePreviews = ref([]);
 
 // Notificación
 const notification = ref({
- show: false,
- type: 'success',
- title: '',
- message: ''
-});
-
-// Filtros para comercios
-const filters = ref({
- category: '',
- property_type: '',
- status: '',
- sortBy: 'title',
- sortDirection: 'asc'
+  show: false,
+  type: 'success',
+  title: '',
+  message: ''
 });
 
 // Definir opciones para los filtros
 const propertyTypes = {
- 'Alojamiento': ['Hotel', 'Motel'],
- 'Restaurante y bar': ['Cafetería', 'Restaurante', 'Bar y restaurante', 'Comida rápida', 'Repostería', 'Heladería', 'Bebidas', 'Bar'],
- 'Entretenimiento': ['Gym', 'Balneario', 'Belleza', 'Futbol', 'Motocross', 'Casino', 'Cine', 'Videojuegos']
+  'Alojamiento': ['Hotel', 'Motel'],
+  'Restaurante y bar': ['Cafetería', 'Restaurante', 'Bar y restaurante', 'Comida rápida', 'Repostería', 'Heladería', 'Bebidas', 'Bar'],
+  'Entretenimiento': ['Gym', 'Balneario', 'Belleza', 'Futbol', 'Motocross', 'Casino', 'Cine', 'Videojuegos']
 };
 
-// Computed properties
-const filteredBusinesses = computed(() => {
- let result = [...businesses.value];
- 
- // Aplicar filtros
- if (filters.value.category) {
-   result = result.filter(business => business.category === filters.value.category);
- }
- 
- if (filters.value.property_type) {
-   result = result.filter(business => business.property_type === filters.value.property_type);
- }
- 
- if (filters.value.status) {
-   if (filters.value.status === 'archived') {
-     result = result.filter(business => business.archived === true);
-   } else {
-     result = result.filter(business => business.status === filters.value.status && !business.archived);
-   }
- }
- 
- // Aplicar ordenamiento
- result.sort((a, b) => {
-   let valueA = a[filters.value.sortBy];
-   let valueB = b[filters.value.sortBy];
-   
-   // Manejo especial para fechas
-   if (filters.value.sortBy === 'created_at' || filters.value.sortBy === 'updated_at' || filters.value.sortBy === 'archived_at') {
-     valueA = valueA ? new Date(valueA).getTime() : 0;
-     valueB = valueB ? new Date(valueB).getTime() : 0;
-   }
-   
-   // Conversión a minúsculas para strings
-   if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-   if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-   
-   if (filters.value.sortDirection === 'asc') {
-     return valueA > valueB ? 1 : -1;
-   } else {
-     return valueA < valueB ? 1 : -1;
-   }
- });
- 
- return result;
+// Filtros para comercios
+const filters = ref({
+  category: '',
+  property_type: '',
+  status: '', // Siempre vacío para mostrar todos por defecto
+  sortBy: 'title',
+  sortDirection: 'asc'
 });
+
+const filteredBusinesses = computed(() => {
+  console.log("Ejecutando filtrado de comercios...");
+  console.log(`Total comercios antes de filtrar: ${businesses.value.length}`);
+  console.log(`Comercios archivados antes de filtrar: ${businesses.value.filter(b => b.archived).length}`);
+  
+  let result = [...businesses.value];
+  
+  // Filtro de búsqueda
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim();
+    result = result.filter(business => 
+      business.title?.toLowerCase().includes(query) ||
+      business.description?.toLowerCase().includes(query) ||
+      business.address?.toLowerCase().includes(query) ||
+      business.category?.toLowerCase().includes(query) ||
+      business.property_type?.toLowerCase().includes(query)
+    );
+  }
+  
+  // Aplicar filtros de categoría y tipo
+  if (filters.value.category) {
+    result = result.filter(business => business.category === filters.value.category);
+  }
+  
+  if (filters.value.property_type) {
+    result = result.filter(business => business.property_type === filters.value.property_type);
+  }
+  
+  // CAMBIO RADICAL: Filtro de estado simplificado y más claro
+  if (filters.value.status === 'archived') {
+    console.log("Filtrando solo comercios archivados");
+    result = result.filter(business => business.archived === true);
+  } else if (filters.value.status === 'active') {
+    console.log("Filtrando solo comercios activos");
+    result = result.filter(business => business.archived !== true);
+  }
+  // Si no hay filtro de estado, muestra TODOS (activos e inactivos)
+  
+  // Aplicar ordenamiento
+  result.sort((a, b) => {
+    let valueA = a[filters.value.sortBy];
+    let valueB = b[filters.value.sortBy];
+    
+    // Manejo especial para fechas
+    if (filters.value.sortBy === 'created_at' || filters.value.sortBy === 'updated_at' || filters.value.sortBy === 'archived_at') {
+      valueA = valueA ? new Date(valueA).getTime() : 0;
+      valueB = valueB ? new Date(valueB).getTime() : 0;
+    }
+    
+    // Conversión a minúsculas para strings
+    if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+    if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+    
+    if (filters.value.sortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
+    } else {
+      return valueA < valueB ? 1 : -1;
+    }
+  });
+  
+  console.log(`Resultado después de filtrar: ${result.length} comercios`);
+  console.log(`Comercios archivados después de filtrar: ${result.filter(b => b.archived).length}`);
+  
+  return result;
+});
+
+// Verificar límites de propiedades destacadas
+const featuredCountByCategory = computed(() => {
+  const counts = {
+    'Alojamiento': 0,
+    'Restaurante y bar': 0,
+    'Entretenimiento': 0
+  };
+  
+  businesses.value.forEach(business => {
+    if (business.isFeatured && business.category && !business.archived) {
+      counts[business.category] = (counts[business.category] || 0) + 1;
+    }
+  });
+  
+  return counts;
+});
+
+const debugBusinesses = () => {
+  console.log('=== DIAGNÓSTICO DE COMERCIOS ===');
+  console.log('Total de comercios:', businesses.value.length);
+  console.log('Comercios archivados:', businesses.value.filter(b => b.archived).length);
+  console.log('Filtro estado actual:', filters.value.status);
+  console.log('Comercios filtrados:', filteredBusinesses.value.length);
+  console.log('Comercios archivados filtrados:', filteredBusinesses.value.filter(b => b.archived).length);
+  
+  console.log('=== INSPECCIÓN DE COMERCIOS ARCHIVADOS ===');
+  const archivedBusinesses = businesses.value.filter(b => b.archived);
+  if (archivedBusinesses.length === 0) {
+    console.log('NO HAY COMERCIOS ARCHIVADOS EN LA LISTA');
+  } else {
+    console.table(archivedBusinesses.map(b => ({
+      id: b.id, 
+      title: b.title, 
+      archived: b.archived,
+      status: b.status
+    })));
+  }
+  
+  showNotification('success', 'Diagnóstico', `Total: ${businesses.value.length}, Archivados: ${businesses.value.filter(b => b.archived).length}`);
+};
+
+const canBeHighlighted = (business) => {
+  // Si ya está destacado, siempre permitir (para poder quitarlo)
+  if (business.isFeatured) return true;
+  
+  // Si está archivado, no permitir destacar
+  if (business.archived) return false;
+  
+  // Verificar límites por categoría
+  if (business.category === 'Alojamiento') {
+    return featuredCountByCategory.value['Alojamiento'] < 10;
+  } else if (business.category === 'Restaurante y bar') {
+    return featuredCountByCategory.value['Restaurante y bar'] < 6;
+  } else if (business.category === 'Entretenimiento') {
+    return true; // Sin límite para entretenimiento
+  }
+  
+  return true;
+};
+
+// Paginación
+const totalPages = computed(() => {
+  return Math.ceil(filteredBusinesses.value.length / itemsPerPage);
+});
+
+const paginatedBusinesses = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  return filteredBusinesses.value.slice(startIndex, endIndex);
+});
+
+const paginationStart = computed(() => {
+  return filteredBusinesses.value.length === 0 ? 0 : (currentPage.value - 1) * itemsPerPage + 1;
+});
+
+const paginationEnd = computed(() => {
+  return Math.min(currentPage.value * itemsPerPage, filteredBusinesses.value.length);
+});
+
+const displayPages = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  const pages = [];
+  
+  if (total <= 5) {
+    // Mostrar todas las páginas si son 5 o menos
+    for (let i = 1; i <= total; i++) {
+      pages.push(i);
+    }
+  } else {
+    // Siempre mostrar la primera página
+    pages.push(1);
+    
+    // Calcular rango central
+    let start = Math.max(2, current - 1);
+    let end = Math.min(total - 1, current + 1);
+    
+    // Añadir elipsis si necesario
+    if (start > 2) {
+      pages.push('...');
+    }
+    
+    // Añadir páginas del rango
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    
+    // Añadir elipsis si necesario
+    if (end < total - 1) {
+      pages.push('...');
+    }
+    
+    // Siempre mostrar la última página
+    pages.push(total);
+  }
+  
+  return pages;
+});
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value && page !== '...') {
+    currentPage.value = page;
+  }
+};
 
 // Métodos para manejo de imágenes
 const handleMainImageUpload = (event) => {
- const file = event.target.files[0];
- if (!file) return;
- 
- mainImageFile.value = file;
- 
- // Crear URL para vista previa
- mainImagePreview.value = URL.createObjectURL(file);
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  mainImageFile.value = file;
+  
+  // Crear URL para vista previa
+  mainImagePreview.value = URL.createObjectURL(file);
 };
 
 const handleAdditionalImagesUpload = (event) => {
- const files = Array.from(event.target.files);
- 
- // Limitar a 9 imágenes
- const totalImages = additionalImageFiles.value.length + files.length;
- if (totalImages > 9) {
-   showNotification('error', 'Error', 'Solo se permite un máximo de 9 imágenes adicionales');
-   return;
- }
- 
- // Agregar archivos
- files.forEach(file => {
-   additionalImageFiles.value.push(file);
-   additionalImagePreviews.value.push(URL.createObjectURL(file));
- });
+  const files = Array.from(event.target.files);
+  
+  // Limitar a 9 imágenes
+  const totalImages = additionalImageFiles.value.length + files.length;
+  if (totalImages > 9) {
+    showNotification('error', 'Error', 'Solo se permite un máximo de 9 imágenes adicionales');
+    return;
+  }
+  
+  // Agregar archivos
+  files.forEach(file => {
+    additionalImageFiles.value.push(file);
+    additionalImagePreviews.value.push(URL.createObjectURL(file));
+  });
 };
 
 const removeAdditionalImage = (index) => {
- additionalImageFiles.value.splice(index, 1);
- URL.revokeObjectURL(additionalImagePreviews.value[index]);
- additionalImagePreviews.value.splice(index, 1);
+  additionalImageFiles.value.splice(index, 1);
+  URL.revokeObjectURL(additionalImagePreviews.value[index]);
+  additionalImagePreviews.value.splice(index, 1);
+};
+
+// Buscar comercios
+const searchBusinesses = () => {
+  // Resetear paginación al buscar
+  currentPage.value = 1;
 };
 
 // Métodos
@@ -718,381 +1011,494 @@ const loadUserData = async () => {
   }
 };
 
+// Modificación de loadBusinesses para asegurar que traiga todos los comercios, incluyendo archivados
 const loadBusinesses = async () => {
- try {
-   isLoading.value = true;
-   const token = localStorage.getItem('access_token');
-   
-   const response = await axios.get('/api/properties/all', {
-     headers: { 'Authorization': `Bearer ${token}` }
-   });
-   
-   if (response.data?.success) {
-     businesses.value = response.data.data.properties || [];
-     
-     // Actualizar estadísticas
-     stats.value.totalBusinesses = businesses.value.length;
-   }
- } catch (error) {
-   console.error('Error al cargar comercios:', error);
-   showNotification('error', 'Error', 'Error al cargar los comercios');
- } finally {
-   isLoading.value = false;
- }
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    console.log("Solicitando todos los comercios incluyendo archivados...");
+    
+    const response = await axios.get('/api/properties/all', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (response.data?.success) {
+      businesses.value = response.data.data.properties || [];
+      
+      // Convertir explícitamente archived a booleano
+      businesses.value.forEach(business => {
+        business.archived = business.archived === 1 || business.archived === true;
+      });
+      
+      // Imprimir detalles para depuración
+      const archivedCount = businesses.value.filter(b => b.archived).length;
+      console.log(`Comercios cargados: ${businesses.value.length}, Archivados: ${archivedCount}`);
+      console.log("Primeros 5 comercios:", businesses.value.slice(0, 5).map(b => ({
+        id: b.id,
+        title: b.title,
+        archived: b.archived
+      })));
+      
+      // Actualizar estadísticas
+      stats.value.totalBusinesses = businesses.value.length;
+    } else {
+      console.error("Error en respuesta:", response.data);
+      showNotification('error', 'Error', 'La respuesta del servidor no es válida');
+    }
+  } catch (error) {
+    console.error('Error al cargar comercios:', error);
+    console.error('Detalles del error:', error.response?.data || error.message);
+    showNotification('error', 'Error', 'Error al cargar los comercios');
+  } finally {
+    isLoading.value = false;
+  }
+  
+  // Añadir un log adicional para diagnosticar después de cargar
+  setTimeout(() => {
+    const archivedBusinesses = businesses.value.filter(b => b.archived);
+    console.table(archivedBusinesses.map(b => ({
+      id: b.id,
+      title: b.title,
+      archived: b.archived
+    })));
+    console.log(`Total de comercios archivados encontrados: ${archivedBusinesses.length}`);
+  }, 500);
 };
 
 const loadEvents = async () => {
- try {
-   isLoading.value = true;
-   const token = localStorage.getItem('access_token');
-   
-   const response = await axios.get('/api/events', {
-     headers: { 'Authorization': `Bearer ${token}` },
-     params: {
-       limit: 100 // Cargar todos los eventos
-     }
-   });
-   
-   if (response.data?.success) {
-     events.value = response.data.data.events || [];
-     
-     // Actualizar estadísticas
-     stats.value.totalEvents = events.value.length;
-   }
- } catch (error) {
-   console.error('Error al cargar eventos:', error);
-   showNotification('error', 'Error', 'Error al cargar eventos');
- } finally {
-   isLoading.value = false;
- }
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    const response = await axios.get('/api/events', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        limit: 100 // Cargar todos los eventos
+      }
+    });
+    
+    if (response.data?.success) {
+      events.value = response.data.data.events || [];
+      
+      // Actualizar estadísticas
+      stats.value.totalEvents = events.value.length;
+    }
+  } catch (error) {
+    console.error('Error al cargar eventos:', error);
+    showNotification('error', 'Error', 'Error al cargar eventos');
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const loadBlogs = async () => {
- try {
-   isLoading.value = true;
-   const token = localStorage.getItem('access_token');
-   
-   const response = await axios.get('/api/blogs', {
-     headers: { 'Authorization': `Bearer ${token}` },
-     params: {
-       limit: 100 // Cargar todos los blogs
-     }
-   });
-   
-   if (response.data?.success) {
-     blogs.value = response.data.data.blogs || [];
-     
-     // Actualizar estadísticas
-     stats.value.totalBlogs = blogs.value.length;
-   }
- } catch (error) {
-   console.error('Error al cargar blogs:', error);
-   showNotification('error', 'Error', 'Error al cargar blogs');
- } finally {
-   isLoading.value = false;
- }
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    const response = await axios.get('/api/blogs', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        limit: 100 // Cargar todos los blogs
+      }
+    });
+    
+    if (response.data?.success) {
+      blogs.value = response.data.data.blogs || [];
+      
+      // Actualizar estadísticas
+      stats.value.totalBlogs = blogs.value.length;
+    }
+  } catch (error) {
+    console.error('Error al cargar blogs:', error);
+    showNotification('error', 'Error', 'Error al cargar blogs');
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 // Inicializar mapa
 const initMap = () => {
- if (!mapContainer.value) return;
- 
- // Verificar si la API de Google Maps está cargada
- if (window.google && window.google.maps) {
-   // Crear mapa
-   map = new google.maps.Map(mapContainer.value, {
-     center: { lat: businessForm.value.lat || 15.5046, lng: businessForm.value.lng || -88.0248 },
-     zoom: 15,
-     mapTypeId: google.maps.MapTypeId.ROADMAP
-   });
-   
-   // Crear marcador
-   marker = new google.maps.Marker({
-     position: { lat: businessForm.value.lat || 15.5046, lng: businessForm.value.lng || -88.0248 },
-     map: map,
-     draggable: true
-   });
-   
-   // Eventos
-   google.maps.event.addListener(marker, 'dragend', function() {
-     const position = marker.getPosition();
-     businessForm.value.lat = position.lat();
-     businessForm.value.lng = position.lng();
-   });
-   
-   // Evento click en el mapa
-   google.maps.event.addListener(map, 'click', function(event) {
-     marker.setPosition(event.latLng);
-     businessForm.value.lat = event.latLng.lat();
-     businessForm.value.lng = event.latLng.lng();
-   });
- } else {
-   console.error('Google Maps API no está cargada');
- }
+  if (!mapContainer.value) return;
+  
+  // Verificar si la API de Google Maps está cargada
+  if (window.google && window.google.maps) {
+    // Crear mapa
+    map = new google.maps.Map(mapContainer.value, {
+      center: { lat: businessForm.value.lat || 15.5046, lng: businessForm.value.lng || -88.0248 },
+      zoom: 15,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+    
+    // Crear marcador
+    marker = new google.maps.Marker({
+      position: { lat: businessForm.value.lat || 15.5046, lng: businessForm.value.lng || -88.0248 },
+      map: map,
+      draggable: true
+    });
+    
+    // Eventos
+    google.maps.event.addListener(marker, 'dragend', function() {
+      const position = marker.getPosition();
+      businessForm.value.lat = position.lat();
+      businessForm.value.lng = position.lng();
+    });
+    
+    // Evento click en el mapa
+    google.maps.event.addListener(map, 'click', function(event) {
+      marker.setPosition(event.latLng);
+      businessForm.value.lat = event.latLng.lat();
+      businessForm.value.lng = event.latLng.lng();
+    });
+  } else {
+    console.error('Google Maps API no está cargada');
+  }
 };
 
 // Actualizar mapa cuando cambian lat/lng
 const updateMap = () => {
- if (map && marker) {
-   const position = { lat: businessForm.value.lat, lng: businessForm.value.lng };
-   map.setCenter(position);
-   marker.setPosition(position);
- }
+  if (map && marker) {
+    const position = { lat: businessForm.value.lat, lng: businessForm.value.lng };
+    map.setCenter(position);
+    marker.setPosition(position);
+  }
 };
 
 // Obtener dirección desde coordenadas
 const getAddressFromCoords = async () => {
- if (!businessForm.value.lat || !businessForm.value.lng) return;
- 
- try {
-   if (window.google && window.google.maps) {
-     const geocoder = new google.maps.Geocoder();
-     const latlng = { lat: businessForm.value.lat, lng: businessForm.value.lng };
-     
-     geocoder.geocode({ location: latlng }, (results, status) => {
-       if (status === 'OK' && results[0]) {
-         if (!businessForm.value.address) {
-           businessForm.value.address = results[0].formatted_address;
-         }
-       }
-     });
-   }
- } catch (error) {
-   console.error('Error al obtener dirección:', error);
- }
+  if (!businessForm.value.lat || !businessForm.value.lng) return;
+  
+  try {
+    if (window.google && window.google.maps) {
+      const geocoder = new google.maps.Geocoder();
+      const latlng = { lat: businessForm.value.lat, lng: businessForm.value.lng };
+      
+      geocoder.geocode({ location: latlng }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          if (!businessForm.value.address) {
+            businessForm.value.address = results[0].formatted_address;
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error al obtener dirección:', error);
+  }
 };
 
 // Business methods
 const openBusinessModal = async (businessData = null) => {
- // Resetear formularios
- resetBusinessForm();
- 
- if (businessData) {
-   isEditingBusiness.value = true;
-   // Clonar para evitar modificaciones directas
-   businessForm.value = { 
-     ...businessData,
-     // Asegurarse que lat/lng sean números
-     lat: parseFloat(businessData.lat) || 15.5046,
-     lng: parseFloat(businessData.lng) || -88.0248
-   };
-   
-   // Parsear horario para el formulario
-   parseScheduleString(businessData.schedule || '');
-   
-   // Si hay una imagen principal, mostrarla
-   if (businessData.image) {
-     mainImagePreview.value = businessData.image;
-   }
-   
-   // Cargar imágenes adicionales si existen
-   if (businessData.additional_images && businessData.additional_images.length > 0) {
-     additionalImagePreviews.value = [...businessData.additional_images];
-   }
- } else {
-   isEditingBusiness.value = false;
-   businessForm.value.host_id = user.value.id;
- }
- 
- showBusinessModal.value = true;
- 
- // Inicializar mapa después de que se muestre el modal
- nextTick(() => {
-   initMap();
- });
+  // Resetear formularios
+  resetBusinessForm();
+  
+  if (businessData) {
+    isEditingBusiness.value = true;
+    // Clonar para evitar modificaciones directas
+    businessForm.value = { 
+      ...businessData,
+      // Asegurarse que lat/lng sean números
+      lat: parseFloat(businessData.lat) || 15.5046,
+      lng: parseFloat(businessData.lng) || -88.0248
+    };
+    
+    // Parsear horario para el formulario
+    parseScheduleString(businessData.schedule || '');
+    
+    // Si hay una imagen principal, mostrarla
+    if (businessData.image) {
+      mainImagePreview.value = businessData.image;
+    }
+    
+    // Cargar imágenes adicionales si existen
+    if (businessData.additional_images && businessData.additional_images.length > 0) {
+      additionalImagePreviews.value = [...businessData.additional_images];
+    }
+  } else {
+    isEditingBusiness.value = false;
+    businessForm.value.host_id = user.value.id;
+  }
+  
+  showBusinessModal.value = true;
+  
+  // Inicializar mapa después de que se muestre el modal
+  nextTick(() => {
+    initMap();
+  });
 };
 
 const parseScheduleString = (scheduleString) => {
- // Ejemplo: "Lun-Vie: 09:00 - 18:00"
- if (!scheduleString) return;
- 
- try {
-   // Separar días y horas
-   const parts = scheduleString.split(':');
-   
-   if (parts.length >= 2) {
-     const days = parts[0].trim();
-     const hours = parts.slice(1).join(':').trim();
-     
-     // Asignar días
-     if (days === '24/7') {
-       scheduleForm.value.days = '24/7';
-     } else if (days === 'Lun-Vie' || days === 'Lun-Sáb' || days === 'Lun-Dom') {
-       scheduleForm.value.days = days;
-     } else {
-       scheduleForm.value.days = 'custom';
-       scheduleForm.value.customDays = days;
-     }
-     
-     // Asignar horas si no es 24/7
-     if (days !== '24/7' && hours) {
-       const timeMatch = hours.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
-       if (timeMatch) {
-         scheduleForm.value.startTime = timeMatch[1];
-         scheduleForm.value.endTime = timeMatch[2];
-       }
-     }
-   }
- } catch (error) {
-   console.error('Error al parsear horario:', error);
- }
+  // Ejemplo: "Lun-Vie: 09:00 - 18:00"
+  if (!scheduleString) return;
+  
+  try {
+    // Separar días y horas
+    const parts = scheduleString.split(':');
+    
+    if (parts.length >= 2) {
+      const days = parts[0].trim();
+      const hours = parts.slice(1).join(':').trim();
+      
+      // Asignar días
+      if (days === '24/7') {
+        scheduleForm.value.days = '24/7';
+      } else if (days === 'Lun-Vie' || days === 'Lun-Sáb' || days === 'Lun-Dom') {
+        scheduleForm.value.days = days;
+      } else {
+        scheduleForm.value.days = 'custom';
+        scheduleForm.value.customDays = days;
+      }
+      
+      // Asignar horas si no es 24/7
+      if (days !== '24/7' && hours) {
+        const timeMatch = hours.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
+        if (timeMatch) {
+          scheduleForm.value.startTime = timeMatch[1];
+          scheduleForm.value.endTime = timeMatch[2];
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error al parsear horario:', error);
+  }
 };
 
 const buildScheduleString = () => {
- if (scheduleForm.value.days === '24/7') {
-   return '24/7';
- }
- 
- const days = scheduleForm.value.days === 'custom' 
-   ? scheduleForm.value.customDays 
-   : scheduleForm.value.days;
-   
- return `${days}: ${scheduleForm.value.startTime} - ${scheduleForm.value.endTime}`;
+  if (scheduleForm.value.days === '24/7') {
+    return '24/7';
+  }
+  
+  const days = scheduleForm.value.days === 'custom' 
+    ? scheduleForm.value.customDays 
+    : scheduleForm.value.days;
+    
+  return `${days}: ${scheduleForm.value.startTime} - ${scheduleForm.value.endTime}`;
 };
 
 const resetBusinessForm = () => {
- businessForm.value = {
-   id: null,
-   title: '',
-   description: '',
-   address: '',
-   phone: '',
-   email: '',
-   category: 'Restaurante y bar',
-   schedule: '',
-   property_type: 'Restaurante',
-   status: 'for-rent',
-   image: '',
-   isFeatured: false,
-   host_id: user.value.id,
-   views: 0,
-   average_rating: 0,
-   lat: 15.5046, // Default a San Pedro Sula
-   lng: -88.0248,
- };
- 
- scheduleForm.value = {
-   days: 'Lun-Vie',
-   startTime: '09:00',
-   endTime: '18:00',
-   customDays: ''
- };
- 
- // Resetear imágenes
- mainImageFile.value = null;
- additionalImageFiles.value = [];
- mainImagePreview.value = null;
- additionalImagePreviews.value = [];
+  businessForm.value = {
+    id: null,
+    title: '',
+    description: '',
+    address: '',
+    phone: '',
+    email: '',
+    category: 'Restaurante y bar',
+    schedule: '',
+    property_type: 'Restaurante',
+    status: 'for-rent',
+    image: '',
+    isFeatured: false,
+    views: 0,
+    average_rating: 0,
+    lat: 15.5046, // Default a San Pedro Sula
+    lng: -88.0248,
+    archived: false,
+  };
+  
+  scheduleForm.value = {
+    days: 'Lun-Vie',
+    startTime: '09:00',
+    endTime: '18:00',
+    customDays: ''
+  };
+  
+  // Resetear imágenes
+  mainImageFile.value = null;
+  additionalImageFiles.value = [];
+  mainImagePreview.value = null;
+  additionalImagePreviews.value = [];
 };
 
 const closeBusinessModal = () => {
- showBusinessModal.value = false;
- resetBusinessForm();
- 
- // Limpiar mapa
- map = null;
- marker = null;
+  showBusinessModal.value = false;
+  resetBusinessForm();
+  
+  // Limpiar mapa
+  map = null;
+  marker = null;
 };
 
+// En la función saveBusiness, modificar la creación del formulario
 const saveBusiness = async () => {
- try {
-   // Construir horario
-   businessForm.value.schedule = buildScheduleString();
-   
-   const token = localStorage.getItem('access_token');
-   const formData = new FormData();
-   
-   // Agregar todos los campos del formulario al FormData
-   Object.keys(businessForm.value).forEach(key => {
-     if (businessForm.value[key] !== null && businessForm.value[key] !== undefined) {
-       // Si es boolean, enviar como 0 o 1
-       if (typeof businessForm.value[key] === 'boolean') {
-         formData.append(key, businessForm.value[key] ? 1 : 0);
-       } else {
-         formData.append(key, businessForm.value[key]);
-       }
-     }
-   });
-   
-   // Agregar imagen principal si existe
-   if (mainImageFile.value) {
-     formData.append('image', mainImageFile.value);
-   }
-   
-   // Agregar imágenes adicionales si existen
-   additionalImageFiles.value.forEach(file => {
-     formData.append('additional_images', file);
-   });
-   
-   let response;
-   
-   if (isEditingBusiness.value) {
-     response = await axios.put(`/api/properties/${businessForm.value.id}`, formData, {
-       headers: { 
-         'Authorization': `Bearer ${token}`,
-         'Content-Type': 'multipart/form-data'
-       }
-     });
-   } else {
-     response = await axios.post('/api/properties', formData, {
-       headers: { 
-         'Authorization': `Bearer ${token}`,
-         'Content-Type': 'multipart/form-data'
-       }
-     });
-   }
-   
-   if (response.data?.success) {
-     showNotification('success', 'Éxito', `Comercio ${isEditingBusiness.value ? 'actualizado' : 'creado'} correctamente`);
-     loadBusinesses();
-     closeBusinessModal();
-   }
- } catch (error) {
-   console.error('Error al guardar comercio:', error);
-   showNotification('error', 'Error', 'Error al guardar el comercio. Por favor, verifique los datos e intente nuevamente.');
- }
+  try {
+    // Construir horario
+    businessForm.value.schedule = buildScheduleString();
+    
+    const token = localStorage.getItem('access_token');
+    const formData = new FormData();
+    
+    // Agregar todos los campos del formulario al FormData, excepto host_id
+    Object.keys(businessForm.value).forEach(key => {
+      if (businessForm.value[key] !== null && businessForm.value[key] !== undefined && key !== 'host_id') {
+        // Si es boolean, enviar como 0 o 1
+        if (typeof businessForm.value[key] === 'boolean') {
+          formData.append(key, businessForm.value[key] ? 1 : 0);
+        } else {
+          formData.append(key, businessForm.value[key]);
+        }
+      }
+    });
+    
+    // Agregar imagen principal si existe
+    if (mainImageFile.value) {
+      formData.append('image', mainImageFile.value);
+    }
+    
+    // Agregar imágenes adicionales si existen
+    additionalImageFiles.value.forEach(file => {
+      formData.append('additional_images', file);
+    });
+    
+    let response;
+    
+    if (isEditingBusiness.value) {
+      response = await axios.put(`/api/properties/${businessForm.value.id}`, formData, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } else {
+      response = await axios.post('/api/properties', formData, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', `Comercio ${isEditingBusiness.value ? 'actualizado' : 'creado'} correctamente`);
+      loadBusinesses();
+      closeBusinessModal();
+    }
+  } catch (error) {
+    console.error('Error al guardar comercio:', error);
+    showNotification('error', 'Error', 'Error al guardar el comercio. Por favor, verifique los datos e intente nuevamente.');
+  }
+};
+
+// Métodos para archivar/restaurar comercios
+const initiateArchive = (business) => {
+  businessToArchive.value = business;
+  archiveReason.value = '';
+  showArchiveModal.value = true;
+};
+
+const cancelArchive = () => {
+  showArchiveModal.value = false;
+  businessToArchive.value = null;
+};
+
+const confirmArchive = async () => {
+  if (!archiveReason.value.trim()) {
+    showNotification('error', 'Error', 'El motivo de desactivación es obligatorio');
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('access_token');
+    const response = await axios.patch(`/api/properties/${businessToArchive.value.id}/archive`, {
+      reason: archiveReason.value
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', 'Comercio desactivado correctamente');
+      
+      // Actualizar directamente el objeto en la lista
+      businessToArchive.value.archived = true;
+      businessToArchive.value.archived_at = new Date().toISOString();
+      businessToArchive.value.archived_reason = archiveReason.value;
+      
+      // También recargar todos los comercios para asegurar
+      await loadBusinesses();
+    } else {
+      showNotification('error', 'Error', 'No se pudo desactivar el comercio');
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado del comercio:', error);
+    showNotification('error', 'Error', 'Error al desactivar el comercio');
+  } finally {
+    showArchiveModal.value = false;
+    businessToArchive.value = null;
+  }
 };
 
 const toggleBusinessStatus = async (business) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    
+    if (!business.archived) {
+      // Si no está archivado, mostrar modal para archivar
+      initiateArchive(business);
+    } else {
+      // Si está archivado, restaurar directamente
+      const response = await axios.patch(`/api/properties/${business.id}/restore`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.data?.success) {
+        showNotification('success', 'Éxito', 'Comercio activado correctamente');
+        
+        // Actualizar directamente el objeto en la lista
+        business.archived = false;
+        business.archived_at = null;
+        business.archived_reason = null;
+        
+        // También recargar todos los comercios para asegurar
+        await loadBusinesses();
+      } else {
+        showNotification('error', 'Error', 'No se pudo activar el comercio');
+      }
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado del comercio:', error);
+    showNotification('error', 'Error', 'Error al actualizar el estado del comercio');
+  }
+};
+
+// Mostrar la razón de archivo
+const showArchiveReason = (business) => {
+  selectedBusiness.value = business;
+  showArchiveReasonModal.value = true;
+};
+
+// Formatear la fecha de archivo
+const formatArchiveDate = (date) => {
+ if (!date) return 'Fecha no disponible';
+ 
  try {
-   const token = localStorage.getItem('access_token');
-   
-   // Si está activo, desactivar (archivar)
-   if (business.status === 'for-rent') {
-     const reason = prompt('Ingrese el motivo de desactivación:', '');
-     if (reason === null) return; // Cancelado
-     
-     const response = await axios.patch(`/api/properties/${business.id}/archive`, {
-       reason: reason
-     }, {
-       headers: { 'Authorization': `Bearer ${token}` }
-     });
-     
-     if (response.data?.success) {
-       showNotification('success', 'Éxito', 'Comercio desactivado correctamente');
-       await loadBusinesses();
-     }
-   } else {
-     // Si está inactivo, activar (restaurar)
-     const response = await axios.patch(`/api/properties/${business.id}/restore`, {
-       status: 'for-rent'
-     }, {
-       headers: { 'Authorization': `Bearer ${token}` }
-     });
-     
-     if (response.data?.success) {
-       showNotification('success', 'Éxito', 'Comercio activado correctamente');
-       await loadBusinesses();
-     }
-   }
- } catch (error) {
-   console.error('Error al cambiar estado del comercio:', error);
-   showNotification('error', 'Error', 'Error al actualizar el estado del comercio');
+   return new Date(date).toLocaleString('es-ES', {
+     year: 'numeric',
+     month: 'long',
+     day: 'numeric',
+     hour: '2-digit',
+     minute: '2-digit'
+   });
+ } catch (e) {
+   console.error('Error formateando fecha:', e);
+   return 'Fecha inválida';
  }
 };
 
 const toggleBusinessFeatured = async (business) => {
  try {
+   // Verificar si puede ser destacado
+   if (!business.isFeatured && !canBeHighlighted(business)) {
+     let message = '';
+     if (business.category === 'Alojamiento') {
+       message = 'Ya hay 10 propiedades destacadas en la categoría Alojamiento. Quite alguna antes de añadir otra.';
+     } else if (business.category === 'Restaurante y bar') {
+       message = 'Ya hay 9 propiedades destacadas en la categoría Restaurante y bar. Quite alguna antes de añadir otra.';
+     }
+     
+     showNotification('error', 'Error', message);
+     return;
+   }
+   
    const token = localStorage.getItem('access_token');
    const newFeaturedStatus = !business.isFeatured;
    
@@ -1145,7 +1551,7 @@ const showNotification = (type, title, message = '') => {
    title,
    message
  };
- 
+
  setTimeout(() => {
    notification.value.show = false;
  }, 3000);
@@ -1158,14 +1564,14 @@ const toggleSortDirection = () => {
 // Lifecycle hooks
 onMounted(async () => {
  await loadUserData();
- 
+
  // Si el usuario es admin, cargar datos iniciales
  if (user.value.role === 'admin') {
    await loadBusinesses();
    await loadEvents();
    await loadBlogs();
  }
- 
+
  // Cargar script de Google Maps si no existe
  if (!window.google) {
    const script = document.createElement('script');
@@ -1193,34 +1599,39 @@ watch(() => businessForm.value.category, (newCategory) => {
 watch(() => [businessForm.value.lat, businessForm.value.lng], () => {
  updateMap();
 });
+
+// Watch para resetear paginación cuando cambian los filtros
+watch(() => [filters.value.category, filters.value.property_type, filters.value.status, filters.value.sortBy, filters.value.sortDirection], () => {
+ currentPage.value = 1;
+});
 </script>
 
 <style>
 /* Estilos personalizados */
 input, select, textarea {
- border-color: #D1D5DB;
- border-radius: 0.375rem;
+border-color: #D1D5DB;
+border-radius: 0.375rem;
 }
 
 input:focus, select:focus, textarea:focus {
- border-color: #F97316;
- box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
- outline: none;
- ring-color: #F97316;
+border-color: #F97316;
+box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+outline: none;
+ring-color: #F97316;
 }
 
 button:disabled {
- opacity: 0.5;
- cursor: not-allowed;
+opacity: 0.5;
+cursor: not-allowed;
 }
 
 .table-fixed {
- table-layout: fixed;
+table-layout: fixed;
 }
 
 .truncate {
- overflow: hidden;
- text-overflow: ellipsis;
- white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
 }
 </style>
