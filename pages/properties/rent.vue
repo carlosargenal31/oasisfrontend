@@ -251,7 +251,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-gray-400 mb-4" viewBox="0 0 24 24">
               <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
             </svg>
-            <h3 class="text-lg font-medium text-black mb-2">No se encontraron propiedades</h3>
+            <h3 class="text-lg font-medium text-black mb-2">No se encontraron negocios</h3>
             <p class="text-gray-600 mb-4">Intente ajustar sus criterios de búsqueda</p>
             <button 
               @click="resetFilters" 
@@ -481,7 +481,7 @@ const loadPropertyRatings = async () => {
   if (properties.value.length === 0) return;
   
   try {
-    console.log('Cargando calificaciones para', properties.value.length, 'propiedades');
+    console.log('Cargando calificaciones para', properties.value.length, 'negocios');
     
     // Asegurarnos de que todas las propiedades tengan un valor para average_rating
     properties.value.forEach(prop => {
@@ -498,7 +498,7 @@ const loadPropertyRatings = async () => {
       p.average_rating === 0 || isNaN(p.average_rating)
     );
     
-    console.log(`${propsToLoad.length} propiedades necesitan cargar calificación`);
+    console.log(`${propsToLoad.length} negocios necesitan cargar calificación`);
     
     // Para cada propiedad sin calificación, obtener su calificación
     const promises = propsToLoad.map(async (prop) => {
@@ -578,7 +578,7 @@ const handleSearch = async () => {
       if (result && result.success) {
         properties.value = result.data?.properties || [];
         totalProperties.value = result.data?.total || properties.value.length;
-        console.log('Propiedades encontradas:', properties.value.length);
+        console.log('Negocios encontradas:', properties.value.length);
         
         // Cargar calificaciones para las propiedades encontradas
         await loadPropertyRatings();
@@ -589,7 +589,7 @@ const handleSearch = async () => {
       }
     } catch (err) {
       console.error('Error en búsqueda:', err);
-      error.value = 'Error al buscar propiedades';
+      error.value = 'Error al buscar negocios';
       properties.value = [];
       totalProperties.value = 0;
     } finally {
@@ -723,7 +723,7 @@ const fetchProperties = async () => {
         await loadPropertyRatings();
       }
     } else {
-      error.value = result?.error || 'No se pudieron cargar las propiedades';
+      error.value = result?.error || 'No se pudieron encontrar los negocios';
       properties.value = [];
       totalProperties.value = 0;
     }
