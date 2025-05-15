@@ -1,3 +1,5 @@
+Cart de información del local:
+
 <template>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -436,15 +438,84 @@
           </div>
           
           <!-- BLOQUE PARA USUARIOS NO AUTENTICADOS -->
-          <div v-if="!isAuthenticated" class="mb-4 p-4 bg-orange-100 rounded-md text-black">
-            <p>Debes iniciar sesión para dejar una reseña.</p>
-            <button 
-              @click="goToLogin" 
-              class="mt-2 bg-orange-800 text-white py-2 px-4 rounded hover:bg-orange-900"
-            >
-              Iniciar sesión
-            </button>
-          </div>
+          <div v-if="!isAuthenticated">
+            <!-- Formulario de login integrado -->
+            <div class="mb-4">
+              <h4 class="font-medium text-black mb-2">Inicia sesión para dejar una reseña</h4>
+              <form @submit.prevent="handleLogin" class="space-y-4">
+                <!-- Campo de correo electrónico -->
+                <div>
+                  <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                  <input 
+                    type="email" 
+                    id="login-email" 
+                    v-model="loginForm.email"
+                    placeholder="tucorreo@ejemplo.com"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                    required
+                  />
+                </div>
+                
+                <!-- Campo de contraseña -->
+                <div>
+                  <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                  <input 
+                    type="password" 
+                    id="login-password" 
+                    v-model="loginForm.password"
+                    placeholder="Contraseña"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+                    required
+                  />
+                </div>
+                
+                <!-- Checkbox para recordar email -->
+                <div class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id="remember" 
+                    v-model="loginForm.remember"
+                    class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <label for="remember" class="ml-2 block text-sm text-gray-700">
+                    Recordar mi correo
+                  </label>
+                </div>
+                
+                <!-- Mensaje de error -->
+                <div v-if="loginError" class="text-red-500 text-sm py-2 px-3 bg-red-50 rounded">
+                  {{ loginError }}
+                </div>
+                
+                <!-- Botones -->
+                <div class="flex flex-col space-y-3">
+                  <button 
+                    type="submit" 
+                    class="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition"
+                    :disabled="loginSubmitting"
+                  >
+                  <span v-if="loginSubmitting" class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Iniciando sesión...
+                </span>
+                <span v-else>Iniciar sesión</span>
+              </button>
+              
+              <div class="text-center text-sm text-gray-500 mt-2">
+                ¿No tienes cuenta? 
+                <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
+              </div>
+              
+              <div class="text-center text-xs text-gray-400 mt-1">
+                <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
           <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
           <div v-else>
@@ -500,7 +571,6 @@
   </div>
 </template>
 
-
 <script setup>
 // Importaciones
 import { ref, onMounted, computed, watch } from 'vue';
@@ -509,7 +579,6 @@ import axios from 'axios';
 import { useReviewStore } from '../store/review';
 import { useFavoritesStore } from '~/store/favorites';
 import { useAuthStore } from '@/store/auth'
-
 
 // Definir la URL base de la API
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';
@@ -545,6 +614,58 @@ const currentPage = ref(1);
 const sortOption = ref('newest');
 const viewCount = ref(0);
 const propertyMap = ref(null);
+
+// Variables para el inicio de sesión
+const loginForm = ref({
+  email: '',
+  password: '',
+  remember: false
+});
+const loginError = ref('');
+const loginSubmitting = ref(false);
+
+// Función para manejar el inicio de sesión
+const handleLogin = async () => {
+  loginError.value = '';
+  loginSubmitting.value = true;
+  
+  try {
+    // Llamar a la función de login del store de autenticación
+    const result = await authStore.login({
+      email: loginForm.value.email,
+      password: loginForm.value.password,
+      remember: loginForm.value.remember
+    });
+    
+    if (result.success) {
+      // Verificar que el token se guardó correctamente
+      const token = localStorage.getItem('token');
+      console.log('Token guardado correctamente:', !!token);
+      
+      // Forzar una re-validación del estado
+      if (typeof authStore.validateSession === 'function') {
+        authStore.validateSession();
+      }
+      
+      // Mostrar notificación de éxito
+      alert(`Bienvenido ${authStore.user.first_name}! Ahora puedes dejar una reseña.`);
+      
+      // Limpiar el formulario de login pero mantener el email si remember está activado
+      if (!loginForm.value.remember) {
+        loginForm.value.email = '';
+      }
+      loginForm.value.password = '';
+    } else {
+      // Mostrar error específico si está disponible
+      loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+    }
+  } catch (err) {
+    console.error('Error al iniciar sesión:', err);
+    loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
+  } finally {
+    loginSubmitting.value = false;
+  }
+};
 
 // Verificar si una propiedad es favorita
 const isFavorite = computed(() => {
@@ -618,10 +739,6 @@ const getReviewerAvatar = (review) => {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_name)}&background=random`;
 };
 
-
-
-// Segunda parte: Agregar estas computed properties y funciones a la sección de script
-
 // Propiedad computada para verificar si hay redes sociales
 const hasSocialLinks = computed(() => {
   if (hostData && hostData.socialLinks) {
@@ -657,7 +774,6 @@ const getSocialLink = (socialNetwork) => {
   
   return null;
 };
-// Tercera parte: La función modificada fetchHostData
 
 // Modificar la función para obtener el token de autenticación
 const userData = computed(() => authStore.user)
@@ -665,14 +781,16 @@ const userData = computed(() => authStore.user)
 // Verificar si el usuario está autenticado
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 
-// Redirigir a la página de inicio de sesión
+// Modificar la función goToLogin para que simplemente abra el modal
 const goToLogin = () => {
-  // Guardamos la URL actual para redirigir de vuelta después del login
-  localStorage.setItem('redirect_after_login', window.location.pathname)
+  // Si ya estamos mostrando el formulario de reseña, el formulario de login ya está visible
+  if (showReviewModal.value) {
+    return;
+  }
   
-  // Redirigir a la página de login
-  router.push('/login?redirect=' + encodeURIComponent(router.currentRoute.value.fullPath))
-}
+  // Abrir el modal de reseña que ahora contiene el formulario de login
+  openReviewModal();
+};
 
 // Cargar datos del propietario
 const fetchHostData = async () => {
@@ -700,7 +818,7 @@ const fetchHostData = async () => {
   
   try {
     // Realizar la petición para obtener los datos del propietario con autenticación
-    const token = getAuthToken();
+    const token = localStorage.getItem('token');
     
     const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
       headers: {
@@ -738,8 +856,6 @@ const fetchHostData = async () => {
     await fetchHostPropertiesAndReviews();
   }
 };
-
-/// Cuarta parte: Función mejorada para obtener propiedades y reseñas
 
 // Función mejorada para obtener propiedades y reseñas del anfitrión
 const fetchHostPropertiesAndReviews = async () => {
@@ -1426,28 +1542,28 @@ const openReviewModal = () => {
 const submitReview = async () => {
   // Verificar si el usuario está autenticado usando el store
   if (!isAuthenticated.value) {
-    goToLogin()
-    return
+    // No necesitamos redireccionar, porque ya estamos mostrando el formulario de login en el modal
+    return;
   }
   
   // Validación básica
-   if (!newReview.value.rating) {
-    alert('Por favor asigne una calificación')
-    return
+  if (!newReview.value.rating) {
+    alert('Por favor asigne una calificación');
+    return;
   }
   
   submittingReview.value = true;
   
-   try {
+  try {
     // Preparar los datos para la API
     const reviewData = {
       property_id: parseInt(propertyId),
       rating: parseInt(newReview.value.rating),
       comment: newReview.value.comment || ''
-    }
+    };
     
     // Obtener token de autenticación desde el store
-    const token = authStore.token
+    const token = authStore.token;
     
     // Enviar la reseña con autenticación
     const response = await axios.post(
@@ -1458,7 +1574,7 @@ const submitReview = async () => {
           'Authorization': `Bearer ${token}`
         }
       }
-    )
+    );
     
     if (response.data && response.data.success) {
       // Cerrar modal y limpiar formulario
@@ -1489,10 +1605,10 @@ const submitReview = async () => {
       throw new Error(response.data?.message || 'Error al crear la reseña');
     }
   } catch (err) {
-    console.error('Error al enviar reseña:', err)
-    alert('Error al enviar la reseña. Por favor intente de nuevo más tarde.')
+    console.error('Error al enviar reseña:', err);
+    alert('Error al enviar la reseña. Por favor intente de nuevo más tarde.');
   } finally {
-    submittingReview.value = false
+    submittingReview.value = false;
   }
 };
 
@@ -1520,12 +1636,20 @@ onMounted(async () => {
   // Cargar los datos de la propiedad específica
   await fetchPropertyData();
 
-    if (!authStore.isInitialized) {
-    authStore.initialize()
+  // Inicializar el store de autenticación si es necesario
+  if (!authStore.isInitialized) {
+    authStore.initialize();
   }
   
   // Cargar favoritos
   await favoritesStore.fetchFavorites();
+  
+  // Cargar email recordado si existe
+  const rememberedEmail = localStorage.getItem('rememberedEmail');
+  if (rememberedEmail) {
+    loginForm.value.email = rememberedEmail;
+    loginForm.value.remember = true;
+  }
 });
 </script>
 
