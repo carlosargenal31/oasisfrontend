@@ -12,11 +12,6 @@
               Finder
             </div>
             <nav class="hidden md:flex space-x-4 text-sm">
-              <a href="#" class="px-3 py-2 rounded-md hover:bg-gray-100">Demos</a>
-              <a href="/" class="px-3 py-2 rounded-md hover:bg-gray-100">Home</a>
-              <a href="#" class="px-3 py-2 rounded-md hover:bg-gray-100">Catalog</a>
-              <a href="#" class="px-3 py-2 rounded-md hover:bg-gray-100">Account</a>
-              <a href="#" class="px-3 py-2 rounded-md hover:bg-gray-100">Vendor</a>
               <a href="/events/grid" class="px-3 py-2 rounded-md bg-orange-100 text-orange-500 font-medium">Eventos</a>
             </nav>
           </div>
@@ -261,124 +256,128 @@
           
           <!-- Right Column - Sidebar -->
           <div class="w-full lg:w-1/3">
-       
-            
-            <!-- Add to Calendar Card -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden mb-6">
-              <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-3">Añadir al calendario</h3>
-                <div class="space-y-2">
-                  <button 
-                    @click="addToGoogleCalendar" 
-                    class="w-full py-2 px-3 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#4285F4">
-                      <path d="M21.56 2.44A.54.54 0 0 0 21 2H3a.54.54 0 0 0-.56.44A12 12 0 0 0 12 22a12 12 0 0 0 9.56-19.56zM12 20a10 10 0 0 1-8.42-4.58h16.84A10 10 0 0 1 12 20z" />
-                      <path d="M8.54 12.04c0 .55.2 1.01.59 1.38.39.38.87.56 1.44.56.54 0 1.02-.18 1.4-.54.39-.36.58-.82.58-1.38 0-.55-.2-1.02-.58-1.4a1.9 1.9 0 0 0-1.4-.56c-.58 0-1.05.19-1.44.57-.4.37-.59.84-.59 1.37zm7.9 0c0 .55.2 1.01.59 1.38.39.38.88.56 1.45.56.54 0 1.02-.18 1.4-.54.39-.36.58-.82.58-1.38 0-.55-.2-1.02-.58-1.4a1.9 1.9 0 0 0-1.4-.56c-.58 0-1.06.19-1.45.57-.4.37-.59.84-.59 1.37z" />
-                    </svg>
-                    <span class="text-sm">Google Calendar</span>
-                  </button>
-                  <button 
-                    @click="addToOutlookCalendar" 
-                    class="w-full py-2 px-3 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#0078D4">
-                      <path d="M21.5 4h-19A1.5 1.5 0 0 0 1 5.5v13A1.5 1.5 0 0 0 2.5 20h19a1.5 1.5 0 0 0 1.5-1.5v-13A1.5 1.5 0 0 0 21.5 4zM8 16H4v-5h4v5zm6 0h-4v-5h4v5zm6 0h-4v-5h4v5zm0-7H4V6h16v3z" />
-                    </svg>
-                    <span class="text-sm">Outlook Calendar</span>
-                  </button>
-                  <button 
-                    @click="addToAppleCalendar" 
-                    class="w-full py-2 px-3 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#999999">
-                      <path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z" />
-                    </svg>
-                    <span class="text-sm">Apple Calendar</span>
-                  </button>
-                  <button 
-                    @click="downloadICalFile" 
-                    class="w-full py-2 px-3 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#666666">
-                      <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                    </svg>
-                    <span class="text-sm">Descargar .ics</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-           
+            <!-- El contenido de la barra lateral iría aquí -->
           </div>
         </div>
       </template>
+    </div>
+    
+    <!-- Modal del mapa simplificado con Google Maps -->
+    <div v-if="showMapModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="font-bold text-lg">Ubicación: {{ event.location }}</h3>
+          <button @click="showMapModal = false" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Contenedor del mapa usando Google Maps iframe -->
+        <div class="flex-1 min-h-[500px] relative">
+          <!-- Estado de carga -->
+          <div v-if="isMapLoading" class="absolute inset-0 bg-gray-100 flex items-center justify-center z-20">
+            <div class="flex flex-col items-center">
+              <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-orange-500 mb-2"></div>
+              <p class="text-gray-600">Cargando mapa...</p>
+            </div>
+          </div>
+          
+          <!-- Iframe de Google Maps -->
+          <iframe 
+            :src="getGoogleMapsEmbedUrl(event.location)" 
+            width="100%" 
+            height="100%" 
+            style="border:0; min-height: 500px;" 
+            allowfullscreen=""
+            loading="lazy"
+            @load="isMapLoading = false">
+          </iframe>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200 flex justify-between">
+          <button 
+            @click="showMapModal = false" 
+            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md text-gray-800">
+            Cerrar
+          </button>
+          <a 
+            :href="getGoogleMapsDirectionsUrl(event.location)" 
+            target="_blank" 
+            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-md text-white">
+            Obtener indicaciones
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import eventService from '@/services/eventService'
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import eventService from '@/services/eventService';
 
 // Imágenes por defecto (fallback)
-import defaultImage from "@/assets/images/blog/01.jpg"
+import defaultImage from "@/assets/images/blog/01.jpg";
 
-const route = useRoute()
+const route = useRoute();
 
 // Variables reactivas
-const event = ref({})
-const loading = ref(true)
-const error = ref(null)
-const relatedEvents = ref([])
-const attendees = ref(1)
+const event = ref({});
+const loading = ref(true);
+const error = ref(null);
+const relatedEvents = ref([]);
+const attendees = ref(1);
 const bookingForm = ref({
   name: '',
   email: '',
   phone: ''
-})
-const isBookingSubmitting = ref(false)
-const linkCopied = ref(false)
+});
+const isBookingSubmitting = ref(false);
+const linkCopied = ref(false);
+const showMapModal = ref(false);
+const isMapLoading = ref(true);
 
 // Cargar datos al montar el componente
 onMounted(async () => {
   try {
-    await fetchEvent()
+    await fetchEvent();
   } catch (err) {
-    console.error('Error inicializando página de evento:', err)
+    console.error('Error inicializando página de evento:', err);
   }
-})
+});
 
 // Obtener evento desde la API
 const fetchEvent = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   
   try {
-    const id = route.params.id
+    const id = route.params.id;
     if (!id) {
-      throw new Error('ID de evento no proporcionado')
+      throw new Error('ID de evento no proporcionado');
     }
     
     // Llamar al servicio de evento para obtener datos
-    const response = await eventService.getEvent(id)
+    const response = await eventService.getEvent(id);
     
     // Verificar si tenemos datos válidos
     if (response && response.data && response.data.data) {
-      event.value = response.data.data
+      event.value = response.data.data;
     } else if (response && response.data) {
-      event.value = response.data
+      event.value = response.data;
     } else {
-      throw new Error('Formato de respuesta inválido')
+      throw new Error('Formato de respuesta inválido');
     }
     
     // Una vez que tenemos el evento, obtener eventos relacionados
-    await fetchRelatedEvents(event.value.event_type, id)
+    await fetchRelatedEvents(event.value.event_type, id);
     
   } catch (err) {
-    console.error('Error al obtener evento:', err)
-    error.value = 'Error al cargar el evento. Por favor, intenta de nuevo más tarde.'
+    console.error('Error al obtener evento:', err);
+    error.value = 'Error al cargar el evento. Por favor, intenta de nuevo más tarde.';
     
     // Datos de fallback para desarrollo
     event.value = {
@@ -394,409 +393,417 @@ const fetchEvent = async () => {
       created_by: 1,
       first_name: 'Admin',
       last_name: 'User'
-    }
+    };
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Obtener eventos relacionados por tipo, excluyendo el actual
 const fetchRelatedEvents = async (eventType, currentEventId) => {
-  if (!eventType) return
+  if (!eventType) return;
   
   try {
     const response = await eventService.getEvents({
       event_type: eventType,
       limit: 4,
       exclude_id: currentEventId
-    })
+    });
     
     if (response && response.data && response.data.data && response.data.data.events) {
-      relatedEvents.value = response.data.data.events
+      relatedEvents.value = response.data.data.events;
     } else if (response && response.data && Array.isArray(response.data.data)) {
-      relatedEvents.value = response.data.data
+      relatedEvents.value = response.data.data;
     } else if (response && Array.isArray(response.data)) {
-      relatedEvents.value = response.data
-    }
-  } catch (err) {
-    console.error('Error al obtener eventos relacionados:', err)
-    // Datos de fallback para desarrollo
-    relatedEvents.value = [
-      {
-        id: 2,
-        event_name: 'Concierto de Clausura del Carnaval',
-        event_date: '2025-05-17',
-        event_time: '20:00:00',
-        location: 'Estadio Municipal Ceibeño',
-        event_type: 'concierto'
-      },
-      {
-        id: 3,
-        event_name: 'Feria Gastronómica Ceibeña',
-        event_date: '2025-05-16',
-        event_time: '10:00:00',
-        location: 'Parque Swinford',
-        event_type: 'feria'
-      }
-    ]
-  }
-}
+     relatedEvents.value = response.data;
+   }
+ } catch (err) {
+   console.error('Error al obtener eventos relacionados:', err);
+   // Datos de fallback para desarrollo
+   relatedEvents.value = [
+     {
+       id: 2,
+       event_name: 'Concierto de Clausura del Carnaval',
+       event_date: '2025-05-17',
+       event_time: '20:00:00',
+       location: 'Estadio Municipal Ceibeño',
+       event_type: 'concierto'
+     },
+     {
+       id: 3,
+       event_name: 'Feria Gastronómica Ceibeña',
+       event_date: '2025-05-16',
+       event_time: '10:00:00',
+       location: 'Parque Swinford',
+       event_type: 'feria'
+     }
+   ];
+ }
+};
 
 // Computados
 const formattedDescription = computed(() => {
-  if (!event.value.description) return ''
-  
-  // Convertir los saltos de línea en <br>
-  return event.value.description.replace(/\n/g, '<br>')
-})
+ if (!event.value.description) return '';
+ 
+ // Convertir los saltos de línea en <br>
+ return event.value.description.replace(/\n/g, '<br>');
+});
 
 const isUpcomingEvent = computed(() => {
-  if (!event.value.event_date) return false
-  
-  const eventDate = new Date(event.value.event_date)
-  const today = new Date()
-  
-  // Resetear las horas para comparar solo fechas
-  today.setHours(0, 0, 0, 0)
-  eventDate.setHours(0, 0, 0, 0)
-  
-  return eventDate >= today
-})
+ if (!event.value.event_date) return false;
+ 
+ const eventDate = new Date(event.value.event_date);
+ const today = new Date();
+ 
+ // Resetear las horas para comparar solo fechas
+ today.setHours(0, 0, 0, 0);
+ eventDate.setHours(0, 0, 0, 0);
+ 
+ return eventDate >= today;
+});
 
 const daysUntilEvent = computed(() => {
-  if (!event.value.event_date) return 0
-  
-  const eventDate = new Date(event.value.event_date)
-  const today = new Date()
-  
-  // Resetear las horas para comparar solo fechas
-  today.setHours(0, 0, 0, 0)
-  eventDate.setHours(0, 0, 0, 0)
-  
-  // Calcular la diferencia en días
-  const differenceInTime = eventDate.getTime() - today.getTime()
-  const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24))
-  
-  return differenceInDays > 0 ? differenceInDays : 0
-})
+ if (!event.value.event_date) return 0;
+ 
+ const eventDate = new Date(event.value.event_date);
+ const today = new Date();
+ 
+ // Resetear las horas para comparar solo fechas
+ today.setHours(0, 0, 0, 0);
+ eventDate.setHours(0, 0, 0, 0);
+ 
+ // Calcular la diferencia en días
+ const differenceInTime = eventDate.getTime() - today.getTime();
+ const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+ 
+ return differenceInDays > 0 ? differenceInDays : 0;
+});
 
 // Métodos
 const validateAttendees = () => {
-  // Asegurarse de que el número de asistentes esté entre 1 y 10
-  if (attendees.value < 1) attendees.value = 1
-  if (attendees.value > 10) attendees.value = 10
-}
+ // Asegurarse de que el número de asistentes esté entre 1 y 10
+ if (attendees.value < 1) attendees.value = 1;
+ if (attendees.value > 10) attendees.value = 10;
+};
 
 const incrementAttendees = () => {
-  if (attendees.value < 10) {
-    attendees.value++
-  }
-}
+ if (attendees.value < 10) {
+   attendees.value++;
+ }
+};
 
 const decrementAttendees = () => {
-  if (attendees.value > 1) {
-    attendees.value--
-  }
-}
+ if (attendees.value > 1) {
+   attendees.value--;
+ }
+};
 
 const calculateSubtotal = () => {
-  return parseFloat(event.value.price || 0) * attendees.value
-}
+ return parseFloat(event.value.price || 0) * attendees.value;
+};
 
 const calculateTax = () => {
-  return calculateSubtotal() * 0.15
-}
+ return calculateSubtotal() * 0.15;
+};
 
 const calculateTotal = () => {
-  return calculateSubtotal() + calculateTax()
-}
+ return calculateSubtotal() + calculateTax();
+};
 
 const submitBooking = async () => {
-  if (event.value.status !== 'activo') {
-    alert('Lo sentimos, este evento no está disponible para reservas.')
-    return
-  }
-  
-  // Validación básica
-  if (!bookingForm.value.name || !bookingForm.value.email) {
-    alert('Por favor, completa los campos requeridos (nombre y email).')
-    return
-  }
-  
-  isBookingSubmitting.value = true
-  
-  try {
-    // Aquí iría la llamada a la API para guardar la reserva
-    // const response = await eventService.createBooking({
-    //   event_id: event.value.id,
-    //   attendees: attendees.value,
-    //   name: bookingForm.value.name,
-    //   email: bookingForm.value.email,
-    //   phone: bookingForm.value.phone,
-    //   total: calculateTotal()
-    // })
-    
-    // Simulamos una espera
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Mostrar confirmación
-    alert(`¡Reserva realizada con éxito! Te esperamos en ${event.value.event_name}.`)
-    
-    // Resetear formulario
-    bookingForm.value = {
-      name: '',
-      email: '',
-      phone: ''
-    }
-    attendees.value = 1
-  } catch (error) {
-    console.error('Error al realizar la reserva:', error)
-    alert('Lo sentimos, ha ocurrido un error al procesar tu reserva. Por favor, intenta de nuevo más tarde.')
-  } finally {
-    isBookingSubmitting.value = false
-  }
-}
+ if (event.value.status !== 'activo') {
+   alert('Lo sentimos, este evento no está disponible para reservas.');
+   return;
+ }
+ 
+ // Validación básica
+ if (!bookingForm.value.name || !bookingForm.value.email) {
+   alert('Por favor, completa los campos requeridos (nombre y email).');
+   return;
+ }
+ 
+ isBookingSubmitting.value = true;
+ 
+ try {
+   // Aquí iría la llamada a la API para guardar la reserva
+   // const response = await eventService.createBooking({
+   //   event_id: event.value.id,
+   //   attendees: attendees.value,
+   //   name: bookingForm.value.name,
+   //   email: bookingForm.value.email,
+   //   phone: bookingForm.value.phone,
+   //   total: calculateTotal()
+   // });
+   
+   // Simulamos una espera
+   await new Promise(resolve => setTimeout(resolve, 1500));
+   
+   // Mostrar confirmación
+   alert(`¡Reserva realizada con éxito! Te esperamos en ${event.value.event_name}.`);
+   
+   // Resetear formulario
+   bookingForm.value = {
+     name: '',
+     email: '',
+     phone: ''
+   };
+   attendees.value = 1;
+ } catch (error) {
+   console.error('Error al realizar la reserva:', error);
+   alert('Lo sentimos, ha ocurrido un error al procesar tu reserva. Por favor, intenta de nuevo más tarde.');
+ } finally {
+   isBookingSubmitting.value = false;
+ }
+};
 
+// Método para abrir el modal del mapa
 const openMap = () => {
-  if (!event.value.location) return
-  
-  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.value.location)}`
-  window.open(mapUrl, '_blank')
-}
+ if (!event.value.location) return;
+ showMapModal.value = true;
+ isMapLoading.value = true;
+};
 
-const getDirectionsUrl = (location) => {
-  if (!location) return '#'
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location)}`
-}
+// Función para generar la URL del mapa de Google Maps
+const getGoogleMapsEmbedUrl = (location) => {
+ if (!location) return '';
+ // URL sin API key para uso simple (alternativa si la otra falla)
+ return `https://maps.google.com/maps?q=${encodeURIComponent(location)}&t=m&z=14&output=embed&iwloc=near`;
+};
+
+// URL para obtener indicaciones en Google Maps
+const getGoogleMapsDirectionsUrl = (location) => {
+ if (!location) return '#';
+ return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location)}`;
+};
 
 // Métodos para compartir
 const shareOnFacebook = () => {
-  const url = encodeURIComponent(window.location.href)
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
-}
+ const url = encodeURIComponent(window.location.href);
+ window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+};
 
 const shareOnTwitter = () => {
-  const url = encodeURIComponent(window.location.href)
-  const text = encodeURIComponent(`¡Asiste a ${event.value.event_name} el ${formatDate(event.value.event_date)}!`)
-  window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank')
-}
+ const url = encodeURIComponent(window.location.href);
+ const text = encodeURIComponent(`¡Asiste a ${event.value.event_name} el ${formatDate(event.value.event_date)}!`);
+ window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+};
 
 const shareOnWhatsApp = () => {
-  const url = encodeURIComponent(window.location.href)
-  const text = encodeURIComponent(`¡Hola! Te invito a asistir a ${event.value.event_name} el ${formatDate(event.value.event_date)}. Más información aquí: `)
-  window.open(`https://wa.me/?text=${text}${url}`, '_blank')
-}
+ const url = encodeURIComponent(window.location.href);
+ const text = encodeURIComponent(`¡Hola! Te invito a asistir a ${event.value.event_name} el ${formatDate(event.value.event_date)}. Más información aquí: `);
+ window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+};
 
 const shareByEmail = () => {
-  const subject = encodeURIComponent(`Invitación: ${event.value.event_name}`)
-  const body = encodeURIComponent(`¡Hola! Te invito a asistir a ${event.value.event_name} el ${formatDate(event.value.event_date)} en ${event.value.location}. Más información aquí: ${window.location.href}`)
-  window.location.href = `mailto:?subject=${subject}&body=${body}`
-}
+ const subject = encodeURIComponent(`Invitación: ${event.value.event_name}`);
+ const body = encodeURIComponent(`¡Hola! Te invito a asistir a ${event.value.event_name} el ${formatDate(event.value.event_date)} en ${event.value.location}. Más información aquí: ${window.location.href}`);
+ window.location.href = `mailto:?subject=${subject}&body=${body}`;
+};
 
 const copyEventLink = () => {
-  navigator.clipboard.writeText(window.location.href)
-    .then(() => {
-      linkCopied.value = true
-      setTimeout(() => {
-        linkCopied.value = false
-      }, 3000)
-    })
-    .catch(err => {
-      console.error('Error al copiar el enlace:', err)
-      alert('No se pudo copiar el enlace. Por favor, inténtalo manualmente.')
-    })
-}
+ navigator.clipboard.writeText(window.location.href)
+   .then(() => {
+     linkCopied.value = true;
+     setTimeout(() => {
+       linkCopied.value = false;
+     }, 3000);
+   })
+   .catch(err => {
+     console.error('Error al copiar el enlace:', err);
+     alert('No se pudo copiar el enlace. Por favor, inténtalo manualmente.');
+   });
+};
 
 const contactOrganizer = () => {
-  // Aquí podríamos abrir un modal de contacto o redireccionar
-  alert(`Para contactar a ${event.value.first_name} ${event.value.last_name}, por favor envía un correo a organizador@ejemplo.com`)
-}
+ // Aquí podríamos abrir un modal de contacto o redireccionar
+ alert(`Para contactar a ${event.value.first_name} ${event.value.last_name}, por favor envía un correo a organizador@ejemplo.com`);
+};
 
 // Funciones para añadir al calendario
 const addToGoogleCalendar = () => {
-  if (!event.value.event_date || !event.value.event_time) return
-  
-  const startDate = new Date(`${event.value.event_date}T${event.value.event_time}`)
-  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000) // Duración de 2 horas por defecto
-  
-  const googleParams = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: event.value.event_name,
-    dates: `${formatCalendarDate(startDate)}/${formatCalendarDate(endDate)}`,
-    details: event.value.description || 'Sin descripción',
-    location: event.value.location || '',
-  })
-  
-  window.open(`https://calendar.google.com/calendar/render?${googleParams.toString()}`, '_blank')
-}
+ if (!event.value.event_date || !event.value.event_time) return;
+ 
+ const startDate = new Date(`${event.value.event_date}T${event.value.event_time}`);
+ const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Duración de 2 horas por defecto
+ 
+ const googleParams = new URLSearchParams({
+   action: 'TEMPLATE',
+   text: event.value.event_name,
+   dates: `${formatCalendarDate(startDate)}/${formatCalendarDate(endDate)}`,
+   details: event.value.description || 'Sin descripción',
+   location: event.value.location || '',
+ });
+ 
+ window.open(`https://calendar.google.com/calendar/render?${googleParams.toString()}`, '_blank');
+};
 
 const addToOutlookCalendar = () => {
-  // Outlook Web usa parámetros similares a Google Calendar
-  addToGoogleCalendar()
-}
+ // Outlook Web usa parámetros similares a Google Calendar
+ addToGoogleCalendar();
+};
 
 const addToAppleCalendar = () => {
-  // Para Apple Calendar, lo mejor es descargar el archivo .ics
-  downloadICalFile()
-}
+ // Para Apple Calendar, lo mejor es descargar el archivo .ics
+ downloadICalFile();
+};
 
 const downloadICalFile = () => {
-  if (!event.value.event_date || !event.value.event_time) return
-  
-  const startDate = new Date(`${event.value.event_date}T${event.value.event_time}`)
-  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000) // Duración de 2 horas por defecto
-  
-  const icsContent = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'BEGIN:VEVENT',
-    `SUMMARY:${event.value.event_name}`,
-    `DTSTART:${formatCalendarDate(startDate)}`,
-    `DTEND:${formatCalendarDate(endDate)}`,
-    `DESCRIPTION:${event.value.description || 'Sin descripción'}`,
-    `LOCATION:${event.value.location || ''}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\n')
-  
-  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = `evento-${slugify(event.value.event_name)}.ics`
-  link.click()
-}
+ if (!event.value.event_date || !event.value.event_time) return;
+ 
+ const startDate = new Date(`${event.value.event_date}T${event.value.event_time}`);
+ const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Duración de 2 horas por defecto
+ 
+ const icsContent = [
+   'BEGIN:VCALENDAR',
+   'VERSION:2.0',
+   'BEGIN:VEVENT',
+   `SUMMARY:${event.value.event_name}`,
+   `DTSTART:${formatCalendarDate(startDate)}`,
+   `DTEND:${formatCalendarDate(endDate)}`,
+   `DESCRIPTION:${event.value.description || 'Sin descripción'}`,
+   `LOCATION:${event.value.location || ''}`,
+   'END:VEVENT',
+   'END:VCALENDAR'
+ ].join('\n');
+ 
+ const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+ const link = document.createElement('a');
+ link.href = URL.createObjectURL(blob);
+ link.download = `evento-${slugify(event.value.event_name)}.ics`;
+ link.click();
+};
 
 // Utilidades
 const formatCalendarDate = (date) => {
-  return date.toISOString().replace(/-|:|\.\d+/g, '')
-}
+ return date.toISOString().replace(/-|:|\.\d+/g, '');
+};
 
 const slugify = (text) => {
-  return text
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, '-')           // Reemplaza espacios con -
-    .replace(/[^\w\-]+/g, '')       // Elimina caracteres especiales
-    .replace(/\-\-+/g, '-')         // Reemplaza múltiples - con uno solo
-    .replace(/^-+/, '')             // Elimina - del inicio
-    .replace(/-+$/, '')             // Elimina - del final
-}
+ return text
+   .toString()
+   .toLowerCase()
+   .replace(/\s+/g, '-')           // Reemplaza espacios con -
+   .replace(/[^\w\-]+/g, '')       // Elimina caracteres especiales
+   .replace(/\-\-+/g, '-')         // Reemplaza múltiples - con uno solo
+   .replace(/^-+/, '')             // Elimina - del inicio
+   .replace(/-+$/, '');            // Elimina - del final
+};
 
 const translateEventType = (type) => {
-  if (!type) return ''
-  
-  const translations = {
-    'festival': 'Festival',
-    'concierto': 'Concierto',
-    'feria': 'Feria',
-    'taller': 'Taller',
-    'conferencia': 'Conferencia',
-    'webinar': 'Webinar',
-    'curso': 'Curso',
-    'exposición': 'Exposición',
-    'networking': 'Networking'
-  }
-  
-  return translations[type] || type.charAt(0).toUpperCase() + type.slice(1)
-}
+ if (!type) return '';
+ 
+ const translations = {
+   'festival': 'Festival',
+   'concierto': 'Concierto',
+   'feria': 'Feria',
+   'taller': 'Taller',
+   'conferencia': 'Conferencia',
+   'webinar': 'Webinar',
+   'curso': 'Curso',
+   'exposición': 'Exposición',
+   'networking': 'Networking'
+ };
+ 
+ return translations[type] || type.charAt(0).toUpperCase() + type.slice(1);
+};
 
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  
-  const date = new Date(dateString)
-  
-  // Opciones para formato español
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
-  
-  try {
-    return date.toLocaleDateString('es-ES', options)
-  } catch (e) {
-    // Fallback en caso de error con el formato
-    return date.toLocaleDateString('en-US', options)
-  }
-}
+ if (!dateString) return '';
+ 
+ const date = new Date(dateString);
+ 
+ // Opciones para formato español
+ const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+ 
+ try {
+   return date.toLocaleDateString('es-ES', options);
+ } catch (e) {
+   // Fallback en caso de error con el formato
+   return date.toLocaleDateString('en-US', options);
+ }
+};
 
 const formatTime = (timeString) => {
-  if (!timeString) return ''
-  
-  // Convertir formato HH:MM:SS a HH:MM AM/PM
-  const [hour, minute] = timeString.split(':')
-  const hourNum = parseInt(hour)
-  
-  const ampm = hourNum >= 12 ? 'PM' : 'AM'
-  const hour12 = hourNum % 12 || 12
-  
-  return `${hour12}:${minute} ${ampm}`
-}
+ if (!timeString) return '';
+ 
+ // Convertir formato HH:MM:SS a HH:MM AM/PM
+ const [hour, minute] = timeString.split(':');
+ const hourNum = parseInt(hour);
+ 
+ const ampm = hourNum >= 12 ? 'PM' : 'AM';
+ const hour12 = hourNum % 12 || 12;
+ 
+ return `${hour12}:${minute} ${ampm}`;
+};
 
 const formatPrice = (price) => {
-  if (price === 0 || price === '0' || price === '0.00') {
-    return 'Gratis'
-  }
-  
-  return `L. ${parseFloat(price).toFixed(2)}`
-}
+ if (price === 0 || price === '0' || price === '0.00') {
+   return 'Gratis';
+ }
+ 
+ return `L. ${parseFloat(price).toFixed(2)}`;
+};
 
 const truncateLocation = (location, length) => {
-  if (!location) return ''
-  if (location.length <= length) return location
-  
-  return location.substring(0, length) + '...'
-}
+ if (!location) return '';
+ if (location.length <= length) return location;
+ 
+ return location.substring(0, length) + '...';
+};
 
 const getDefaultImage = () => {
-  return defaultImage
-}
+ return defaultImage;
+};
 
 const getCreatorImage = (creatorId) => {
-  return `/images/avatars/avatar${(creatorId % 5) + 1}.jpg`
-}
+ return `/images/avatars/avatar${(creatorId % 5) + 1}.jpg`;
+};
 
 const capitalizeFirst = (text) => {
-  if (!text) return ''
-  return text.charAt(0).toUpperCase() + text.slice(1)
-}
+ if (!text) return '';
+ return text.charAt(0).toUpperCase() + text.slice(1);
+};
 </script>
 
 <style scoped>
 .prose {
-  max-width: 100%;
-  color: #4b5563;
+ max-width: 100%;
+ color: #4b5563;
 }
 
 .prose p {
-  margin-bottom: 1.5rem;
-  line-height: 1.7;
+ margin-bottom: 1.5rem;
+ line-height: 1.7;
 }
 
 /* Colores específicos */
 .text-orange-500 {
-  color: #f97316;
+ color: #f97316;
 }
 
 .bg-orange-500 {
-  background-color: #f97316;
+ background-color: #f97316;
 }
 
 .bg-orange-100 {
-  background-color: #ffedd5;
+ background-color: #ffedd5;
 }
 
 .hover\:bg-orange-600:hover {
-  background-color: #ea580c;
+ background-color: #ea580c;
 }
 
 .hover\:text-orange-500:hover {
-  color: #f97316;
+ color: #f97316;
 }
 
 /* Remove spinner from number input */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+ -webkit-appearance: none;
+ margin: 0;
 }
 input[type="number"] {
-  -moz-appearance: textfield;
+ -moz-appearance: textfield;
 }
 </style>
