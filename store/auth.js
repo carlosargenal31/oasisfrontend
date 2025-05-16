@@ -54,30 +54,80 @@ export const useAuthStore = defineStore('auth', {
       }
       
       if (process.client && token) {
-        localStorage.setItem('token', token);
-        
-        if (refreshToken) {
-          localStorage.setItem('refreshToken', refreshToken);
+        try {
+          localStorage.setItem('token', token);
+          
+          if (refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
+          }
+          
+          // Verificar que el token se guardó correctamente
+          const savedToken = localStorage.getItem('token');
+          if (!savedToken) {
+            console.error('Error: Token no guardado correctamente en localStorage');
+          }
+        } catch (e) {
+          console.error('Error al guardar token en localStorage', e);
         }
       }
     },
     
-    // Nuevo método para validar la sesión actual
+    // Método mejorado para validar la sesión actual
     validateSession() {
-      if (!process.client) return false;
-      
-      const token = localStorage.getItem('token');
-      const userJson = localStorage.getItem('user');
-      
-      // Si hay alguna inconsistencia entre el estado de la tienda y localStorage
-      if ((!token && this.isAuthenticated) || (token && !this.isAuthenticated)) {
-        console.warn('Estado de autenticación inconsistente, reinicializando...');
-        this.initialize();
-        return this.isAuthenticated;
+  if (!process.client) return false;
+  
+  // Si ya estamos autenticados, simplemente devolver true sin más verificaciones
+  // Esto evitará reinicializaciones innecesarias durante la navegación
+  if (this.isAuthenticated && this.user && this.token) {
+    return true;
+  }
+  
+  const token = localStorage.getItem('token');
+  const userJson = localStorage.getItem('user');
+  
+  // Si no hay token en localStorage pero estamos autenticados en el store,
+  // preservar el estado actual en lugar de reinicializar
+  if (!token && this.isAuthenticated) {
+    console.warn('Token no encontrado en localStorage pero estamos autenticados');
+    
+    // Guardar el token actual en localStorage para mantener consistencia
+    if (this.token) {
+      localStorage.setItem('token', this.token);
+      console.log('Token restaurado en localStorage');
+    }
+    
+    // Si tenemos usuario pero no está en localStorage, guardarlo también
+    if (this.user && (!userJson || userJson === 'null' || userJson === 'undefined')) {
+      localStorage.setItem('user', JSON.stringify(this.user));
+      console.log('Usuario restaurado en localStorage');
+    }
+    
+    return true; // Mantener el estado autenticado
+  }
+  
+  // Si hay token en localStorage pero no estamos autenticados en el store,
+  // restaurar la autenticación desde localStorage
+  if (token && !this.isAuthenticated) {
+    console.warn('Token encontrado en localStorage pero no estamos autenticados');
+    
+    this.token = token;
+    
+    if (userJson) {
+      try {
+        const parsedUser = JSON.parse(userJson);
+        if (parsedUser && parsedUser.id) {
+          this.user = parsedUser;
+          this.isAuthenticated = true;
+          console.log('Sesión restaurada desde localStorage');
+        }
+      } catch (e) {
+        console.error('Error al parsear usuario desde localStorage:', e);
       }
-      
-      return this.isAuthenticated;
-    },
+    }
+  }
+  
+  return this.isAuthenticated;
+},
     
     async register(userData) {
       try {
@@ -121,16 +171,16 @@ export const useAuthStore = defineStore('auth', {
           // Extraer datos de la respuesta
           const { user, accessToken, refreshToken } = data.data;
           
-          // Actualizar estado
-          this.user = user;
-          this.token = accessToken;
-          this.refreshToken = refreshToken;
+          // Asegurarnos de que el token y el usuario se guardan correctamente
+          this.setToken(accessToken, refreshToken);
+          this.setUser(user);
           this.isAuthenticated = true;
           
-          // Guardar en localStorage
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem('user', JSON.stringify(user));
+          // Verificar que todo se guardó correctamente
+          const tokenInStorage = localStorage.getItem('token');
+          if (!tokenInStorage) {
+            console.error('Error: Token no guardado correctamente después del registro');
+          }
           
           return { success: true };
         } else {
@@ -160,16 +210,10 @@ export const useAuthStore = defineStore('auth', {
           const accessToken = 'mock_access_token_' + Date.now();
           const refreshToken = 'mock_refresh_token_' + Date.now();
           
-          // Actualizar estado
-          this.user = mockUser;
-          this.token = accessToken;
-          this.refreshToken = refreshToken;
+          // Asegurarnos de que el token y el usuario se guardan correctamente
+          this.setToken(accessToken, refreshToken);
+          this.setUser(mockUser);
           this.isAuthenticated = true;
-          
-          // Guardar en localStorage
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem('user', JSON.stringify(mockUser));
           
           return { success: true };
         }
@@ -232,23 +276,29 @@ export const useAuthStore = defineStore('auth', {
           // Extraer datos de la respuesta
           const { user, accessToken, refreshToken } = data.data;
           
-          // Actualizar estado
-          this.user = user;
-          this.token = accessToken;
-          this.refreshToken = refreshToken;
-          this.isAuthenticated = true;
+          // Limpiar primero cualquier estado anterior para evitar conflictos
+          this.logout();
           
-          // Guardar en localStorage
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem('user', JSON.stringify(user));
+          // Actualizar estado usando los métodos que verifican guardado correcto
+          this.setToken(accessToken, refreshToken);
+          this.setUser(user);
+          this.isAuthenticated = true;
           
           if (credentials.remember) {
             localStorage.setItem('rememberedEmail', credentials.email);
           }
           
           // Verificar que el token se guardó correctamente
-          console.log('Token guardado correctamente:', !!localStorage.getItem('token'));
+          const tokenInStorage = localStorage.getItem('token');
+          console.log('Token guardado correctamente:', !!tokenInStorage);
+          
+          if (!tokenInStorage) {
+            console.error('Error: Token no guardado correctamente después del login');
+            return { 
+              success: false, 
+              error: 'Error al guardar datos de sesión. Intente de nuevo.' 
+            };
+          }
           
           return { success: true };
         } else {
@@ -264,6 +314,9 @@ export const useAuthStore = defineStore('auth', {
         if (error.message && error.message.includes('Network Error')) {
           console.log('Network error detected, using mock data for development');
           
+          // Limpiar primero cualquier estado anterior para evitar conflictos
+          this.logout();
+          
           // Crear usuario mock con imagen de perfil real
           const mockUser = {
             id: 1,
@@ -278,16 +331,10 @@ export const useAuthStore = defineStore('auth', {
           const accessToken = 'mock_access_token_' + Date.now();
           const refreshToken = 'mock_refresh_token_' + Date.now();
           
-          // Actualizar estado
-          this.user = mockUser;
-          this.token = accessToken;
-          this.refreshToken = refreshToken;
+          // Actualizar estado usando los métodos seguros
+          this.setToken(accessToken, refreshToken);
+          this.setUser(mockUser);
           this.isAuthenticated = true;
-          
-          // Guardar en localStorage
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-          localStorage.setItem('user', JSON.stringify(mockUser));
           
           if (credentials.remember) {
             localStorage.setItem('rememberedEmail', credentials.email);
@@ -310,79 +357,113 @@ export const useAuthStore = defineStore('auth', {
     },
     
     logout() {
+      // Guardar una copia del estado actual para logging en caso de error
+      const hadToken = !!this.token;
+      const hadUser = !!this.user;
+      
+      // Resetear el estado
       this.user = null;
       this.token = null;
       this.refreshToken = null;
       this.isAuthenticated = false;
       
       if (process.client) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+        try {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          
+          // Verificar que se eliminó correctamente
+          const tokenAfter = localStorage.getItem('token');
+          if (tokenAfter && hadToken) {
+            console.error('Error: Token no eliminado correctamente de localStorage');
+          }
+        } catch (e) {
+          console.error('Error al eliminar datos de localStorage:', e);
+        }
       }
       
       return { success: true };
     },
     
     // Versión mejorada del método initialize
-    initialize() {
-      if (!process.client) return false;
-      
-      console.log('Inicializando store de autenticación');
-      
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const userJson = localStorage.getItem('user');
-      
-      let isValid = false;
-      
-      if (token) {
-        console.log('Token encontrado en localStorage');
-        this.token = token;
-        this.refreshToken = refreshToken || null;
-        
-        // Si tenemos el usuario en localStorage, lo cargamos
-        if (userJson) {
-          try {
-            const parsedUser = JSON.parse(userJson);
-            if (parsedUser && parsedUser.id) {
-              this.user = parsedUser;
-              isValid = true;
-              console.log('Usuario cargado desde localStorage:', this.user.first_name);
-            } else {
-              console.warn('Datos de usuario inválidos en localStorage');
-              isValid = false;
-            }
-          } catch (e) {
-            console.error('Error al parsear usuario desde localStorage:', e);
-            isValid = false;
-          }
+    // En auth.js - modifica la función initialize
+initialize() {
+  if (!process.client) return false;
+  
+  console.log('Inicializando store de autenticación');
+  
+  // Si ya estamos inicializados y autenticados, no hacer nada
+  if (this.isInitialized && this.isAuthenticated && this.user && this.token) {
+    console.log('Store ya inicializado y autenticado, manteniendo sesión');
+    return true;
+  }
+  
+  const token = localStorage.getItem('token');
+  const refreshToken = localStorage.getItem('refreshToken');
+  const userJson = localStorage.getItem('user');
+  
+  let isValid = false;
+  
+  if (token) {
+    console.log('Token encontrado en localStorage');
+    this.token = token;
+    this.refreshToken = refreshToken || null;
+    
+    // Si tenemos el usuario en localStorage, lo cargamos
+    if (userJson) {
+      try {
+        const parsedUser = JSON.parse(userJson);
+        if (parsedUser && parsedUser.id) {
+          this.user = parsedUser;
+          isValid = true;
+          this.isAuthenticated = true;
+          console.log('Usuario cargado desde localStorage:', this.user.first_name);
         } else {
-          console.warn('No hay datos de usuario en localStorage');
-          isValid = false;
-          // Intentar obtener el usuario del servidor
-          this.fetchCurrentUser();
+          console.warn('Datos de usuario inválidos en localStorage');
         }
-        
-        // Solo establecer como autenticado si tenemos datos válidos
-        this.isAuthenticated = isValid;
-        
-        if (!isValid) {
-          console.warn('Datos de autenticación incompletos o inválidos');
-          // No hacer logout automáticamente para evitar círculos viciosos
-        }
-      } else {
-        console.warn('No se encontró token en localStorage');
-        // Asegurarnos de que el estado es consistente con localStorage
-        if (this.isAuthenticated) {
-          console.warn('Estado inconsistente: autenticado en store pero sin token en localStorage');
-          this.logout();
-        }
+      } catch (e) {
+        console.error('Error al parsear usuario desde localStorage:', e);
       }
-      
-      this.isInitialized = true;
-      return isValid;
-    },
+    } else {
+      console.warn('No hay datos de usuario en localStorage');
+      // Intentar obtener el usuario del servidor si estamos en producción
+      // En desarrollo, no hacer esta llamada para no añadir complejidad
+      if (process.env.NODE_ENV === 'production') {
+        this.fetchCurrentUser();
+      }
+    }
+    
+    // Si ya tenemos usuario en memoria pero no se pudo cargar desde localStorage,
+    // confiar en el estado actual
+    if (!isValid && this.user && this.user.id) {
+      console.log('Usando datos de usuario ya existentes en memoria');
+      isValid = true;
+      this.isAuthenticated = true;
+    }
+  } else {
+    console.warn('No se encontró token en localStorage');
+    
+    // Si no hay token pero tenemos usuario y estamos autenticados,
+    // intentar preservar la sesión
+    if (this.user && this.token && this.isAuthenticated) {
+      console.log('Preservando sesión existente aunque no haya token en localStorage');
+      localStorage.setItem('token', this.token);
+      localStorage.setItem('user', JSON.stringify(this.user));
+      isValid = true;
+    } else {
+      // Realmente no hay sesión, limpiar todo
+      this.user = null;
+      this.token = null;
+      this.refreshToken = null;
+      this.isAuthenticated = false;
+    }
+  }
+  
+  this.isInitialized = true;
+  return isValid;
+},
+
     
     async fetchCurrentUser() {
       if (!process.client || !this.token) return { success: false };
@@ -395,10 +476,8 @@ export const useAuthStore = defineStore('auth', {
         });
         
         if (response.data && response.data.success && response.data.data) {
-          this.user = response.data.data;
-          
-          // Actualizar localStorage
-          localStorage.setItem('user', JSON.stringify(this.user));
+          this.setUser(response.data.data);
+          this.isAuthenticated = true;
           return { success: true };
         }
         
@@ -413,6 +492,35 @@ export const useAuthStore = defineStore('auth', {
         
         return { success: false, error: 'No se pudo obtener información del usuario.' };
       }
+    },
+
+    // En auth.js - agregar este nuevo método
+syncAuthState() {
+  if (!process.client) return;
+  
+  const token = localStorage.getItem('token');
+  const userJson = localStorage.getItem('user');
+  
+  // Si hay alguna inconsistencia, intentar resolverla
+  if (this.isAuthenticated && !token) {
+    // Store dice autenticado pero localStorage no tiene token
+    localStorage.setItem('token', this.token || 'sync_' + Date.now());
+    localStorage.setItem('user', JSON.stringify(this.user || {}));
+    console.log('Estado sincronizado: token restaurado en localStorage');
+  } else if (!this.isAuthenticated && token) {
+    // Store dice no autenticado pero localStorage tiene token
+    try {
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        this.user = user;
+        this.token = token;
+        this.isAuthenticated = true;
+        console.log('Estado sincronizado: sesión restaurada desde localStorage');
+      }
+    } catch (e) {
+      console.error('Error al sincronizar estado:', e);
     }
+  }
+}
   }
 });
