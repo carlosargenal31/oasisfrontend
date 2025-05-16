@@ -1,239 +1,295 @@
-<script lang="ts" setup>
-import { ref } from 'vue'
-import Breadcrumb from '@/components/about/Breadcrumb.vue'
-import Main from '@/components/about/main.vue'
-import Team from '@/components/about/team.vue'
-import Reviews from '@/components/about/reviews.vue'
+<template>
+  <div class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 pb-20">
+    <!-- Banner principal -->
+    <section class="relative bg-gradient-to-r from-orange-500 to-red-600 py-20 text-white overflow-hidden">
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">¡Descubre La Ceiba!</h1>
+        <p class="text-xl opacity-90 mb-4 max-w-3xl mx-auto">
+          Tu guía personal para experiencias únicas en la Novia de Honduras. Conocemos los mejores lugares y eventos en cada rincón de la ciudad.
+        </p>
+      </div>
+      
+      <!-- Elementos decorativos flotantes -->
+      <div class="absolute right-0 top-0 h-full w-1/2 opacity-10">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="h-full">
+          <path fill="white" d="M42.8,-76.4C54.9,-68.3,63.7,-55.2,71.3,-41.4C78.9,-27.6,85.3,-13.8,83.4,-1.1C81.5,11.6,71.3,23.2,62.2,34.6C53.1,46.1,45.2,57.3,34.4,65.9C23.6,74.4,11.8,80.3,-1.2,82.2C-14.2,84.2,-28.3,82.3,-40.5,75.6C-52.7,68.9,-62.9,57.5,-70.4,44.8C-77.9,32.1,-82.7,16,-82.1,0.3C-81.5,-15.4,-75.5,-30.8,-67.1,-44.2C-58.8,-57.5,-48.1,-68.8,-35.4,-76.5C-22.7,-84.3,-7.9,-88.5,4.4,-86.4C16.7,-84.2,30.7,-84.5,42.8,-76.4Z" transform="translate(100 100)" />
+        </svg>
+      </div>
+      <div class="absolute left-0 bottom-0 h-full w-1/3 opacity-10">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="h-full">
+          <path fill="white" d="M37.9,-65.1C50.4,-59.4,62.7,-51.4,72.1,-40.1C81.4,-28.8,87.9,-14.4,87.8,-0.1C87.7,14.3,81,28.5,71.8,40.1C62.6,51.6,50.8,60.4,38.1,67.7C25.4,75,12.7,80.9,-0.4,81.5C-13.4,82.1,-26.8,77.5,-39.9,70.7C-53,64,-65.8,55.2,-71.8,43.1C-77.8,31,-77,15.5,-75.9,0.6C-74.8,-14.3,-73.4,-28.5,-66.9,-40C-60.4,-51.5,-48.7,-60.2,-36.2,-65.9C-23.7,-71.5,-11.9,-74.1,0.6,-75.1C13,-76.1,25.9,-70.8,37.9,-65.1Z" transform="translate(100 100)" />
+        </svg>
+      </div>
+    </section>
 
-const breadcrumbData = ref([
-    {
-        title: 'Home',
-        link: '/',
-        subitems: [
-            {
-                title: 'About'
-            }
-        ]
-    }
-])
+    <!-- Seguridad como prioridad -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Seguridad es nuestra prioridad</h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Queremos que tengas una experiencia increible, pero siempre con las medidas necesarias para que todo funcione sin problemas.
+        </p>
+      </div>
+    </section>
 
-definePageMeta({
-    title: 'About Us',
-});
+    <!-- Trabajo diario -->
+    <section class="py-16 bg-orange-50">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Trabajo diario</h3>
+          <p class="text-gray-600">
+            Nuestro equipo trabaja constantemente para ofrecerte información actualizada y relevante sobre los mejores lugares y eventos en La Ceiba.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valores que nos guían -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Los valores que nos guían</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- Precio justo -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <TagIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Precio justo</h3>
+            <p class="text-gray-600 text-center">
+              Promovemos opciones para todos los presupuestos, destacando la mejor relación calidad-precio.
+            </p>
+          </div>
+          
+          <!-- Comunicación -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <MessageSquareIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Comunicación</h3>
+            <p class="text-gray-600 text-center">
+              Escuchamos tus necesidades y nos aseguramos de que tu tiempo con nosotros sea bien invertido.
+            </p>
+          </div>
+          
+          <!-- Empatía -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <HeartIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Empatía</h3>
+            <p class="text-gray-600 text-center">
+              Entendemos tus deseos como viajero y nos esforzamos por satisfacerlos.
+            </p>
+          </div>
+          
+          <!-- Pasión y entusiasmo -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <ZapIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Pasión y entusiasmo</h3>
+            <p class="text-gray-600 text-center">
+              Amamos La Ceiba y queremos compartir esa pasión contigo.
+            </p>
+          </div>
+          
+          <!-- Equipo orientado a resultados -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <AwardIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Orientado a resultados</h3>
+            <p class="text-gray-600 text-center">
+              Nos enfocamos en brindarte soluciones que realmente mejoren tu experiencia.
+            </p>
+          </div>
+          
+          <!-- Soluciones simples -->
+          <div class="bg-orange-50 p-6 rounded-xl shadow-md">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <CheckCircleIcon :size="24" />
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Soluciones simples</h3>
+            <p class="text-gray-600 text-center">
+              Simplificamos la información para que encuentres lo que necesitas fácilmente.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Atrae nuevos clientes -->
+    <section class="py-16 bg-gradient-to-r from-orange-500 to-red-600 text-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">¡Atrae nuevos clientes con nuestro catálogo!</h2>
+        
+        <div class="max-w-4xl mx-auto">
+          <p class="text-xl mb-8 text-center">
+            Si tienes un negocio en La Ceiba, podemos ayudarte a llegar a más visitantes y turistas.
+          </p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Mayor visibilidad para tu negocio</span>
+            </div>
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Conecta con turistas locales e internacionales</span>
+            </div>
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Promoción en eventos especiales</span>
+            </div>
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Actualización constante de información</span>
+            </div>
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Fácil acceso para tus clientes</span>
+            </div>
+            <div class="flex items-start">
+              <CheckIcon class="text-white mt-1 mr-2 flex-shrink-0" />
+              <span>Integración con redes sociales</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preguntas frecuentes -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Preguntas frecuentes</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <!-- Categoría 1 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">1. Empezando</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Cómo funciona la plataforma?</p>
+                <p class="text-gray-600 mt-1">Explora lugares, eventos y servicios en La Ceiba según tus intereses.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Es necesario registrarse?</p>
+                <p class="text-gray-600 mt-1">No, pero al crear una cuenta puedes guardar tus favoritos.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Categoría 2 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">2. Alojamiento</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Dónde puedo encontrar hoteles?</p>
+                <p class="text-gray-600 mt-1">Tenemos un listado completo de opciones para todos los presupuestos.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Hay opciones de hospedaje económico?</p>
+                <p class="text-gray-600 mt-1">Sí, incluimos hostales, pensiones y opciones de alquiler.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Categoría 3 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">3. Cuenta y perfil</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Cómo actualizo mi información?</p>
+                <p class="text-gray-600 mt-1">Accede a tu perfil y edita los datos que necesites cambiar.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Puedo compartir mis experiencias?</p>
+                <p class="text-gray-600 mt-1">¡Claro! Fomentamos que los usuarios compartan sus reseñas.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Categoría 4 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">4. Privacidad y seguridad</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Cómo protegen mis datos?</p>
+                <p class="text-gray-600 mt-1">Implementamos las mejores prácticas de seguridad digital.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Qué información es pública?</p>
+                <p class="text-gray-600 mt-1">Solo lo que tú decidas compartir en tu perfil público.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Categoría 5 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">5. Transacciones</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Puedo reservar a través de la plataforma?</p>
+                <p class="text-gray-600 mt-1">Algunos establecimientos ofrecen reserva directa, otros te redirigen.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Hay comisiones por reservar?</p>
+                <p class="text-gray-600 mt-1">No cobramos comisiones por usar nuestra plataforma.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Categoría 6 -->
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">6. Eventos</h3>
+            <div class="space-y-4">
+              <div>
+                <p class="font-medium text-gray-700">¿Cómo sé qué eventos hay?</p>
+                <p class="text-gray-600 mt-1">Tenemos un calendario actualizado con todos los eventos.</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700">¿Puedo promocionar mi evento?</p>
+                <p class="text-gray-600 mt-1">Sí, contáctanos para incluir tu evento en nuestra plataforma.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de contacto -->
+    <section class="py-16 bg-orange-50">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">¿Tienes más preguntas?</h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Contáctanos y te ayudaremos con cualquier duda sobre turismo en La Ceiba.
+        </p>
+        <button class="bg-orange-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-orange-700 transition shadow-lg">
+          Contactar al equipo
+        </button>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { 
+  Check as CheckIcon,
+  Tag as TagIcon,
+  MessageSquare as MessageSquareIcon,
+  Heart as HeartIcon,
+  Zap as ZapIcon,
+  Award as AwardIcon,
+  CheckCircle as CheckCircleIcon
+} from 'lucide-vue-next';
 </script>
 
-<template>
-    <!-- Breadcrumb-->
-    <div class="container mt-5 mb-md-4 pt-5">
-        <Breadcrumb :data="breadcrumbData" />
-    </div>
-
-    <Main />
-
-    <!-- Why choose us?-->
-    <section class="container mb-2 mb-xl-5 pb-lg-4">
-        <h2 class="h3 mb-4">Why choose us?</h2>
-        <!-- Features -->
-        <div class="row">
-            <!-- Feature -->
-            <div class="col-lg-4">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#fd5631">
-                            <path d="M13.585 21.456a10.416 10.416 0 1 0 20.832 0c0-5.76-4.656-10.464-10.416-10.464s-10.416 4.704-10.416 10.464zm18.096 0c0 4.224-3.456 7.68-7.68 7.68s-7.68-3.456-7.68-7.68 3.456-7.68 7.68-7.68 7.68 3.408 7.68 7.68zm-10.225-.96a1.36 1.36 0 0 0-1.92 0 1.36 1.36 0 0 0 0 1.92l2.352 2.352c.24.24.624.384.96.384s.72-.144.96-.384l4.512-4.512a1.36 1.36 0 0 0 0-1.92 1.36 1.36 0 0 0-1.92 0l-3.552 3.552-1.392-1.392zM42 10.512C29.568 5.568 24.96 1.584 24.912 1.536c-.528-.48-1.296-.48-1.824 0C23.04 1.584 18.48 5.52 6 10.512c-.528.192-.864.72-.864 1.248 0 24.576 17.424 34.464 18.192 34.848.192.096.432.192.672.192a1.2 1.2 0 0 0 .672-.192c.72-.384 18.192-10.272 18.192-34.848 0-.528-.336-1.056-.864-1.248zM24 43.824C20.928 41.808 8.304 32.352 7.872 12.72 17.328 8.88 22.128 5.664 24 4.32c1.872 1.392 6.672 4.56 16.128 8.4C39.744 32.352 27.072 41.808 24 43.824z"></path>
-                        </svg>
-                        <h3 class="h5 card-title pb-1">Safety is our priority</h3>
-                        <p class="card-text">
-                            Vel et aliquet diam vulputate hendrerit lorem eget amet adipiscing. At ut ut
-                            consectetur in sed massa arcu risus sed.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#fd5631">
-                            <path d="M39.976 40.416l-5.667-26.529c-.098-.44-.391-.831-.782-1.026L20.531 6.217l-.928-4.202c-.195-.831-.977-1.368-1.808-1.173s-1.368.977-1.172 1.808l.879 4.202-9.136 11.335c-.293.342-.391.831-.293 1.27l5.618 26.529c.195.831.977 1.368 1.808 1.173l23.304-4.934a1.59 1.59 0 0 0 1.173-1.808zm-23.597 3.469L11.2 19.554l7.182-8.843.635 2.931c.195.831.977 1.368 1.808 1.172s1.368-.977 1.172-1.808l-.635-2.931 10.162 5.179 5.179 24.33-20.324 4.299zm7.963-17.149l-2.052.44a1.54 1.54 0 0 1-1.857-1.27c-.146-.831.44-1.612 1.27-1.759l2.052-.44c.684-.146 1.368.195 1.71.782.098.244.342.342.586.293l1.954-.44c.293-.049.489-.391.391-.684-.733-2.003-2.736-3.225-4.837-3.029l-.391-1.954c-.049-.293-.342-.489-.635-.391l-1.954.391c-.293.049-.489.342-.391.635l.391 1.954c-2.247.733-3.664 3.029-3.127 5.374.586 2.492 3.078 4.006 5.521 3.469l2.003-.44c.831-.195 1.661.293 1.857 1.124.244.879-.293 1.71-1.172 1.905l-2.101.44c-.684.147-1.368-.195-1.71-.782-.098-.195-.342-.342-.586-.293l-1.954.44c-.342.049-.488.391-.391.684.733 2.003 2.736 3.224 4.837 3.029l.391 1.905c.049.293.342.489.635.391l1.954-.391c.293-.049.489-.342.391-.635l-.391-1.905c2.247-.733 3.664-3.029 3.127-5.374-.538-2.492-3.029-4.006-5.521-3.469z"></path>
-                        </svg>
-                        <h3 class="h5 card-title pb-1">Fair price</h3>
-                        <p class="card-text">
-                            Tincidunt mauris sit eu, lacinia pharetra, lorem neque dui. Maecenas ultricies laoreet
-                            facilisis fusce amet, consequat neque.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <!-- Feature -->
-            <div class="col-lg-4">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none">
-                            <path fill-rule="evenodd" d="M5.493 32.863a6.53 6.53 0 0 1-5.446-6.441v-3.981a6.53 6.53 0 0 1 1.913-4.619c1.225-1.225 2.887-1.913 4.619-1.913h.435C7.709 7.137 15.048.234 24 .234s16.291 6.903 16.986 15.675h.435a6.53 6.53 0 0 1 6.532 6.532v3.981a6.53 6.53 0 0 1-6.532 6.532h-1.928a1.45 1.45 0 0 1-1.447-1.448V17.274A14.05 14.05 0 0 0 24 3.228 14.05 14.05 0 0 0 9.954 17.274v14.232a1.45 1.45 0 0 1-1.447 1.448h0a8.87 8.87 0 0 0 8.821 7.935h.199c.248-.839.702-1.611 1.332-2.241.991-.991 2.336-1.548 3.738-1.548h2.807a5.29 5.29 0 0 1 5.287 5.286 5.29 5.29 0 0 1-5.287 5.287h-2.807a5.29 5.29 0 0 1-5.071-3.789h-.198c-3.147 0-6.164-1.25-8.39-3.475-2.025-2.025-3.242-4.707-3.445-7.545zm22.203 9.523c0-1.266-1.026-2.292-2.292-2.292h-2.807a2.29 2.29 0 0 0-2.292 2.292c0 1.266 1.026 2.292 2.292 2.292h2.807c1.266 0 2.292-1.026 2.292-2.292zM6.96 18.903h-.381a3.54 3.54 0 0 0-3.538 3.538v3.981a3.54 3.54 0 0 0 3.538 3.538h.381V18.903zm34.08 0V29.96h.381a3.54 3.54 0 0 0 3.538-3.538v-3.981a3.54 3.54 0 0 0-3.538-3.538h-.381z" fill="#fd5631"></path>
-                        </svg>
-                        <h3 class="h5 card-title pb-1">Support 24/7</h3>
-                        <p class="card-text">
-                            Id velit, dui condimentum dictumst sapien quis a elementum dignissim. Dignissim
-                            ultrices scelerisque ultrices nisi.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How it works-->
-    <section class="container mb-5 pb-2 pb-lg-4">
-        <div class="row gy-4">
-            <div class="col-md-5 col-12">
-                <img class="d-block mx-auto" src="@/assets/images/about/hero/01.jpg" alt="Illustration" />
-            </div>
-            <div class="col-lg-6 offset-lg-1 col-md-7 col-12">
-                <h2 class="h3 mb-lg-5 mb-sm-4">How it works</h2>
-                <div class="steps steps-vertical">
-                    <div class="step active">
-                        <div class="step-progress"><span class="step-number">1</span></div>
-                        <div class="step-label ms-4">
-                            <h3 class="h5 mb-2 pb-1">Choose your property</h3>
-                            <p class="mb-0">
-                                Odio velit, massa augue etiam in parturient volutpat orci. Pulvinar amet, at est ac
-                                curabitur mauris, semper cursus metus. Imperdiet sed massa amet at turpis. Dis
-                                risus, donec in ac ultricies tempor eu, amet.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step active">
-                        <div class="step-progress"><span class="step-number">2</span></div>
-                        <div class="step-label ms-4">
-                            <h3 class="h5 mb-2 pb-1">See the property directly</h3>
-                            <p class="mb-0">
-                                Id orci senectus dignissim magna nec diam bibendum at. Morbi quis turpis nulla
-                                condimentum est elementum. Tristique in accumsan eget vestibulum volutpat pretium.
-                                Sed id elit duis turpis diam justo. Dignissim blandit rutrum venenatis.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step active">
-                        <div class="step-progress"><span class="step-number">3</span></div>
-                        <div class="step-label ms-4">
-                            <h3 class="h5 mb-2 pb-1">Easy payment</h3>
-                            <p class="mb-0">
-                                Ut mattis nascetur aliquam neque velit nunc sed. Morbi congue mauris amet ultrices
-                                molestie tellus proin odio diam. Feugiat elit, habitasse egestas egestas id nec
-                                potenti. Donec convallis donec tristique mattis et viverra.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <Team />
-
-    <Reviews />
-
-    <!-- Find property-->
-    <section class="container mb-5 pb-sm-3 pb-lg-4">
-        <div class="bg-secondary rounded-3">
-            <div class="col-md-11 col-12 offset-md-1 p-md-0 p-2 d-flex align-items-center justify-content-between">
-                <div class="me-md-5 py-md-5 px-md-0 p-4" style="max-width: 526px">
-                    <h2 class="mb-md-4">
-                        Buy property with confidence. <br />
-                        Sell without pressure.
-                    </h2>
-                    <p class="mb-4 pb-md-3 fs-lg">
-                        Amet libero morbi venenatis ut est. Iaculis leo ultricies nunc id ante adipiscing. Vel
-                        metus odio at faucibus ac.
-                    </p>
-                    <nuxt-link class="btn btn-lg btn-primary" to="/catalog/sale">
-                        <i class="fi-search me-2"></i>Find property
-                    </nuxt-link>
-                </div>
-                <div class="col-4 d-md-block d-none align-self-end px-0">
-                    <img class="mt-n5" src="@/assets/images/about/hero/01.jpg" width="406" alt="Cover image" />
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Recent posts-->
-    <section class="container mb-5 pb-lg-5">
-        <div class="d-sm-flex align-items-center justify-content-between mb-4 pb-2">
-            <h2 class="h3 mb-sm-0">Our recent highlights</h2>
-            <nuxt-link class="btn btn-link fw-normal ms-sm-3 p-0" to="/pages/blog/grid">Go to blog
-                <i class="fi-arrow-long-right ms-2"></i>
-            </nuxt-link>
-        </div>
-        <!-- Blog posts-->
-        <div class="row">
-            <div class="col-lg-4">
-                <article>
-                    <a class="d-block mb-3" to="/pages/blog/single">
-                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
-                    </a>
-                    <a class="fs-xs text-uppercase text-decoration-none" href="javascript:void(0);">Property Market Analysis</a>
-                    <h3 class="fs-base pt-1">
-                        <a class="nav-link" to="/pages/blog/single">When Is the Right Time to Downsize Your Home?</a>
-                    </h3>
-                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
-                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
-                        <div class="ps-2">
-                            <h6 class="fs-sm text-nav lh-base mb-1">Cody Fisher</h6>
-                            <div class="d-flex text-body fs-xs">
-                                <span class="me-2 pe-1"><i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Nov 24</span>
-                                <span><i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>No comments</span>
-                            </div>
-                        </div>
-                    </a>
-                </article>
-            </div>
-            <div class="col-lg-4">
-                <article>
-                    <a class="d-block mb-3" to="/pages/blog/single">
-                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
-                    </a>
-                    <a class="fs-xs text-uppercase text-decoration-none" href="javascript:void(0);">Tips &amp; Advice</a>
-                    <h3 class="fs-base pt-1">
-                        <a class="nav-link" to="/pages/blog/single">7 Tips for Achieving Maximum Coziness</a>
-                    </h3>
-                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
-                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
-                        <div class="ps-2">
-                            <h6 class="fs-sm text-nav lh-base mb-1">Darrell Steward</h6>
-                            <div class="d-flex text-body fs-xs">
-                                <span class="me-2 pe-1">
-                                    <i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Dec 15</span>
-                                <span>
-                                    <i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>2 comments</span>
-                            </div>
-                        </div>
-                    </a>
-                </article>
-            </div>
-            <div class="col-lg-4">
-                <article>
-                    <nuxt-link class="d-block mb-3" to="/pages/blog/single">
-                        <img class="rounded-3" src="@/assets/images/about/hero/01.jpg" alt="Post image">
-                    </nuxt-link>
-                    <a class="fs-xs text-uppercase text-decoration-none" href="">Inspiration</a>
-                    <h3 class="fs-base pt-1">
-                        <nuxt-link class="nav-link" to="/pages/blog/single">5 Easy-to-Ambitious Projects to Improve Your Home</nuxt-link>
-                    </h3>
-                    <a class="d-flex align-items-center text-decoration-none" href="javascript:void(0);">
-                        <img class="rounded-circle" src="@/assets/images/about/hero/01.jpg" width="44" alt="Avatar">
-                        <div class="ps-2">
-                            <h6 class="fs-sm text-nav lh-base mb-1">Kathryn Murphy</h6>
-                            <div class="d-flex text-body fs-xs">
-                                <span class="me-2 pe-1">
-                                    <i class="fi-calendar-alt opacity-70 mt-n1 me-1 align-middle"></i>Nov 28</span>
-                                <span>
-                                    <i class="fi-chat-circle opacity-70 mt-n1 me-1 align-middle"></i>4 comments</span>
-                            </div>
-                        </div>
-                    </a>
-                </article>
-            </div>
-        </div>
-    </section>
-</template>
+<style>
+/* Estilos adicionales */
+.transition {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+</style>
