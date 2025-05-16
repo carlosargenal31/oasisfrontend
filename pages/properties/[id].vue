@@ -173,9 +173,9 @@
               </button>
             </div>
             
-            <!-- Lista de reseñas -->
+            <!-- Lista de reseñas - AQUÍ ESTÁ LA CORRECCIÓN: displayedReviews en lugar de sortedReviews -->
             <div v-else class="space-y-6">
-              <div v-for="(review, index) in sortedReviews" :key="index" class="border-b border-gray-200 pb-6 mb-6 last:border-0">
+              <div v-for="(review, index) in displayedReviews" :key="index" class="border-b border-gray-200 pb-6 mb-6 last:border-0">
                 <div class="flex items-start">
                   <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
                     <img :src="getReviewerAvatar(review)" :alt="review.reviewer_name" class="w-full h-full object-cover" />
@@ -2189,7 +2189,6 @@ if (rememberedEmail) {
 }
 });
 </script>
-
 
 <style>
 /* Estilos para texto negro */
