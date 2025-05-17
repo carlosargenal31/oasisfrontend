@@ -25,7 +25,7 @@ export const usePropertyService = () => {
     }
   };
 
-    const getPropertiesByCategoryFeatured = async (category, params = {}) => {
+  const getPropertiesByCategoryFeatured = async (category, params = {}) => {
     try {
       const response = await $axios.get(`/properties/categories/featured/${category}`, { params });
       
@@ -39,87 +39,87 @@ export const usePropertyService = () => {
   
   // Mejora del método getPropertiesByCategoryAndType en propertyService.js
 
-// Obtener propiedades por categoría Y tipo - MEJORADO
-const getPropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
-  try {
-    if (!category) {
-      console.error('Error: Se requiere una categoría');
-      return { success: false, data: { properties: [], total: 0 }, error: 'Categoría no proporcionada' };
-    }
-    
-    // Clonar los parámetros básicos
-    const queryParams = { ...params };
-    
-    // Asegurarse de que la categoría esté incluida
-    queryParams.category = category;
-    
-    // Añadir el tipo de propiedad al objeto de parámetros
-    if (propertyType) {
-      if (Array.isArray(propertyType)) {
-        // Si es un array, lo dejamos como está para que Axios lo maneje
-        queryParams.property_type = propertyType;
-      } else {
-        queryParams.property_type = propertyType;
+  // Obtener propiedades por categoría Y tipo - MEJORADO
+  const getPropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
+    try {
+      if (!category) {
+        console.error('Error: Se requiere una categoría');
+        return { success: false, data: { properties: [], total: 0 }, error: 'Categoría no proporcionada' };
       }
-    }
-    
-    console.log(`Solicitud API - Categoría: ${category}, Tipo: ${JSON.stringify(propertyType)}`);
-    console.log('Parámetros completos:', queryParams);
-    
-    // Usar la ruta de categoría y pasar el tipo de propiedad como parámetro
-    const response = await $axios.get(`/properties/categories/${category}`, { 
-      params: queryParams 
-    });
-    
-    if (response.data && response.data.success) {
-      console.log(`Respuesta exitosa: ${response.data.data.properties?.length || 0} propiedades encontradas`);
       
-      // Verificar que las propiedades devueltas coincidan con los filtros aplicados
-      if (propertyType && response.data.data.properties?.length > 0) {
-        const propiedadesFiltradasPorTipo = response.data.data.properties.filter(prop => {
-          if (Array.isArray(propertyType)) {
-            return propertyType.includes(prop.property_type);
-          } else {
-            return prop.property_type === propertyType;
-          }
-        });
-        
-        if (propiedadesFiltradasPorTipo.length !== response.data.data.properties.length) {
-          console.warn('Advertencia: El API devolvió propiedades que no coinciden con los tipos solicitados');
-          console.log(`Filtradas: ${propiedadesFiltradasPorTipo.length}, Total: ${response.data.data.properties.length}`);
-          
-          // Sobrescribir propiedades con las filtradas correctamente
-          return {
-            success: true,
-            data: {
-              properties: propiedadesFiltradasPorTipo,
-              total: propiedadesFiltradasPorTipo.length,
-              page: response.data.data.page,
-              limit: response.data.data.limit,
-              totalPages: Math.ceil(propiedadesFiltradasPorTipo.length / response.data.data.limit)
-            }
-          };
+      // Clonar los parámetros básicos
+      const queryParams = { ...params };
+      
+      // Asegurarse de que la categoría esté incluida
+      queryParams.category = category;
+      
+      // Añadir el tipo de propiedad al objeto de parámetros
+      if (propertyType) {
+        if (Array.isArray(propertyType)) {
+          // Si es un array, lo dejamos como está para que Axios lo maneje
+          queryParams.property_type = propertyType;
+        } else {
+          queryParams.property_type = propertyType;
         }
       }
       
-      return response.data;
-    } else {
-      console.error('Error en respuesta del API:', response.data);
+      console.log(`Solicitud API - Categoría: ${category}, Tipo: ${JSON.stringify(propertyType)}`);
+      console.log('Parámetros completos:', queryParams);
+      
+      // Usar la ruta de categoría y pasar el tipo de propiedad como parámetro
+      const response = await $axios.get(`/properties/categories/${category}`, { 
+        params: queryParams 
+      });
+      
+      if (response.data && response.data.success) {
+        console.log(`Respuesta exitosa: ${response.data.data.properties?.length || 0} propiedades encontradas`);
+        
+        // Verificar que las propiedades devueltas coincidan con los filtros aplicados
+        if (propertyType && response.data.data.properties?.length > 0) {
+          const propiedadesFiltradasPorTipo = response.data.data.properties.filter(prop => {
+            if (Array.isArray(propertyType)) {
+              return propertyType.includes(prop.property_type);
+            } else {
+              return prop.property_type === propertyType;
+            }
+          });
+          
+          if (propiedadesFiltradasPorTipo.length !== response.data.data.properties.length) {
+            console.warn('Advertencia: El API devolvió propiedades que no coinciden con los tipos solicitados');
+            console.log(`Filtradas: ${propiedadesFiltradasPorTipo.length}, Total: ${response.data.data.properties.length}`);
+            
+            // Sobrescribir propiedades con las filtradas correctamente
+            return {
+              success: true,
+              data: {
+                properties: propiedadesFiltradasPorTipo,
+                total: propiedadesFiltradasPorTipo.length,
+                page: response.data.data.page,
+                limit: response.data.data.limit,
+                totalPages: Math.ceil(propiedadesFiltradasPorTipo.length / response.data.data.limit)
+              }
+            };
+          }
+        }
+        
+        return response.data;
+      } else {
+        console.error('Error en respuesta del API:', response.data);
+        return {
+          success: false,
+          data: { properties: [], total: 0 },
+          error: response.data?.message || 'Error desconocido al obtener propiedades'
+        };
+      }
+    } catch (error) {
+      console.error(`Error obteniendo propiedades por categoría ${category} y tipo ${propertyType}:`, error);
       return {
         success: false,
         data: { properties: [], total: 0 },
-        error: response.data?.message || 'Error desconocido al obtener propiedades'
+        error: error.message || 'Error en la solicitud al API'
       };
     }
-  } catch (error) {
-    console.error(`Error obteniendo propiedades por categoría ${category} y tipo ${propertyType}:`, error);
-    return {
-      success: false,
-      data: { properties: [], total: 0 },
-      error: error.message || 'Error en la solicitud al API'
-    };
-  }
-};
+  };
   
   // Get all main categories
   const getMainCategories = async () => {
@@ -215,75 +215,97 @@ const getPropertiesByCategoryAndType = async (category, propertyType, params = {
     }
   };
   
-  // Search properties by query - MODIFICADO
- // Search properties by query - MEJORADO
-// Actualización para propertyService.js (frontend)
-// Versión mejorada de searchProperties
-
-// Search properties by query - MEJORADO
-const searchProperties = async (query, fields = [], params = {}) => {
-  try {
-    if (!query) {
-      console.error('Error: Término de búsqueda no proporcionado');
-      return { 
-        success: false, 
-        data: { properties: [], total: 0 },
-        error: 'Se requiere un término de búsqueda'
-      };
-    }
-    
-    // Combinar parámetros de búsqueda con sort, page, limit, etc.
-    const queryParams = { 
-      q: query,
-      ...params 
-    };
-    
-    // Si se proporcionan campos específicos para buscar
-    if (fields && fields.length > 0) {
-      queryParams.searchFields = fields.join(',');
-    }
-    
-    // Imprimir parámetros completos para debug
-    console.log('Enviando búsqueda con parámetros:', JSON.stringify(queryParams, null, 2));
-    
-    const response = await $axios.get('/properties/search', { params: queryParams });
-    
-    // Validar respuesta
-    if (response.data && response.data.success) {
-      const { properties = [], total = 0 } = response.data.data || {};
-      console.log(`Búsqueda exitosa: ${properties.length} resultados de ${total} totales`);
-      
-      // Filtrar categoría/tipo si corresponde
-      if (params.category || params.property_type) {
-        console.log('Respuesta contiene filtros de categoría/tipo');
+  // Search properties by query - MEJORADO
+  const searchProperties = async (query, fields = [], params = {}) => {
+    try {
+      if (!query) {
+        console.error('Error: Término de búsqueda no proporcionado');
+        return { 
+          success: false, 
+          data: { properties: [], total: 0 },
+          error: 'Se requiere un término de búsqueda'
+        };
       }
       
-      return response.data;
-    } else {
-      console.warn('Respuesta de búsqueda sin éxito:', response.data);
+      // Combinar parámetros de búsqueda con sort, page, limit, etc.
+      const queryParams = { 
+        q: query,
+        ...params 
+      };
+      
+      // Si se proporcionan campos específicos para buscar
+      if (fields && fields.length > 0) {
+        queryParams.searchFields = fields.join(',');
+      }
+      
+      // Imprimir parámetros completos para debug
+      console.log('Enviando búsqueda con parámetros:', JSON.stringify(queryParams, null, 2));
+      
+      const response = await $axios.get('/properties/search', { params: queryParams });
+      
+      // Validar respuesta
+      if (response.data && response.data.success) {
+        const { properties = [], total = 0 } = response.data.data || {};
+        console.log(`Búsqueda exitosa: ${properties.length} resultados de ${total} totales`);
+        
+        // Filtrar categoría/tipo si corresponde
+        if (params.category || params.property_type) {
+          console.log('Respuesta contiene filtros de categoría/tipo');
+        }
+        
+        return response.data;
+      } else {
+        console.warn('Respuesta de búsqueda sin éxito:', response.data);
+        return { 
+          success: false, 
+          data: { properties: [], total: 0 },
+          error: response.data?.message || 'Error desconocido en la búsqueda'
+        };
+      }
+    } catch (error) {
+      console.error('Error searching properties:', error);
       return { 
         success: false, 
         data: { properties: [], total: 0 },
-        error: response.data?.message || 'Error desconocido en la búsqueda'
+        error: error.message || 'Error en la solicitud de búsqueda'
       };
     }
-  } catch (error) {
-    console.error('Error searching properties:', error);
-    return { 
-      success: false, 
-      data: { properties: [], total: 0 },
-      error: error.message || 'Error en la solicitud de búsqueda'
-    };
-  }
-};
-  // Increment property views
+  };
+
+  // Increment property views - MEJORADO
   const incrementPropertyViews = async (id) => {
     try {
-      const response = await $axios.post(`/properties/${id}/view`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error incrementing views for property ${id}:`, error);
+      if (!id) {
+        console.error('Error: ID de propiedad requerido para incrementar vistas');
+        return { success: false };
+      }
+      
+      // Verificar si ya hemos visitado esta propiedad en esta sesión
+      const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
+      
+      // Solo enviar la solicitud si no hemos visto la propiedad en esta sesión
+      if (!viewedProperties.includes(parseInt(id))) {
+        console.log(`Incrementando vistas para propiedad ${id}`);
+        const response = await $axios.post(`/properties/${id}/view`);
+        
+        if (response.data && response.data.success) {
+          // Añadir a las propiedades ya vistas
+          viewedProperties.push(parseInt(id));
+          localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
+          
+          console.log('Vista registrada exitosamente en el servidor');
+          return response.data;
+        }
+      } else {
+        console.log(`Propiedad ${id} ya vista en esta sesión, no se incrementa el contador`);
+        // Retornar "éxito" aunque no incrementamos, para no mostrar error al usuario
+        return { success: true, message: 'Vista ya registrada en esta sesión' };
+      }
+      
       return { success: false };
+    } catch (error) {
+      console.error(`Error incrementando vistas para propiedad ${id}:`, error);
+      return { success: false, error: error.message };
     }
   };
   

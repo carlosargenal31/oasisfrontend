@@ -5,7 +5,7 @@
     <!-- Estado de carga -->
     <div v-if="isLoading" class="flex justify-center items-center min-h-[600px]">
       <div class="spinner border-4 border-gray-200 border-t-orange-800 rounded-full w-10 h-10 animate-spin"></div>
-      <p class="text-xl text-black ml-4">Cargando detalles de la propiedad...</p>
+      <p class="text-xl text-black ml-4">Cargando detalles de la negocio...</p>
     </div>
 
     <!-- Estado de error -->
@@ -164,7 +164,7 @@
             
             <!-- Mensaje sin reseñas -->
             <div v-else-if="reviews.length === 0" class="text-center py-8">
-              <p class="text-black mb-4">No hay reseñas disponibles para esta propiedad.</p>
+              <p class="text-black mb-4">No hay reseñas disponibles para esta negocio.</p>
               <button 
                 @click="openReviewModal" 
                 class="bg-orange-800 hover:bg-orange-900 text-white py-2 px-4 rounded"
@@ -330,9 +330,9 @@
             <div class="mr-4 pr-4 border-r border-gray-200">Publicado: <b class="text-black">{{ formatDate(property.created_at) }}</b></div>
             <div class="mr-4 pr-4 border-r border-gray-200">Nº anuncio: <b class="text-black">{{ property.id }}</b></div>
             <div class="flex items-center">
-              <span class="material-icons mr-1 text-orange-800">visibility</span>
-              Vistas: <b class="text-black ml-1">{{ property.views || viewCount }}</b>
-            </div>
+  <span class="material-icons mr-1 text-orange-800">visibility</span>
+  Vistas: <b class="text-black ml-1 view-count">{{ property.views || viewCount }}</b>
+</div>
           </div>
         </div>
       </div>
@@ -340,7 +340,7 @@
       <!-- Sección de Propiedades Similares -->
       <div class="mt-10">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="similar-properties-title text-2xl font-bold text-black">Propiedades similares</h2>
+          <h2 class="similar-properties-title text-2xl font-bold text-black">Negocios similares</h2>
           <a href="/properties/rent" class="text-orange-800 flex items-center">
             Ver todas <span class="ml-1">→</span>
           </a>
@@ -351,7 +351,7 @@
         </div>
         
         <div v-else-if="similarProperties.length === 0" class="text-center py-8 text-black">
-          No se encontraron propiedades similares.
+          No se encontraron negocios similares.
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -494,165 +494,165 @@
                   >
                   <span v-if="loginSubmitting" class="flex items-center justify-center">
                   <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Iniciando sesión...
-             </span>
-             <span v-else>Iniciar sesión</span>
-           </button>
-           
-           <div class="text-center text-sm text-gray-500 mt-2">
-             ¿No tienes cuenta? 
-             <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
-           </div>
-           
-           <div class="text-center text-xs text-gray-400 mt-1">
-             <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
-           </div>
-         </div>
-       </form>
-     </div>
-   </div>
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+               </svg>
+               Iniciando sesión...
+            </span>
+            <span v-else>Iniciar sesión</span>
+          </button>
+          
+          <div class="text-center text-sm text-gray-500 mt-2">
+            ¿No tienes cuenta? 
+            <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
+          </div>
+          
+          <div class="text-center text-xs text-gray-400 mt-1">
+            <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-       <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
-       <div v-else>
-         <!-- Información del usuario -->
-         <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
-           Comentando como: {{ userData.first_name }} {{ userData.last_name }}
-         </div>
-         
-         <!-- Formulario de reseña -->
-         <form @submit.prevent="submitReview">
-           <div class="mb-4">
-             <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
-             <div class="flex space-x-2">
-               <button 
-                 type="button"
-                 v-for="star in 5"
-                 :key="star"
-                 @click="newReview.rating = star"
-                 class="text-3xl focus:outline-none"
-               >
-                 <span class="material-icons star-icon" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
-               </button>
-             </div>
-           </div>
-           <div class="mb-4">
-             <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
-             <textarea 
-               v-model="newReview.comment" 
-               rows="4" 
-               class="w-full px-3 py-2 border rounded-md text-black"
-               placeholder="Comparte tu experiencia con este negocio"
-               required
-             ></textarea>
-           </div>
-           <button 
-             type="submit" 
-             class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
-             :disabled="submittingReview"
-           >
-             <span v-if="submittingReview" class="text-white">Enviando...</span>
-             <span v-else class="text-white">Enviar Reseña</span>
-           </button>
-         </form>
-       </div>
-     </div>
-   </div>
-   
-   <!-- Modal de Direcciones (Oculto por defecto) -->
-  <div v-if="showDirectionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
+      <div v-else>
+        <!-- Información del usuario -->
+        <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+          Comentando como: {{ userData.first_name }} {{ userData.last_name }}
+        </div>
+        
+        <!-- Formulario de reseña -->
+        <form @submit.prevent="submitReview">
+          <div class="mb-4">
+            <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
+            <div class="flex space-x-2">
+              <button 
+                type="button"
+                v-for="star in 5"
+                :key="star"
+                @click="newReview.rating = star"
+                class="text-3xl focus:outline-none"
+              >
+                <span class="material-icons star-icon" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
+              </button>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
+            <textarea 
+              v-model="newReview.comment" 
+              rows="4" 
+              class="w-full px-3 py-2 border rounded-md text-black"
+              placeholder="Comparte tu experiencia con este negocio"
+              required
+            ></textarea>
+          </div>
+          <button 
+            type="submit" 
+            class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
+            :disabled="submittingReview"
+          >
+            <span v-if="submittingReview" class="text-white">Enviando...</span>
+            <span v-else class="text-white">Enviar Reseña</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Direcciones (Oculto por defecto) -->
+ <div v-if="showDirectionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 <div class="bg-white rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
- <div class="flex justify-between items-center mb-4">
-   <h3 class="text-xl font-semibold text-black">Cómo llegar a {{ property.title }}</h3>
-   <button @click="closeDirectionsModal" class="text-gray-500 hover:text-gray-700">
-     <span class="text-2xl">&times;</span>
-   </button>
- </div>
-       
-       <!-- Formulario para dirección de origen -->
-       <div class="mb-4">
-         <label for="starting-point" class="block text-sm font-medium text-gray-700 mb-1">Punto de partida:</label>
-         <div class="flex">
-           <input 
-             type="text" 
-             id="starting-point" 
-             v-model="startingPoint"
-             placeholder="Ingresa tu dirección o ubicación"
-             class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-           />
-           <button 
-             @click="calculateRoute"
-             class="bg-orange-800 text-white px-4 py-2 rounded-r-md hover:bg-orange-900 transition-colors"
-             :disabled="directionsLoading"
-           >
-             <span v-if="directionsLoading">Calculando...</span>
-             <span v-else>Calcular Ruta</span>
-           </button>
-         </div>
-         <p v-if="directionsError" class="mt-2 text-red-500 text-sm">{{ directionsError }}</p>
-       </div>
-       
-       <!-- Mapa para mostrar direcciones -->
-       <div id="directionsMap" class="w-full h-[400px] rounded-md mb-4"></div>
-       
-       <!-- Información de la ruta si se encuentra -->
-       <div v-if="directionsFound" class="bg-green-50 p-4 rounded-md mb-4">
-         <h4 class="font-medium text-black mb-2">Información de la ruta:</h4>
-         <p class="text-black"><strong>Distancia:</strong> {{ directionsDistance }} km</p>
-         <p class="text-black"><strong>Tiempo estimado:</strong> {{ directionsTime }} minutos</p>
-       </div>
-       
-       <!-- Información del destino -->
-       <div class="bg-gray-50 p-4 rounded-md">
-         <h4 class="font-medium text-black mb-2">Destino:</h4>
-         <p class="text-black"><strong>{{ property.title }}</strong></p>
-         <p class="text-black">{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
-         <p v-if="property.phone" class="text-black mt-2">
-           <span class="material-icons align-middle text-sm mr-1">phone</span>
-           <a :href="`tel:${property.phone}`" class="text-orange-800 hover:underline">{{ property.phone }}</a>
-         </p>
-         <p v-if="property.schedule" class="text-black mt-1">
-           <span class="material-icons align-middle text-sm mr-1">schedule</span>
-           {{ formatSchedule(property.schedule) }}
-         </p>
-       </div>
-     </div>
-   </div>
- </div>
+<div class="flex justify-between items-center mb-4">
+  <h3 class="text-xl font-semibold text-black">Cómo llegar a {{ property.title }}</h3>
+  <button @click="closeDirectionsModal" class="text-gray-500 hover:text-gray-700">
+    <span class="text-2xl">&times;</span>
+  </button>
+</div>
+      
+      <!-- Formulario para dirección de origen -->
+      <div class="mb-4">
+        <label for="starting-point" class="block text-sm font-medium text-gray-700 mb-1">Punto de partida:</label>
+        <div class="flex">
+          <input 
+            type="text" 
+            id="starting-point" 
+            v-model="startingPoint"
+            placeholder="Ingresa tu dirección o ubicación"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+          />
+          <button 
+            @click="calculateRoute"
+            class="bg-orange-800 text-white px-4 py-2 rounded-r-md hover:bg-orange-900 transition-colors"
+            :disabled="directionsLoading"
+          >
+            <span v-if="directionsLoading">Calculando...</span>
+            <span v-else>Calcular Ruta</span>
+          </button>
+        </div>
+        <p v-if="directionsError" class="mt-2 text-red-500 text-sm">{{ directionsError }}</p>
+      </div>
+      
+      <!-- Mapa para mostrar direcciones -->
+      <div id="directionsMap" class="w-full h-[400px] rounded-md mb-4"></div>
+      
+      <!-- Información de la ruta si se encuentra -->
+      <div v-if="directionsFound" class="bg-green-50 p-4 rounded-md mb-4">
+        <h4 class="font-medium text-black mb-2">Información de la ruta:</h4>
+        <p class="text-black"><strong>Distancia:</strong> {{ directionsDistance }} km</p>
+        <p class="text-black"><strong>Tiempo estimado:</strong> {{ directionsTime }} minutos</p>
+      </div>
+      
+      <!-- Información del destino -->
+      <div class="bg-gray-50 p-4 rounded-md">
+        <h4 class="font-medium text-black mb-2">Destino:</h4>
+        <p class="text-black"><strong>{{ property.title }}</strong></p>
+        <p class="text-black">{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+        <p v-if="property.phone" class="text-black mt-2">
+          <span class="material-icons align-middle text-sm mr-1">phone</span>
+          <a :href="`tel:${property.phone}`" class="text-orange-800 hover:underline">{{ property.phone }}</a>
+        </p>
+        <p v-if="property.schedule" class="text-black mt-1">
+          <span class="material-icons align-middle text-sm mr-1">schedule</span>
+          {{ formatSchedule(property.schedule) }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
- <!-- Estado de no encontrado -->
- <div v-else class="flex justify-center items-center min-h-[600px]">
-   <p class="text-xl text-black">Propiedad no encontrada</p>
- </div>
+<!-- Estado de no encontrado -->
+<div v-else class="flex justify-center items-center min-h-[600px]">
+  <p class="text-xl text-black">Negocio no encontrada</p>
+</div>
 
- <!-- Notificación Toast -->
- <div 
-   v-if="notification.show" 
-   class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-300"
-   :class="{
-     'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
-     'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
-     'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
-   }"
- >
-   <div class="flex items-center">
-     <div 
-       class="w-6 h-6 mr-2 flex items-center justify-center rounded-full"
-       :class="{
-         'bg-green-200 text-green-600': notification.type === 'success',
-         'bg-red-200 text-red-600': notification.type === 'error',
-         'bg-blue-200 text-blue-600': notification.type === 'info'
-       }"
-     >
-       <span v-if="notification.type === 'success'" class="material-icons text-sm">check</span>
-       <span v-if="notification.type === 'error'" class="material-icons text-sm">error</span>
-       <span v-if="notification.type === 'info'" class="material-icons text-sm">info</span>
-     </div>
-     <p>{{ notification.message }}</p>
-   </div>
- </div>
+<!-- Notificación Toast -->
+<div 
+  v-if="notification.show" 
+  class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-300"
+  :class="{
+    'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
+    'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
+    'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
+  }"
+>
+  <div class="flex items-center">
+    <div 
+      class="w-6 h-6 mr-2 flex items-center justify-center rounded-full"
+      :class="{
+        'bg-green-200 text-green-600': notification.type === 'success',
+        'bg-red-200 text-red-600': notification.type === 'error',
+        'bg-blue-200 text-blue-600': notification.type === 'info'
+      }"
+    >
+      <span v-if="notification.type === 'success'" class="material-icons text-sm">check</span>
+      <span v-if="notification.type === 'error'" class="material-icons text-sm">error</span>
+      <span v-if="notification.type === 'info'" class="material-icons text-sm">info</span>
+    </div>
+    <p>{{ notification.message }}</p>
+  </div>
+</div>
 </div>
 </template>
 
@@ -687,7 +687,7 @@ const isLoadingSimilar = ref(false);
 const activeImageIndex = ref(0);
 const showReviewModal = ref(false);
 const submittingReview = ref(false);
-const reviewsPerPage = 5;
+const reviewsPerPage = 3;
 const hostName = ref('');
 const hostRole = ref('');
 const hostReviews = ref(0);
@@ -698,6 +698,7 @@ const loadingReviews = ref(false);
 const currentPage = ref(1);
 const sortOption = ref('newest');
 const viewCount = ref(0);
+const viewCountUpdated = ref(false); // Nueva variable para controlar la animación del contador
 const propertyMap = ref(null);
 
 // Variables para el mapa y direcciones
@@ -730,14 +731,14 @@ type: 'success' // 'success', 'error', 'info'
 // Función para mostrar notificación
 const showNotification = (message, type = 'success') => {
 notification.value = {
-  show: true,
-  message,
-  type
+ show: true,
+ message,
+ type
 }
 
 // Ocultar después de 3 segundos
 setTimeout(() => {
-  notification.value.show = false;
+ notification.value.show = false;
 }, 3000);
 };
 
@@ -747,42 +748,42 @@ loginError.value = '';
 loginSubmitting.value = true;
 
 try {
-  // Llamar a la función de login del store de autenticación
-  const result = await authStore.login({
-    email: loginForm.value.email,
-    password: loginForm.value.password,
-    remember: loginForm.value.remember
-  });
-  
-  if (result.success) {
-    // Verificar que el token se guardó correctamente
-    const token = localStorage.getItem('token');
-    console.log('Token guardado correctamente:', !!token);
-    
-    // Forzar una re-validación del estado
-    if (typeof authStore.validateSession === 'function') {
-      authStore.validateSession();
-    }
-    
-    // Mostrar notificación de éxito en lugar de alert
-    showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes dejar una reseña.`, 'success');
-    
-    // Limpiar el formulario de login pero mantener el email si remember está activado
-    if (!loginForm.value.remember) {
-      loginForm.value.email = '';
-    }
-    loginForm.value.password = '';
-  } else {
-    // Mostrar error específico si está disponible
-    loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
-    showNotification('Error al iniciar sesión. Verifica tus credenciales.', 'error');
-  }
+ // Llamar a la función de login del store de autenticación
+ const result = await authStore.login({
+   email: loginForm.value.email,
+   password: loginForm.value.password,
+   remember: loginForm.value.remember
+ });
+ 
+ if (result.success) {
+   // Verificar que el token se guardó correctamente
+   const token = localStorage.getItem('token');
+   console.log('Token guardado correctamente:', !!token);
+   
+   // Forzar una re-validación del estado
+   if (typeof authStore.validateSession === 'function') {
+     authStore.validateSession();
+   }
+   
+   // Mostrar notificación de éxito en lugar de alert
+   showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes dejar una reseña.`, 'success');
+   
+   // Limpiar el formulario de login pero mantener el email si remember está activado
+   if (!loginForm.value.remember) {
+     loginForm.value.email = '';
+   }
+   loginForm.value.password = '';
+ } else {
+   // Mostrar error específico si está disponible
+   loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+   showNotification('Error al iniciar sesión. Verifica tus credenciales.', 'error');
+ }
 } catch (err) {
-  console.error('Error al iniciar sesión:', err);
-  loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
-  showNotification('Error al iniciar sesión. Inténtalo de nuevo más tarde.', 'error');
+ console.error('Error al iniciar sesión:', err);
+ loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
+ showNotification('Error al iniciar sesión. Inténtalo de nuevo más tarde.', 'error');
 } finally {
-  loginSubmitting.value = false;
+ loginSubmitting.value = false;
 }
 };
 
@@ -796,17 +797,17 @@ const toggleFavorite = async () => {
 if (!property.value) return;
 
 try {
-  await favoritesStore.toggleFavorite(property.value);
-  
-  // Mostrar notificación basada en el estado actual
-  if (isFavorite.value) {
-    showNotification('Propiedad añadida a favoritos', 'success');
-  } else {
-    showNotification('Propiedad eliminada de favoritos', 'info');
-  }
+ await favoritesStore.toggleFavorite(property.value);
+ 
+ // Mostrar notificación basada en el estado actual
+ if (isFavorite.value) {
+   showNotification('Negocio añadida a favoritos', 'success');
+ } else {
+   showNotification('Negocio eliminada de favoritos', 'info');
+ }
 } catch (error) {
-  console.error('Error toggling favorite:', error);
-  showNotification('Error al actualizar favoritos', 'error');
+ console.error('Error toggling favorite:', error);
+ showNotification('Error al actualizar favoritos', 'error');
 }
 };
 
@@ -827,23 +828,23 @@ const sortedReviews = computed(() => {
 const reviewsList = [...reviews.value];
 
 switch (sortOption.value) {
-  case 'newest':
-    return reviewsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  case 'oldest':
-    return reviewsList.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-  case 'highest':
-    return reviewsList.sort((a, b) => b.rating - a.rating);
-  case 'lowest':
-    return reviewsList.sort((a, b) => a.rating - b.rating);
-  default:
-    return reviewsList;
+ case 'newest':
+   return reviewsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+ case 'oldest':
+   return reviewsList.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+ case 'highest':
+   return reviewsList.sort((a, b) => b.rating - a.rating);
+ case 'lowest':
+   return reviewsList.sort((a, b) => a.rating - b.rating);
+ default:
+   return reviewsList;
 }
 });
 
 // Calcular calificación promedio
 const averageRating = computed(() => {
 if (!property.value || !property.value.average_rating) {
-  return reviewStore.getAverageRating(propertyId).toFixed(1);
+ return reviewStore.getAverageRating(propertyId).toFixed(1);
 }
 return parseFloat(property.value.average_rating).toFixed(1);
 });
@@ -869,17 +870,17 @@ return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_na
 // Propiedad computada para verificar si hay redes sociales
 const hasSocialLinks = computed(() => {
 if (hostData && hostData.socialLinks) {
-  return Object.values(hostData.socialLinks).some(link => !!link);
+ return Object.values(hostData.socialLinks).some(link => !!link);
 }
 // Si la propiedad tiene datos de redes sociales directamente
 if (property.value) {
-  return !!(
-    property.value.host_social_facebook ||
-    property.value.host_social_twitter ||
-    property.value.host_social_instagram ||
-    property.value.host_social_linkedin ||
-    property.value.host_social_pinterest
-  );
+ return !!(
+   property.value.host_social_facebook ||
+   property.value.host_social_twitter ||
+   property.value.host_social_instagram ||
+   property.value.host_social_linkedin ||
+   property.value.host_social_pinterest
+ );
 }
 return false;
 });
@@ -888,15 +889,15 @@ return false;
 const getSocialLink = (socialNetwork) => {
 // Primero verificar si tenemos datos en hostData
 if (hostData && hostData.socialLinks && hostData.socialLinks[socialNetwork]) {
-  return hostData.socialLinks[socialNetwork];
+ return hostData.socialLinks[socialNetwork];
 }
 
 // Si no, verificar si tenemos datos en la propiedad
 if (property.value) {
-  const propKey = `host_social_${socialNetwork}`;
-  if (property.value[propKey]) {
-    return property.value[propKey];
-  }
+ const propKey = `host_social_${socialNetwork}`;
+ if (property.value[propKey]) {
+   return property.value[propKey];
+ }
 }
 
 return null;
@@ -912,7 +913,7 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const goToLogin = () => {
 // Si ya estamos mostrando el formulario de reseña, el formulario de login ya está visible
 if (showReviewModal.value) {
-  return;
+ return;
 }
 
 // Abrir el modal de reseña que ahora contiene el formulario de login
@@ -929,58 +930,58 @@ hostRole.value = property.value.host_role === 'agent' ? 'Agente Inmobiliario' : 
 
 // Si tenemos ratings o reviews en la propiedad, usarlos
 if (property.value.host_average_rating) {
-  hostRating.value = parseFloat(property.value.host_average_rating);
+ hostRating.value = parseFloat(property.value.host_average_rating);
 }
 
 if (property.value.host_review_count) {
-  hostReviews.value = property.value.host_review_count;
+ hostReviews.value = property.value.host_review_count;
 }
 
 // Si no estamos autenticados o no hay token, usar método alternativo
 if (!isAuthenticated()) {
-  console.log('No hay token de autenticación, usando métodos alternativos');
-  await fetchHostPropertiesAndReviews();
-  return;
+ console.log('No hay token de autenticación, usando métodos alternativos');
+ await fetchHostPropertiesAndReviews();
+ return;
 }
 
 try {
-  // Realizar la petición para obtener los datos del propietario con autenticación
-  const token = localStorage.getItem('token');
-  
-  const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (response.data && response.data.success) {
-    hostData.value = response.data.data;
-    
-    // Actualizar variables con datos reales
-    hostName.value = `${hostData.value.first_name || ''} ${hostData.value.last_name || ''}`.trim() || hostName.value;
-    hostRole.value = hostData.value.role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
-    
-    // Si hay datos de rating y reseñas del anfitrión (todas sus propiedades), asignarlos
-    if (hostData.value.average_rating) {
-      hostRating.value = parseFloat(hostData.value.average_rating);
-    }
-    
-    if (hostData.value.total_reviews) {
-      hostReviews.value = hostData.value.total_reviews;
-    }
-    
-    // Si hay propiedades, asignarlas
-    if (hostData.value.properties_list && Array.isArray(hostData.value.properties_list)) {
-      hostProperties.value = hostData.value.properties_list;
-    }
-    
-    console.log('Datos del anfitrión cargados:', hostData.value);
-  }
+ // Realizar la petición para obtener los datos del propietario con autenticación
+ const token = localStorage.getItem('token');
+ 
+ const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
+   headers: {
+     'Authorization': `Bearer ${token}`
+   }
+ });
+ 
+ if (response.data && response.data.success) {
+   hostData.value = response.data.data;
+   
+   // Actualizar variables con datos reales
+   hostName.value = `${hostData.value.first_name || ''} ${hostData.value.last_name || ''}`.trim() || hostName.value;
+   hostRole.value = hostData.value.role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
+   
+   // Si hay datos de rating y reseñas del anfitrión (todas sus propiedades), asignarlos
+   if (hostData.value.average_rating) {
+     hostRating.value = parseFloat(hostData.value.average_rating);
+   }
+   
+   if (hostData.value.total_reviews) {
+     hostReviews.value = hostData.value.total_reviews;
+   }
+   
+   // Si hay propiedades, asignarlas
+   if (hostData.value.properties_list && Array.isArray(hostData.value.properties_list)) {
+     hostProperties.value = hostData.value.properties_list;
+   }
+   
+   console.log('Datos del anfitrión cargados:', hostData.value);
+ }
 } catch (err) {
-  console.error('Error al cargar datos del propietario:', err);
-  
-  // En caso de error de autenticación u otro error, intentar método alternativo
-  await fetchHostPropertiesAndReviews();
+ console.error('Error al cargar datos del propietario:', err);
+ 
+ // En caso de error de autenticación u otro error, intentar método alternativo
+ await fetchHostPropertiesAndReviews();
 }
 };
 
@@ -990,95 +991,95 @@ if (!property.value || !property.value.host_id) return;
 
 // Inicializar objeto hostData si no existe
 if (!hostData.value) {
-  hostData.value = {
-    socialLinks: {}
-  };
+ hostData.value = {
+   socialLinks: {}
+ };
 } else if (!hostData.value.socialLinks) {
-  hostData.value.socialLinks = {};
+ hostData.value.socialLinks = {};
 }
 
 // Verificar si la propiedad tiene links sociales directamente
 if (property.value.host_social_facebook) {
-  hostData.value.socialLinks.facebook = property.value.host_social_facebook;
+ hostData.value.socialLinks.facebook = property.value.host_social_facebook;
 }
 if (property.value.host_social_twitter) {
-  hostData.value.socialLinks.twitter = property.value.host_social_twitter;
+ hostData.value.socialLinks.twitter = property.value.host_social_twitter;
 }
 if (property.value.host_social_instagram) {
-  hostData.value.socialLinks.instagram = property.value.host_social_instagram;
+ hostData.value.socialLinks.instagram = property.value.host_social_instagram;
 }
 if (property.value.host_social_linkedin) {
-  hostData.value.socialLinks.linkedin = property.value.host_social_linkedin;
+ hostData.value.socialLinks.linkedin = property.value.host_social_linkedin;
 }
 if (property.value.host_social_pinterest) {
-  hostData.value.socialLinks.pinterest = property.value.host_social_pinterest;
+ hostData.value.socialLinks.pinterest = property.value.host_social_pinterest;
 }
 
 // Si ya tenemos bio del anfitrión en la propiedad, usarla
 if (property.value.host_bio) {
-  hostData.value.bio = property.value.host_bio;
+ hostData.value.bio = property.value.host_bio;
 }
 
 try {
-  // 1. Obtener todas las propiedades del anfitrión
-  const propertiesResponse = await axios.get(`${API_URL}/properties`, {
-    params: { host_id: property.value.host_id, limit: 100 }
-  });
-  
-  if (propertiesResponse.data && propertiesResponse.data.success) {
-    const properties = propertiesResponse.data.data.properties;
-    hostProperties.value = properties || [];
-    
-    // 2. Si tenemos propiedades, obtener todas las reseñas para calcular el rating
-    if (properties && properties.length > 0) {
-      let totalRating = 0;
-      let reviewCount = 0;
-      let totalReviews = 0;
-      
-      // Para cada propiedad, obtener sus reseñas
-      for (const prop of properties) {
-        try {
-          const reviewsResponse = await axios.get(`${API_URL}/reviews`, {
-            params: { property_id: prop.id }
-          });
-          
-          if (reviewsResponse.data && reviewsResponse.data.success) {
-            const reviews = reviewsResponse.data.data.reviews || [];
-            totalReviews += reviews.length;
-            
-            // Sumar ratings para el promedio
-            reviews.forEach(review => {
-              if (review && typeof review.rating === 'number') {
-                totalRating += review.rating;
-                reviewCount++;
-              }
-            });
-          }
-        } catch (error) {
-          console.warn(`Error al obtener reseñas para la propiedad ${prop.id}:`, error);
-        }
-      }
-      
-      // Actualizar contadores solo si no tenemos datos previos
-      if (hostReviews.value === 0) {
-        hostReviews.value = totalReviews;
-      }
-      
-      // Calcular y actualizar promedio solo si no tenemos datos previos
-      if (hostRating.value === 0 && reviewCount > 0) {
-        hostRating.value = totalRating / reviewCount;
-      }
-      
-      // Actualizar también en el objeto hostData
-      hostData.value.average_rating = hostRating.value;
-      hostData.value.total_reviews = hostReviews.value;
-      hostData.value.properties_count = properties.length;
-      
-      console.log(`Anfitrión: ${totalReviews} reseñas, rating ${hostRating.value.toFixed(1)} y ${properties.length} propiedades`);
-    }
-  }
+ // 1. Obtener todas las propiedades del anfitrión
+ const propertiesResponse = await axios.get(`${API_URL}/properties`, {
+   params: { host_id: property.value.host_id, limit: 100 }
+ });
+ 
+ if (propertiesResponse.data && propertiesResponse.data.success) {
+   const properties = propertiesResponse.data.data.properties;
+   hostProperties.value = properties || [];
+   
+   // 2. Si tenemos propiedades, obtener todas las reseñas para calcular el rating
+   if (properties && properties.length > 0) {
+     let totalRating = 0;
+     let reviewCount = 0;
+     let totalReviews = 0;
+     
+     // Para cada propiedad, obtener sus reseñas
+     for (const prop of properties) {
+       try {
+         const reviewsResponse = await axios.get(`${API_URL}/reviews`, {
+           params: { property_id: prop.id }
+         });
+         
+         if (reviewsResponse.data && reviewsResponse.data.success) {
+           const reviews = reviewsResponse.data.data.reviews || [];
+           totalReviews += reviews.length;
+           
+           // Sumar ratings para el promedio
+           reviews.forEach(review => {
+             if (review && typeof review.rating === 'number') {
+               totalRating += review.rating;
+               reviewCount++;
+             }
+           });
+         }
+       } catch (error) {
+         console.warn(`Error al obtener reseñas para la negocio ${prop.id}:`, error);
+       }
+     }
+     
+     // Actualizar contadores solo si no tenemos datos previos
+     if (hostReviews.value === 0) {
+       hostReviews.value = totalReviews;
+     }
+     
+     // Calcular y actualizar promedio solo si no tenemos datos previos
+     if (hostRating.value === 0 && reviewCount > 0) {
+       hostRating.value = totalRating / reviewCount;
+     }
+     
+     // Actualizar también en el objeto hostData
+     hostData.value.average_rating = hostRating.value;
+     hostData.value.total_reviews = hostReviews.value;
+     hostData.value.properties_count = properties.length;
+     
+     console.log(`Anfitrión: ${totalReviews} reseñas, rating ${hostRating.value.toFixed(1)} y ${properties.length} negocios`);
+   }
+ }
 } catch (error) {
-  console.error('Error al obtener propiedades y reseñas del anfitrión:', error);
+ console.error('Error al obtener negocios y reseñas del anfitrión:', error);
 }
 };
 
@@ -1109,12 +1110,12 @@ return getPropertyImage(randomNum);
 // Propiedad computada para imágenes de propiedad
 const propertyImages = computed(() => {
 if (!property.value) {
-  return [
-    getPropertyImage(1),
-    getPropertyImage(2),
-    getPropertyImage(3),
-    getPropertyImage(4)
-  ];
+ return [
+   getPropertyImage(1),
+   getPropertyImage(2),
+   getPropertyImage(3),
+   getPropertyImage(4)
+ ];
 }
 
 // Imágenes disponibles
@@ -1122,18 +1123,18 @@ const images = [];
 
 // Si la propiedad tiene su propia imagen, la usamos como primera
 if (property.value.image) {
-  images.push(property.value.image);
+ images.push(property.value.image);
 }
 
 // Añadir imágenes adicionales si existen
 if (property.value.additional_images && Array.isArray(property.value.additional_images)) {
-  images.push(...property.value.additional_images);
+ images.push(...property.value.additional_images);
 }
 
 // Si no hay suficientes imágenes, añadir imágenes genéricas basadas en el ID
 while (images.length < 4) {
-  const baseIndex = (images.length % 65) + 1; // Usar módulo para quedarnos en el rango 1-65
-  images.push(getPropertyImage(baseIndex));
+ const baseIndex = (images.length % 65) + 1; // Usar módulo para quedarnos en el rango 1-65
+ images.push(getPropertyImage(baseIndex));
 }
 
 return images;
@@ -1143,25 +1144,25 @@ return images;
 const getMapImage = (property) => {
 // Verificar si la propiedad tiene coordenadas
 if (property.lat && property.lng) {
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${property.lat},${property.lng}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${property.lat},${property.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`;
+ return `https://maps.googleapis.com/maps/api/staticmap?center=${property.lat},${property.lng}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${property.lat},${property.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`;
 } else {
-  // Fallback a la dirección como antes si no hay coordenadas
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state
-  )}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state
-  )}&key=YOUR_GOOGLE_MAPS_API_KEY`;
+ // Fallback a la dirección como antes si no hay coordenadas
+ return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
+   property.address + ', ' + property.city + ', ' + property.state
+ )}&zoom=15&size=800x400&maptype=roadmap&markers=color:red%7C${encodeURIComponent(
+   property.address + ', ' + property.city + ', ' + property.state
+ )}&key=YOUR_GOOGLE_MAPS_API_KEY`;
 }
 };
 
 // Obtener URL de Google Maps para direcciones (YA NO SE USA, PERO SE MANTIENE PARA COMPATIBILIDAD)
 const getGoogleMapsUrl = (property) => {
 if (property.lat && property.lng) {
-  return `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}`;
+ return `https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}`;
 } else {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    property.address + ', ' + property.city + ', ' + property.state + ' ' + property.zip_code
-  )}`;
+ return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+   property.address + ', ' + property.city + ', ' + property.state + ' ' + property.zip_code
+ )}`;
 }
 };
 
@@ -1176,43 +1177,43 @@ if (!mapElement) return;
 
 // Verificar si el mapa ya está inicializado
 if (propertyMap.value) {
-  propertyMap.value.remove();
-  propertyMap.value = null;
+ propertyMap.value.remove();
+ propertyMap.value = null;
 }
 
 // Asegurarse de que Leaflet está disponible
 if (typeof window.L !== 'undefined') {
-  // Crear el mapa
-  propertyMap.value = window.L.map('propertyMap').setView(
-    [property.value.lat, property.value.lng], 
-    15
-  );
-  
-  // Añadir capa de OpenStreetMap (completamente gratuito)
-  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(propertyMap.value);
-  
-  // Añadir marcador en la ubicación de la propiedad
-  const icon = window.L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-  
-  // Marcador con popup con información del negocio
-  const marker = window.L.marker([property.value.lat, property.value.lng], {icon: icon}).addTo(propertyMap.value);
-  marker.bindPopup(`
-    <strong>${property.value.title}</strong><br>
-    ${property.value.address}, ${property.value.city}<br>
-    <a href="tel:${property.value.phone}">${property.value.phone}</a>
-  `).openPopup();
-} else {
-  // Si Leaflet no está disponible, cargar los scripts necesarios
-  loadLeafletScripts();
+ // Crear el mapa
+ propertyMap.value = window.L.map('propertyMap').setView(
+   [property.value.lat, property.value.lng], 
+   15
+ );
+ 
+ // Añadir capa de OpenStreetMap (completamente gratuito)
+ window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+ }).addTo(propertyMap.value);
+ 
+ // Añadir marcador en la ubicación de la propiedad
+ const icon = window.L.icon({
+   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
+ 
+ // Marcador con popup con información del negocio
+ const marker = window.L.marker([property.value.lat, property.value.lng], {icon: icon}).addTo(propertyMap.value);
+ marker.bindPopup(`
+   <strong>${property.value.title}</strong><br>
+   ${property.value.address}, ${property.value.city}<br>
+   <a href="tel:${property.value.phone}">${property.value.phone}</a>
+ `).openPopup();
+ } else {
+ // Si Leaflet no está disponible, cargar los scripts necesarios
+ loadLeafletScripts();
 }
 };
 
@@ -1220,37 +1221,37 @@ if (typeof window.L !== 'undefined') {
 const loadLeafletScripts = () => {
 // Cargar CSS de Leaflet
 if (!document.getElementById('leaflet-css')) {
-  const link = document.createElement('link');
-  link.id = 'leaflet-css';
-  link.rel = 'stylesheet';
-  link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-  document.head.appendChild(link);
+ const link = document.createElement('link');
+ link.id = 'leaflet-css';
+ link.rel = 'stylesheet';
+ link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+ document.head.appendChild(link);
 }
 
 // Cargar JavaScript de Leaflet
 if (!document.getElementById('leaflet-js')) {
-  const script = document.createElement('script');
-  script.id = 'leaflet-js';
-  script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
-  script.onload = () => {
-    // Cargar Leaflet Routing Machine para direcciones
-    const routingScript = document.createElement('script');
-    routingScript.id = 'leaflet-routing-js';
-    routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
-    routingScript.onload = () => {
-      // Cargar CSS de Leaflet Routing Machine
-      const routingCss = document.createElement('link');
-      routingCss.id = 'leaflet-routing-css';
-      routingCss.rel = 'stylesheet';
-      routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
-      document.head.appendChild(routingCss);
-      
-      // Una vez cargado todo, inicializar el mapa
-      initializeMap();
-    };
-    document.head.appendChild(routingScript);
-  };
-  document.head.appendChild(script);
+ const script = document.createElement('script');
+ script.id = 'leaflet-js';
+ script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+ script.onload = () => {
+   // Cargar Leaflet Routing Machine para direcciones
+   const routingScript = document.createElement('script');
+   routingScript.id = 'leaflet-routing-js';
+   routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
+   routingScript.onload = () => {
+     // Cargar CSS de Leaflet Routing Machine
+     const routingCss = document.createElement('link');
+     routingCss.id = 'leaflet-routing-css';
+     routingCss.rel = 'stylesheet';
+     routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
+     document.head.appendChild(routingCss);
+     
+     // Una vez cargado todo, inicializar el mapa
+     initializeMap();
+   };
+   document.head.appendChild(routingScript);
+ };
+ document.head.appendChild(script);
 }
 };
 
@@ -1259,44 +1260,44 @@ const openDirectionsModal = () => {
 // Ocultar el mapa principal cuando se abre el modal
 const mainMapElement = document.getElementById('propertyMap');
 if (mainMapElement) {
-  mainMapElement.style.visibility = 'hidden';
+ mainMapElement.style.visibility = 'hidden';
 }
 
 showDirectionsModal.value = true;
 
 // Intentar obtener la ubicación actual del usuario si el navegador lo permite
 if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      // Convertir coordenadas a dirección aproximada con OpenStreetMap Nominatim (servicio gratuito)
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.display_name) {
-            startingPoint.value = data.display_name;
-          }
-        })
-        .catch(err => {
-          console.error('Error obteniendo dirección:', err);
-          // Si falla, simplemente usamos las coordenadas
-          startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        });
-    },
-    (error) => {
-      console.warn('Error obteniendo ubicación:', error);
-      // Dejar el campo vacío para que el usuario lo complete
-      startingPoint.value = '';
-    }
-  );
+ navigator.geolocation.getCurrentPosition(
+   (position) => {
+     // Convertir coordenadas a dirección aproximada con OpenStreetMap Nominatim (servicio gratuito)
+     const lat = position.coords.latitude;
+     const lng = position.coords.longitude;
+     
+     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+       .then(response => response.json())
+       .then(data => {
+         if (data && data.display_name) {
+           startingPoint.value = data.display_name;
+         }
+       })
+       .catch(err => {
+         console.error('Error obteniendo dirección:', err);
+         // Si falla, simplemente usamos las coordenadas
+         startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+       });
+   },
+   (error) => {
+     console.warn('Error obteniendo ubicación:', error);
+     // Dejar el campo vacío para que el usuario lo complete
+     startingPoint.value = '';
+   }
+ );
 }
 
 // Crear una nueva instancia del mapa de direcciones
 // Usamos un pequeño retraso para asegurar que el DOM esté listo
 setTimeout(() => {
-  initializeDirectionsMap();
+ initializeDirectionsMap();
 }, 300);
 };
 
@@ -1306,15 +1307,15 @@ showDirectionsModal.value = false;
 
 // Restaurar la visibilidad del mapa principal
 setTimeout(() => {
-  const mainMapElement = document.getElementById('propertyMap');
-  if (mainMapElement) {
-    mainMapElement.style.visibility = 'visible';
-  }
-  
-  // Reiniciar el mapa principal si es necesario
-  if (propertyMap.value && typeof propertyMap.value.invalidateSize === 'function') {
-    propertyMap.value.invalidateSize();
-  }
+ const mainMapElement = document.getElementById('propertyMap');
+ if (mainMapElement) {
+   mainMapElement.style.visibility = 'visible';
+ }
+ 
+ // Reiniciar el mapa principal si es necesario
+ if (propertyMap.value && typeof propertyMap.value.invalidateSize === 'function') {
+   propertyMap.value.invalidateSize();
+ }
 }, 300);
 };
 
@@ -1328,63 +1329,63 @@ const mapElement = document.getElementById('directionsMap');
 if (!mapElement) return;
 
 try {
-  // Si Leaflet está disponible
-  if (typeof window.L !== 'undefined') {
-    // Crear una variable local para el mapa de direcciones (no usar propertyMap)
-    let directionsMap;
-    
-    // Verificar si ya existe un mapa en este elemento
-    if (mapElement._leaflet_id) {
-      // Si ya existe, eliminarlo primero
-      window.L.DomUtil.empty(mapElement);
-    }
-    
-    // Crear mapa para direcciones (con una nueva instancia)
-    directionsMap = window.L.map('directionsMap', {
-      attributionControl: true, 
-      zoomControl: true,
-      minZoom: 2,
-      maxZoom: 18
-    }).setView([property.value.lat, property.value.lng], 13);
-    
-    // Añadir capa de OpenStreetMap
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(directionsMap);
-    
-    // Añadir marcador de destino (la propiedad)
-    const destIcon = window.L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
-    
-    const marker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
-      .addTo(directionsMap)
-      .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`)
-      .openPopup();
-    
-    // Guardar referencia al mapa en una variable separada para el mapa de direcciones
-    // NO USAR propertMap para esto, crear una nueva variable
-    routingMap.value = directionsMap;
-    
-    // Cargar el plugin Routing Machine si existe
-    if (window.L.Routing && typeof window.L.Routing.control === 'function') {
-      console.log("Leaflet Routing Machine está disponible");
-    } else {
-      console.log("Cargando Leaflet Routing Machine...");
-      // Carga dinámica del script y CSS de Leaflet Routing Machine
-      loadLeafletRoutingScripts();
-    }
-  } else {
-    // Si no están disponibles las bibliotecas, cargarlas
-    loadLeafletScripts();
-  }
+ // Si Leaflet está disponible
+ if (typeof window.L !== 'undefined') {
+   // Crear una variable local para el mapa de direcciones (no usar propertyMap)
+   let directionsMap;
+   
+   // Verificar si ya existe un mapa en este elemento
+   if (mapElement._leaflet_id) {
+     // Si ya existe, eliminarlo primero
+     window.L.DomUtil.empty(mapElement);
+   }
+   
+   // Crear mapa para direcciones (con una nueva instancia)
+   directionsMap = window.L.map('directionsMap', {
+     attributionControl: true, 
+     zoomControl: true,
+     minZoom: 2,
+     maxZoom: 18
+   }).setView([property.value.lat, property.value.lng], 13);
+   
+   // Añadir capa de OpenStreetMap
+   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+   }).addTo(directionsMap);
+   
+   // Añadir marcador de destino (la propiedad)
+   const destIcon = window.L.icon({
+     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+     iconSize: [25, 41],
+     iconAnchor: [12, 41],
+     popupAnchor: [1, -34],
+     shadowSize: [41, 41]
+   });
+   
+   const marker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
+     .addTo(directionsMap)
+     .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`)
+     .openPopup();
+   
+   // Guardar referencia al mapa en una variable separada para el mapa de direcciones
+   // NO USAR propertMap para esto, crear una nueva variable
+   routingMap.value = directionsMap;
+   
+   // Cargar el plugin Routing Machine si existe
+   if (window.L.Routing && typeof window.L.Routing.control === 'function') {
+     console.log("Leaflet Routing Machine está disponible");
+   } else {
+     console.log("Cargando Leaflet Routing Machine...");
+     // Carga dinámica del script y CSS de Leaflet Routing Machine
+     loadLeafletRoutingScripts();
+   }
+ } else {
+   // Si no están disponibles las bibliotecas, cargarlas
+   loadLeafletScripts();
+ }
 } catch (error) {
-  console.error("Error inicializando mapa de direcciones:", error);
+ console.error("Error inicializando mapa de direcciones:", error);
 }
 };
 
@@ -1392,22 +1393,22 @@ try {
 const loadLeafletRoutingScripts = () => {
 // Cargar CSS de Leaflet Routing Machine
 if (!document.getElementById('leaflet-routing-css')) {
-  const routingCss = document.createElement('link');
-  routingCss.id = 'leaflet-routing-css';
-  routingCss.rel = 'stylesheet';
-  routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
-  document.head.appendChild(routingCss);
+ const routingCss = document.createElement('link');
+ routingCss.id = 'leaflet-routing-css';
+ routingCss.rel = 'stylesheet';
+ routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
+ document.head.appendChild(routingCss);
 }
 
 // Cargar JavaScript de Leaflet Routing Machine
 if (!document.getElementById('leaflet-routing-js')) {
-  const routingScript = document.createElement('script');
-  routingScript.id = 'leaflet-routing-js';
-  routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
-  routingScript.onload = () => {
-    console.log("Leaflet Routing Machine cargado con éxito");
-  };
-  document.head.appendChild(routingScript);
+ const routingScript = document.createElement('script');
+ routingScript.id = 'leaflet-routing-js';
+ routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
+ routingScript.onload = () => {
+   console.log("Leaflet Routing Machine cargado con éxito");
+ };
+ document.head.appendChild(routingScript);
 }
 };
 
@@ -1415,9 +1416,9 @@ if (!document.getElementById('leaflet-routing-js')) {
 const calculateRoute = async () => {
 // Validar que tenemos un punto de inicio
 if (!startingPoint.value.trim()) {
-  directionsError.value = "Por favor, ingresa un punto de partida";
-  showNotification("Por favor, ingresa un punto de partida", 'error');
-  return;
+ directionsError.value = "Por favor, ingresa un punto de partida";
+ showNotification("Por favor, ingresa un punto de partida", 'error');
+ return;
 }
 
 directionsLoading.value = true;
@@ -1425,223 +1426,223 @@ directionsError.value = null;
 directionsFound.value = false;
 
 try {
-  // Convertir dirección de inicio a coordenadas usando Nominatim (gratuito)
-  const nominatimResponse = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(startingPoint.value)}&countrycodes=hn`
-  );
-  
-  const nominatimData = await nominatimResponse.json();
-  
-  if (!nominatimData || nominatimData.length === 0) {
-    throw new Error("No se pudo encontrar el punto de partida. Intenta con una dirección más específica o usa el formato: Calle, Ciudad, País");
-  }
-  
-  // Obtener primera coincidencia
-  const startLocation = nominatimData[0];
-  const startLat = parseFloat(startLocation.lat);
-  const startLng = parseFloat(startLocation.lon);
-  
-  console.log("Punto de partida encontrado:", startLocation.display_name, startLat, startLng);
-  
-  // Guardar las coordenadas del origen y destino para mostrar aunque no se pueda calcular la ruta
-  const originLatLng = window.L.latLng(startLat, startLng);
-  const destLatLng = window.L.latLng(property.value.lat, property.value.lng);
-  
-  // Calcular distancia en línea recta
-  const distanceStraight = originLatLng.distanceTo(destLatLng) / 1000; // km
-  
-  // Añadir marcadores aunque no se pueda calcular la ruta
-  const map = routingMap.value; // ¡USAR routingMap EN LUGAR DE propertyMap!
-  
-  if (!map) {
-    throw new Error("El mapa de direcciones no está inicializado correctamente");
-  }
-  
-  // Limpiar marcadores previos
-  map.eachLayer(function(layer) {
-    if (layer instanceof window.L.Marker || layer instanceof window.L.Routing.Control || layer instanceof window.L.Polyline) {
-      map.removeLayer(layer);
-    }
-  });
-  
-  // Añadir capa base
-  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-  
-  // Añadir marcador de origen (verde)
-  const startIcon = window.L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-  
-  const startMarker = window.L.marker([startLat, startLng], {icon: startIcon})
-    .addTo(map)
-    .bindPopup('Punto de inicio: ' + startLocation.display_name);
-  
-  // Añadir marcador de destino (rojo)
-  const destIcon = window.L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-  
-  const destMarker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
-    .addTo(map)
-    .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`);
-  
-  // Ajustar mapa para mostrar ambos marcadores
-  const bounds = window.L.latLngBounds([
-    [startLat, startLng],
-    [property.value.lat, property.value.lng]
-  ]);
-  map.fitBounds(bounds, { padding: [50, 50] });
-  
-  // Crear los waypoints (origen y destino)
-  const waypoints = [
-    originLatLng,
-    destLatLng
-  ];
-  
-  // Si ya existe una ruta, eliminarla
-  if (routingControl.value) {
-    map.removeControl(routingControl.value);
-  }
-  
-  // Mostrar siempre línea recta primero mientras se calcula la ruta detallada
-  const polyline = window.L.polyline([
-    [startLat, startLng],
-    [property.value.lat, property.value.lng]
-  ], {color: '#fd5631', dashArray: '5, 10', weight: 3}).addTo(map);
-  
-  // Actualizar la información de distancia directamente con la línea recta para que el usuario tenga retroalimentación inmediata
-  directionsFound.value = true;
-  directionsDistance.value = distanceStraight.toFixed(1);
-  directionsTime.value = Math.round(distanceStraight / 50 * 60); // Estimado a 50 km/h promedio
-  
-  // Si la distancia es muy grande, no intentamos calcular la ruta detallada
-  if (distanceStraight > 100) {
-    directionsError.value = "Se muestra la distancia en línea recta aproximada. La ruta exacta no se pudo calcular debido a la gran distancia.";
-    directionsLoading.value = false;
-    showNotification("Se muestra una aproximación de la ruta", 'info');
-    return;
-  }
-  
-  // Intentamos calcular la ruta detallada solo si la distancia no es muy grande
-  try {
-    // Crear nueva ruta usando OSRM (servicio gratuito)
-    routingControl.value = window.L.Routing.control({
-      waypoints: waypoints,
-      router: window.L.Routing.osrmv1({
-        serviceUrl: 'https://router.project-osrm.org/route/v1',
-        timeout: 30000,  // Aumentar el tiempo de espera a 30 segundos
-        profile: 'driving' // Modo de viaje: driving, cycling, walking
-      }),
-      lineOptions: {
-        styles: [
-          {color: '#fd5631', opacity: 0.8, weight: 5}
-        ]
-      },
-      routeWhileDragging: false,
-      showAlternatives: false,
-      addWaypoints: false,
-      fitSelectedRoutes: true,
-      show: false, // Ocultar panel de instrucciones
-      createMarker: function() {
-        // No creamos marcadores aquí ya que los hemos añadido antes
-        return null;
-      }
-    }).addTo(map);
-    
-    // Manejar el evento cuando se encuentra la ruta
-    routingControl.value.on('routesfound', function(e) {
-      const routes = e.routes;
-      const summary = routes[0].summary;
-      
-      // Guardar distancia y tiempo estimado
-      directionsDistance.value = (summary.totalDistance / 1000).toFixed(1); // km
-      directionsTime.value = Math.round(summary.totalTime / 60); // minutos
-      
-      // Ajustar el mapa para que se vea toda la ruta
-      map.fitBounds(routes[0].bounds, { padding: [50, 50] });
-      
-      // Eliminar la línea recta ya que ahora tenemos la ruta detallada
-      map.removeLayer(polyline);
-      
-      // Marcar que se encontró la ruta
-      directionsFound.value = true;
-      directionsLoading.value = false;
-      directionsError.value = null;
-      
-      showNotification("Ruta calculada correctamente", 'success');
-    });
-    
-    // Manejar errores en la búsqueda de ruta
-    routingControl.value.on('routingerror', function(e) {
-      console.error("Error en cálculo de ruta:", e);
-      
-      // Mantenemos la línea recta como alternativa (ya está dibujada)
-      directionsError.value = "No se pudo calcular la ruta exacta. Se muestra la distancia aproximada en línea recta.";
-      directionsLoading.value = false;
-      
-      showNotification("Se muestra una aproximación de la ruta", 'info');
-    });
-  } catch (routingError) {
-    console.error('Error creando control de ruta:', routingError);
-    // Ya tenemos la línea recta dibujada, así que solo actualizamos el mensaje de error
-    directionsError.value = "No se pudo calcular la ruta exacta. Se muestra la distancia aproximada en línea recta.";
-    directionsLoading.value = false;
-    
-    showNotification("Se muestra una aproximación de la ruta", 'info');
-  }
+ // Convertir dirección de inicio a coordenadas usando Nominatim (gratuito)
+ const nominatimResponse = await fetch(
+   `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(startingPoint.value)}&countrycodes=hn`
+ );
+ 
+ const nominatimData = await nominatimResponse.json();
+ 
+ if (!nominatimData || nominatimData.length === 0) {
+   throw new Error("No se pudo encontrar el punto de partida. Intenta con una dirección más específica o usa el formato: Calle, Ciudad, País");
+ }
+ 
+ // Obtener primera coincidencia
+ const startLocation = nominatimData[0];
+ const startLat = parseFloat(startLocation.lat);
+ const startLng = parseFloat(startLocation.lon);
+ 
+ console.log("Punto de partida encontrado:", startLocation.display_name, startLat, startLng);
+ 
+ // Guardar las coordenadas del origen y destino para mostrar aunque no se pueda calcular la ruta
+ const originLatLng = window.L.latLng(startLat, startLng);
+ const destLatLng = window.L.latLng(property.value.lat, property.value.lng);
+ 
+ // Calcular distancia en línea recta
+ const distanceStraight = originLatLng.distanceTo(destLatLng) / 1000; // km
+ 
+ // Añadir marcadores aunque no se pueda calcular la ruta
+ const map = routingMap.value; // ¡USAR routingMap EN LUGAR DE propertyMap!
+ 
+ if (!map) {
+   throw new Error("El mapa de direcciones no está inicializado correctamente");
+ }
+ 
+ // Limpiar marcadores previos
+ map.eachLayer(function(layer) {
+   if (layer instanceof window.L.Marker || layer instanceof window.L.Routing.Control || layer instanceof window.L.Polyline) {
+     map.removeLayer(layer);
+   }
+ });
+ 
+ // Añadir capa base
+ window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+ }).addTo(map);
+ 
+ // Añadir marcador de origen (verde)
+ const startIcon = window.L.icon({
+   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
+ 
+ const startMarker = window.L.marker([startLat, startLng], {icon: startIcon})
+   .addTo(map)
+   .bindPopup('Punto de inicio: ' + startLocation.display_name);
+ 
+ // Añadir marcador de destino (rojo)
+ const destIcon = window.L.icon({
+   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
+ 
+ const destMarker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
+   .addTo(map)
+   .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`);
+ 
+ // Ajustar mapa para mostrar ambos marcadores
+ const bounds = window.L.latLngBounds([
+   [startLat, startLng],
+   [property.value.lat, property.value.lng]
+ ]);
+ map.fitBounds(bounds, { padding: [50, 50] });
+ 
+ // Crear los waypoints (origen y destino)
+ const waypoints = [
+   originLatLng,
+   destLatLng
+ ];
+ 
+ // Si ya existe una ruta, eliminarla
+ if (routingControl.value) {
+   map.removeControl(routingControl.value);
+ }
+ 
+ // Mostrar siempre línea recta primero mientras se calcula la ruta detallada
+ const polyline = window.L.polyline([
+   [startLat, startLng],
+   [property.value.lat, property.value.lng]
+ ], {color: '#fd5631', dashArray: '5, 10', weight: 3}).addTo(map);
+ 
+ // Actualizar la información de distancia directamente con la línea recta para que el usuario tenga retroalimentación inmediata
+ directionsFound.value = true;
+ directionsDistance.value = distanceStraight.toFixed(1);
+ directionsTime.value = Math.round(distanceStraight / 50 * 60); // Estimado a 50 km/h promedio
+ 
+ // Si la distancia es muy grande, no intentamos calcular la ruta detallada
+ if (distanceStraight > 100) {
+   directionsError.value = "Se muestra la distancia en línea recta aproximada. La ruta exacta no se pudo calcular debido a la gran distancia.";
+   directionsLoading.value = false;
+   showNotification("Se muestra una aproximación de la ruta", 'info');
+   return;
+ }
+ 
+ // Intentamos calcular la ruta detallada solo si la distancia no es muy grande
+ try {
+   // Crear nueva ruta usando OSRM (servicio gratuito)
+   routingControl.value = window.L.Routing.control({
+     waypoints: waypoints,
+     router: window.L.Routing.osrmv1({
+       serviceUrl: 'https://router.project-osrm.org/route/v1',
+       timeout: 30000,  // Aumentar el tiempo de espera a 30 segundos
+       profile: 'driving' // Modo de viaje: driving, cycling, walking
+     }),
+     lineOptions: {
+       styles: [
+         {color: '#fd5631', opacity: 0.8, weight: 5}
+       ]
+     },
+     routeWhileDragging: false,
+     showAlternatives: false,
+     addWaypoints: false,
+     fitSelectedRoutes: true,
+     show: false, // Ocultar panel de instrucciones
+     createMarker: function() {
+       // No creamos marcadores aquí ya que los hemos añadido antes
+       return null;
+     }
+   }).addTo(map);
+   
+   // Manejar el evento cuando se encuentra la ruta
+   routingControl.value.on('routesfound', function(e) {
+     const routes = e.routes;
+     const summary = routes[0].summary;
+     
+     // Guardar distancia y tiempo estimado
+     directionsDistance.value = (summary.totalDistance / 1000).toFixed(1); // km
+     directionsTime.value = Math.round(summary.totalTime / 60); // minutos
+     
+     // Ajustar el mapa para que se vea toda la ruta
+     map.fitBounds(routes[0].bounds, { padding: [50, 50] });
+     
+     // Eliminar la línea recta ya que ahora tenemos la ruta detallada
+     map.removeLayer(polyline);
+     
+     // Marcar que se encontró la ruta
+     directionsFound.value = true;
+     directionsLoading.value = false;
+     directionsError.value = null;
+     
+     showNotification("Ruta calculada correctamente", 'success');
+   });
+   
+   // Manejar errores en la búsqueda de ruta
+   routingControl.value.on('routingerror', function(e) {
+     console.error("Error en cálculo de ruta:", e);
+     
+     // Mantenemos la línea recta como alternativa (ya está dibujada)
+     directionsError.value = "No se pudo calcular la ruta exacta. Se muestra la distancia aproximada en línea recta.";
+     directionsLoading.value = false;
+     
+     showNotification("Se muestra una aproximación de la ruta", 'info');
+   });
+ } catch (routingError) {
+   console.error('Error creando control de ruta:', routingError);
+   // Ya tenemos la línea recta dibujada, así que solo actualizamos el mensaje de error
+   directionsError.value = "No se pudo calcular la ruta exacta. Se muestra la distancia aproximada en línea recta.";
+   directionsLoading.value = false;
+   
+   showNotification("Se muestra una aproximación de la ruta", 'info');
+ }
 } catch (error) {
-  console.error('Error calculando ruta:', error);
-  directionsError.value = error.message || "Ocurrió un error al calcular la ruta. Intenta con otra dirección.";
-  directionsLoading.value = false;
-  showNotification("Error al calcular la ruta: " + error.message, 'error');
+ console.error('Error calculando ruta:', error);
+ directionsError.value = error.message || "Ocurrió un error al calcular la ruta. Intenta con otra dirección.";
+ directionsLoading.value = false;
+ showNotification("Error al calcular la ruta: " + error.message, 'error');
 }
 };
 
 // Funciones para obtener iconos para amenidades
 const getAmenityIcon = (amenity) => {
 const icons = {
-  'wifi': 'wifi',
-  'aire-acondicionado': 'ac_unit',
-  'piscina': 'pool',
-  'jacuzzi': 'hot_tub',
-  'gimnasio': 'fitness_center',
-  'parking': 'local_parking',
-  'ascensor': 'elevator',
-  'balcon': 'balcony',
-  'terraza': 'deck',
-  'jardin': 'yard',
-  'cocina-equipada': 'kitchen',
-  'lavadora': 'local_laundry_service',
-  'lavavajillas': 'dishwasher',
-  'calefaccion': 'hvac',
-  'chimenea': 'fireplace',
-  'seguridad-24h': 'security',
-  'vigilancia-24h': 'videocam',
-  'alarma': 'notifications_active',
-  'garaje': 'garage',
-  'trastero': 'inventory_2',
-  'amueblado': 'chair',
-  'armarios-empotrados': 'inventory',
-  'barbacoa': 'outdoor_grill',
-  'agua-incluida': 'water_drop',
-  'electricidad-incluida': 'bolt',
-  'fibra-optica': 'wifi_tethering',
-  'piscina-comunitaria': 'pool',
-  'zona-infantil': 'child_care',
-  'suelo-radiante': 'floor',
-  'urbanizacion-privada': 'gated_community'
+ 'wifi': 'wifi',
+ 'aire-acondicionado': 'ac_unit',
+ 'piscina': 'pool',
+ 'jacuzzi': 'hot_tub',
+ 'gimnasio': 'fitness_center',
+ 'parking': 'local_parking',
+ 'ascensor': 'elevator',
+ 'balcon': 'balcony',
+ 'terraza': 'deck',
+ 'jardin': 'yard',
+ 'cocina-equipada': 'kitchen',
+ 'lavadora': 'local_laundry_service',
+ 'lavavajillas': 'dishwasher',
+ 'calefaccion': 'hvac',
+ 'chimenea': 'fireplace',
+ 'seguridad-24h': 'security',
+ 'vigilancia-24h': 'videocam',
+ 'alarma': 'notifications_active',
+ 'garaje': 'garage',
+ 'trastero': 'inventory_2',
+ 'amueblado': 'chair',
+ 'armarios-empotrados': 'inventory',
+ 'barbacoa': 'outdoor_grill',
+ 'agua-incluida': 'water_drop',
+ 'electricidad-incluida': 'bolt',
+ 'fibra-optica': 'wifi_tethering',
+ 'piscina-comunitaria': 'pool',
+ 'zona-infantil': 'child_care',
+ 'suelo-radiante': 'floor',
+ 'urbanizacion-privada': 'gated_community'
 };
 
 // Convertir a minúsculas y quitar espacios para facilitar la búsqueda
@@ -1653,15 +1654,15 @@ return icons[normalizedAmenity] || 'check';
 // Funciones de traducción
 const translatePropertyType = (type) => {
 const translations = {
-  'apartment': 'Apartamento',
-  'house': 'Casa',
-  'room': 'Habitación',
-  'office': 'Oficina',
-  'commercial': 'Comercial',
-  'land': 'Terreno',
-  'daily-rental': 'Alquiler diario',
-  'new-building': 'Edificio nuevo',
-  'parking-lot': 'Estacionamiento'
+ 'apartment': 'Apartamento',
+ 'house': 'Casa',
+ 'room': 'Habitación',
+ 'office': 'Oficina',
+ 'commercial': 'Comercial',
+ 'land': 'Terreno',
+ 'daily-rental': 'Alquiler diario',
+ 'new-building': 'Edificio nuevo',
+ 'parking-lot': 'Estacionamiento'
 };
 
 return translations[type] || type;
@@ -1687,15 +1688,15 @@ const translatePetsAllowed = (petsAllowed) => {
 if (!petsAllowed || petsAllowed.length === 0) return 'No permitidas';
 
 if (Array.isArray(petsAllowed)) {
-  if (petsAllowed.includes('cats-allowed') && petsAllowed.includes('dogs-allowed')) {
-    return 'Gatos y perros';
-  }
-  if (petsAllowed.includes('cats-allowed')) {
-    return 'Solo gatos';
-  }
-  if (petsAllowed.includes('dogs-allowed')) {
-    return 'Solo perros';
-  }
+ if (petsAllowed.includes('cats-allowed') && petsAllowed.includes('dogs-allowed')) {
+   return 'Gatos y perros';
+ }
+ if (petsAllowed.includes('cats-allowed')) {
+   return 'Solo gatos';
+ }
+ if (petsAllowed.includes('dogs-allowed')) {
+   return 'Solo perros';
+ }
 }
 
 return 'No permitidas';
@@ -1703,40 +1704,40 @@ return 'No permitidas';
 
 const translateAmenity = (amenity) => {
 const translations = {
-  'wifi': 'WiFi',
-  'aire-acondicionado': 'Aire acondicionado',
-  'piscina': 'Piscina',
-  'jacuzzi': 'Jacuzzi',
-  'gimnasio': 'Gimnasio',
-  'parking': 'Estacionamiento',
-  'ascensor': 'Ascensor',
-  'balcon': 'Balcón',
-  'terraza': 'Terraza',
-  'jardin': 'Jardín',
-  'cocina-equipada': 'Cocina equipada',
-  'lavadora': 'Lavadora',
-  'lavavajillas': 'Lavavajillas',
-  'calefaccion': 'Calefacción',
-  'chimenea': 'Chimenea',
-  'seguridad-24h': 'Seguridad 24h',
-  'vigilancia-24h': 'Vigilancia 24h',
-  'alarma': 'Alarma',
-  'garaje': 'Garaje',
-  'trastero': 'Trastero',
-  'amueblado': 'Amueblado',
-  'armarios-empotrados': 'Armarios empotrados',
-  'barbacoa': 'Barbacoa',
-  'agua-incluida': 'Agua incluida',
-  'electricidad-incluida': 'Electricidad incluida',
-  'fibra-optica': 'Fibra óptica',
-  'piscina-comunitaria': 'Piscina comunitaria',
-  'zona-infantil': 'Zona infantil',
-  'suelo-radiante': 'Suelo radiante',
-  'urbanizacion-privada': 'Urbanización privada',
-  'vistas-mar': 'Vistas al mar',
-  'vistas-montana': 'Vistas a la montaña',
-  'vistas-panoramicas': 'Vistas panorámicas',
-  'primera-linea-playa': 'Primera línea de playa'
+ 'wifi': 'WiFi',
+ 'aire-acondicionado': 'Aire acondicionado',
+ 'piscina': 'Piscina',
+ 'jacuzzi': 'Jacuzzi',
+ 'gimnasio': 'Gimnasio',
+ 'parking': 'Estacionamiento',
+ 'ascensor': 'Ascensor',
+ 'balcon': 'Balcón',
+ 'terraza': 'Terraza',
+ 'jardin': 'Jardín',
+ 'cocina-equipada': 'Cocina equipada',
+ 'lavadora': 'Lavadora',
+ 'lavavajillas': 'Lavavajillas',
+ 'calefaccion': 'Calefacción',
+ 'chimenea': 'Chimenea',
+ 'seguridad-24h': 'Seguridad 24h',
+ 'vigilancia-24h': 'Vigilancia 24h',
+ 'alarma': 'Alarma',
+ 'garaje': 'Garaje',
+ 'trastero': 'Trastero',
+ 'amueblado': 'Amueblado',
+ 'armarios-empotrados': 'Armarios empotrados',
+ 'barbacoa': 'Barbacoa',
+ 'agua-incluida': 'Agua incluida',
+ 'electricidad-incluida': 'Electricidad incluida',
+ 'fibra-optica': 'Fibra óptica',
+ 'piscina-comunitaria': 'Piscina comunitaria',
+ 'zona-infantil': 'Zona infantil',
+ 'suelo-radiante': 'Suelo radiante',
+ 'urbanizacion-privada': 'Urbanización privada',
+ 'vistas-mar': 'Vistas al mar',
+ 'vistas-montana': 'Vistas a la montaña',
+ 'vistas-panoramicas': 'Vistas panorámicas',
+ 'primera-linea-playa': 'Primera línea de playa'
 };
 
 return translations[amenity] || amenity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -1745,17 +1746,17 @@ return translations[amenity] || amenity.replace(/-/g, ' ').replace(/\b\w/g, l =>
 // Funciones de galería de imágenes
 const goToPrevImage = () => {
 if (activeImageIndex.value === 0) {
-  activeImageIndex.value = propertyImages.value.length - 1;
+ activeImageIndex.value = propertyImages.value.length - 1;
 } else {
-  activeImageIndex.value--;
+ activeImageIndex.value--;
 }
 };
 
 const goToNextImage = () => {
 if (activeImageIndex.value === propertyImages.value.length - 1) {
-  activeImageIndex.value = 0;
+ activeImageIndex.value = 0;
 } else {
-  activeImageIndex.value++;
+ activeImageIndex.value++;
 }
 };
 
@@ -1766,25 +1767,25 @@ activeImageIndex.value = index;
 // Compartir propiedad
 const shareProperty = () => {
 if (navigator.share) {
-  navigator.share({
-    title: property.value.title,
-    text: `¡Mira esta propiedad: ${property.value.title}!`,
-    url: window.location.href
-  }).catch(err => {
-    console.error('Error compartiendo:', err);
-    showNotification('Error al compartir la propiedad', 'error');
-  });
+ navigator.share({
+   title: property.value.title,
+   text: `¡Mira este negocio: ${property.value.title}!`,
+   url: window.location.href
+ }).catch(err => {
+   console.error('Error compartiendo:', err);
+   showNotification('Error al compartir el negocio', 'error');
+ });
 } else {
-  // Fallback - copiar enlace al portapapeles
-  const dummy = document.createElement('input');
-  document.body.appendChild(dummy);
-  dummy.value = window.location.href;
-  dummy.select();
-  document.execCommand('copy');
-  document.body.removeChild(dummy);
-  
-  // Mostrar notificación en lugar de alert
-  showNotification('Enlace copiado al portapapeles', 'success');
+ // Fallback - copiar enlace al portapapeles
+ const dummy = document.createElement('input');
+ document.body.appendChild(dummy);
+ dummy.value = window.location.href;
+ dummy.select();
+ document.execCommand('copy');
+ document.body.removeChild(dummy);
+ 
+ // Mostrar notificación en lugar de alert
+ showNotification('Enlace copiado al portapapeles', 'success');
 }
 };
 
@@ -1798,14 +1799,14 @@ return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 const formatDate = (dateString) => {
 if (!dateString) return "Sin fecha";
 try {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
-  });
+ const date = new Date(dateString);
+ return date.toLocaleDateString('es-ES', { 
+   year: 'numeric', 
+   month: 'short', 
+   day: 'numeric' 
+ });
 } catch (err) {
-  return "Sin fecha";
+ return "Sin fecha";
 }
 };
 
@@ -1814,116 +1815,141 @@ const formatSchedule = (schedule) => {
 if (!schedule) return "No disponible";
 // Convierte el texto del horario "Lunes Martes" en "Lun, Mar"
 return schedule
-  .split(' ')
-  .map(day => {
-    const firstThree = day.substring(0, 3);
-    return firstThree.charAt(0).toUpperCase() + firstThree.slice(1).toLowerCase();
-  })
-  .join(', ');
+ .split(' ')
+ .map(day => {
+   const firstThree = day.substring(0, 3);
+   return firstThree.charAt(0).toUpperCase() + firstThree.slice(1).toLowerCase();
+ })
+ .join(', ');
 };
 
 // Navegar a otra propiedad
 const navigateToProperty = (id) => {
 // Si estamos en la misma ruta pero con diferente ID, forzar recarga
 if (route.name === route.name && route.params.id !== id.toString()) {
-  router.replace(`/properties/${id}`);
-  setTimeout(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 100);
+ router.replace(`/properties/${id}`);
+ setTimeout(() => {
+   window.scrollTo({ top: 0, behavior: 'smooth' });
+ }, 100);
 } else {
-  router.push(`/properties/${id}`);
+ router.push(`/properties/${id}`);
 }
 };
 
-// Incrementar contador de visitas
+// Función para activar la animación cuando cambia el contador
+const animateViewCount = () => {
+ viewCountUpdated.value = true;
+ setTimeout(() => {
+   viewCountUpdated.value = false;
+ }, 1000); // La animación dura 1 segundo
+};
+
+
+// Incrementar contador de vistas - versión actualizada para coincidencia con Postman
 const incrementViewCount = async () => {
-try {
-  if (!property.value) return;
-  
-  // Verificar si ya hemos visitado esta propiedad en esta sesión
-  const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
-  
-  // Solo enviar la solicitud si no hemos visto la propiedad en esta sesión
-  if (!viewedProperties.includes(parseInt(propertyId))) {
-    try {
-      // Incrementar contador local inmediatamente para una experiencia más fluida
-      viewCount.value = (property.value.views || 0) + 1;
+  try {
+    console.log("Función incrementViewCount iniciada");
+    if (!property.value) {
+      console.log("No hay propiedad, saliendo de la función");
+      return;
+    }
+    
+    // Formar la URL exactamente como en Postman
+    const endpoint = `${API_URL}/properties/${propertyId}/view`;
+    console.log(`Intentando llamar a: ${endpoint}`);
+    
+    // Realizar la solicitud POST sin cuerpo, igual que en Postman
+    const response = await axios.post(endpoint);
+    console.log("Respuesta de vista:", response);
+    
+    if (response.data && response.data.success) {
+      // Incrementar contador local
+      property.value.views = (property.value.views || 0) + 1;
+      viewCount.value = property.value.views;
       
-      // Enviar la solicitud a la API para incrementar el contador
-      await axios.post(`${API_URL}/properties/${propertyId}/view`);
+      console.log(`Contador actualizado a: ${property.value.views}`);
+      showNotification(`Visita registrada. Total: ${property.value.views}`, 'success');
       
-      // Añadir a las propiedades ya vistas
-      viewedProperties.push(parseInt(propertyId));
-      localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
-      
-      showNotification(`Eres el visitante #${viewCount.value} de esta propiedad`, 'info');
-    } catch (err) {
-      console.error('Error al registrar vista:', err);
-      // No interrumpir el flujo por este error
+      // Guardar en localStorage para no incrementar nuevamente en la misma sesión
+      const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
+      if (!viewedProperties.includes(parseInt(propertyId))) {
+        viewedProperties.push(parseInt(propertyId));
+        localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
+      }
+    } else {
+      console.error("La respuesta del servidor no fue exitosa:", response.data);
+    }
+  } catch (err) {
+    console.error("Error en incrementViewCount:", err);
+    if (err.response) {
+      console.error("Datos de error:", err.response.data);
+      console.error("Estado HTTP:", err.response.status);
     }
   }
-} catch (err) {
-  console.error('Error al incrementar contador de visitas:', err);
-}
 };
 
-// Obtener datos de la propiedad
+// Modificación en el método fetchPropertyData para inicializar correctamente el contador
 const fetchPropertyData = async () => {
-isLoading.value = true;
-error.value = null;
+ isLoading.value = true;
+ error.value = null;
 
-try {
-  // Obtener datos de la propiedad
-  const response = await axios.get(`${API_URL}/properties/${propertyId}`);
-  
-  if (response.data && response.data.success) {
-    property.value = response.data.data;
-    
-    // Configurar nueva reseña
-    newReview.value.property_id = property.value.id;
-    
-    // Cargar datos del anfitrión
-    await fetchHostData();
-    
-    // Cargar reseñas
-    await fetchReviews();
-    
-    // Cargar propiedades similares
-    await fetchSimilarProperties();
-    
-    // Incrementar contador de visitas
-    incrementViewCount();
-    
-    // Inicializar viewCount con el valor de la API
-    viewCount.value = property.value.views || 0;
-    
-    // Inicializar el mapa
-    setTimeout(() => {
-      initializeMap();
-    }, 300);
-    
-    showNotification('Propiedad cargada correctamente', 'success');
-  } else {
-    error.value = 'No se pudo cargar la propiedad. Por favor intente de nuevo.';
-    showNotification('Error al cargar la propiedad', 'error');
-  }
-} catch (err) {
-  console.error('Error cargando la propiedad:', err);
-  error.value = 'No se pudo cargar la propiedad. Por favor intente de nuevo más tarde.';
-  showNotification('Error al cargar la propiedad', 'error');
-} finally {
-  isLoading.value = false;
-}
+ try {
+   // Obtener datos de la propiedad
+   const response = await axios.get(`${API_URL}/properties/${propertyId}`);
+   
+   if (response.data && response.data.success) {
+     property.value = response.data.data;
+     
+     // Configurar nueva reseña
+     newReview.value.property_id = property.value.id;
+     
+     // Cargar datos del anfitrión
+     await fetchHostData();
+     
+     // Cargar reseñas
+     await fetchReviews();
+     
+     // Cargar propiedades similares
+     await fetchSimilarProperties();
+     
+     // Inicializar viewCount con el valor de la API
+     // Asegurarse de que views es un número
+     property.value.views = property.value.views ? parseInt(property.value.views) : 0;
+     viewCount.value = property.value.views;
+     
+     // Incrementar contador de visitas - ahora con una pequeña demora para evitar
+     // que se haga antes de que el usuario pueda ver la página
+     setTimeout(() => {
+       incrementViewCount();
+     }, 2000);
+     
+     // Inicializar el mapa
+     setTimeout(() => {
+       initializeMap();
+     }, 300);
+     
+     showNotification('Negocio cargado correctamente', 'success');
+   } else {
+     error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo.';
+     showNotification('Error al cargar el negocio', 'error');
+   }
+ } catch (err) {
+   console.error('Error cargando el negocio:', err);
+   error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo más tarde.';
+   showNotification('Error al cargar el negocio', 'error');
+ } finally {
+   isLoading.value = false;
+ }
 };
 
 // Agregar esta función en el script
 const getActionButtonText = () => {
 if (property.value.category === 'Alojamiento') {
-  return property.value.status === 'for-rent' ? 'Reservar Ahora' : 'Contactar';
+ return property.value.status === 'for-rent' ? 'Reservar Ahora' : 'Contactar';
 } else if (property.value.category === 'Restaurante y bar') {
-  return 'Reservar Mesa';
+ return 'Reservar Mesa';
 } else if (property.value.category === 'Entretenimiento') {
-  return 'Más Información';
+ return 'Más Información';
 }
 return 'Contactar';
 };
@@ -1933,63 +1959,63 @@ const fetchSimilarProperties = async () => {
 isLoadingSimilar.value = true;
 
 try {
-  if (!property.value) return;
-  
-  // Construir parámetros de filtro para propiedades similares
-  const filters = {
-    category: property.value.category,
-    property_type: property.value.property_type,
-    include_ratings: true, // Asegurarse de incluir los ratings
-    limit: 4
-  };
-  
-  // Opcional: añadir filtros adicionales como ciudad, etc.
-  
-  // Armar la URL con los parámetros
-  const queryString = Object.entries(filters)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&');
-  
-  const response = await axios.get(`${API_URL}/properties?${queryString}`);
-  
-  if (response.data && response.data.success) {
-    // Filtrar para no incluir la propiedad actual
-    const filteredProperties = response.data.data.properties
-      .filter(p => p.id !== property.value.id)
-      .slice(0, 4);
-    
-    // Para cada propiedad, si no tiene average_rating, obtenerlo
-    for (const prop of filteredProperties) {
-      if (!prop.average_rating || !prop.review_count) {
-        try {
-          const ratingResponse = await axios.get(`${API_URL}/reviews/property/${prop.id}/rating`);
-          if (ratingResponse.data && ratingResponse.data.success) {
-            prop.average_rating = ratingResponse.data.data.averageRating;
-            prop.review_count = ratingResponse.data.data.reviewCount || 0;
-          }
-        } catch (err) {
-          console.warn(`No se pudo obtener rating para propiedad ${prop.id}:`, err);
-          // Si falla, asignar valores por defecto
-          prop.average_rating = prop.average_rating || 0;
-          prop.review_count = prop.review_count || 0;
-        }
-      }
-    }
-    
-    similarProperties.value = filteredProperties;
-    
-    if (filteredProperties.length > 0) {
-      showNotification('Se encontraron propiedades similares', 'info');
-    }
-  } else {
-    similarProperties.value = [];
-  }
+ if (!property.value) return;
+ 
+ // Construir parámetros de filtro para propiedades similares
+ const filters = {
+   category: property.value.category,
+   property_type: property.value.property_type,
+   include_ratings: true, // Asegurarse de incluir los ratings
+   limit: 4
+ };
+ 
+ // Opcional: añadir filtros adicionales como ciudad, etc.
+ 
+ // Armar la URL con los parámetros
+ const queryString = Object.entries(filters)
+   .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+   .join('&');
+ 
+ const response = await axios.get(`${API_URL}/properties?${queryString}`);
+ 
+ if (response.data && response.data.success) {
+   // Filtrar para no incluir la propiedad actual
+   const filteredProperties = response.data.data.properties
+     .filter(p => p.id !== property.value.id)
+     .slice(0, 4);
+   
+   // Para cada propiedad, si no tiene average_rating, obtenerlo
+   for (const prop of filteredProperties) {
+     if (!prop.average_rating || !prop.review_count) {
+       try {
+         const ratingResponse = await axios.get(`${API_URL}/reviews/property/${prop.id}/rating`);
+         if (ratingResponse.data && ratingResponse.data.success) {
+           prop.average_rating = ratingResponse.data.data.averageRating;
+           prop.review_count = ratingResponse.data.data.reviewCount || 0;
+         }
+       } catch (err) {
+         console.warn(`No se pudo obtener rating para negocio ${prop.id}:`, err);
+         // Si falla, asignar valores por defecto
+         prop.average_rating = prop.average_rating || 0;
+         prop.review_count = prop.review_count || 0;
+       }
+     }
+   }
+   
+   similarProperties.value = filteredProperties;
+   
+   if (filteredProperties.length > 0) {
+     showNotification('Se encontraron negocios similares', 'info');
+   }
+ } else {
+   similarProperties.value = [];
+ }
 } catch (err) {
-  console.error('Error cargando propiedades similares:', err);
-  similarProperties.value = [];
-  showNotification('Error al cargar propiedades similares', 'error');
+ console.error('Error cargando negocios similares:', err);
+ similarProperties.value = [];
+ showNotification('Error al cargar negocio similares', 'error');
 } finally {
-  isLoadingSimilar.value = false;
+ isLoadingSimilar.value = false;
 }
 };
 
@@ -2017,71 +2043,71 @@ const fetchReviews = async () => {
 loadingReviews.value = true;
 
 try {
-  // Obtener reseñas directamente de la API para evitar problemas con el store
-  const response = await axios.get(`${API_URL}/reviews`, {
-    params: { property_id: parseInt(propertyId) }
-  });
-  
-  if (response.data && response.data.success) {
-    const fetchedReviews = response.data.data.reviews || [];
-    
-    // Actualizar el store con las reseñas obtenidas
-    reviewStore.reviews = [
-      ...reviewStore.reviews.filter(r => r.property_id !== parseInt(propertyId)),
-      ...fetchedReviews
-    ];
-    
-    if (fetchedReviews.length > 0) {
-      showNotification(`Se encontraron ${fetchedReviews.length} reseñas`, 'info');
-    }
-  }
+ // Obtener reseñas directamente de la API para evitar problemas con el store
+ const response = await axios.get(`${API_URL}/reviews`, {
+   params: { property_id: parseInt(propertyId) }
+ });
+ 
+ if (response.data && response.data.success) {
+   const fetchedReviews = response.data.data.reviews || [];
+   
+   // Actualizar el store con las reseñas obtenidas
+   reviewStore.reviews = [
+     ...reviewStore.reviews.filter(r => r.property_id !== parseInt(propertyId)),
+     ...fetchedReviews
+   ];
+   
+   if (fetchedReviews.length > 0) {
+     showNotification(`Se encontraron ${fetchedReviews.length} reseñas`, 'info');
+   }
+ }
 } catch (err) {
-  console.error('Error cargando reseñas:', err);
-  showNotification('Error al cargar reseñas', 'error');
+ console.error('Error cargando reseñas:', err);
+ showNotification('Error al cargar reseñas', 'error');
 } finally {
-  loadingReviews.value = false;
+ loadingReviews.value = false;
 }
 };
 
 // Manejar like de reseña
 const handleLikeReview = async (review) => {
 try {
-  await axios.post(`${API_URL}/reviews/${review.id}/like`);
-  
-  // Actualizar la reseña localmente para mostrar el cambio inmediatamente
-  const updatedReview = { ...review, likes: (review.likes || 0) + 1 };
-  
-  // Actualizar en el store
-  const index = reviewStore.reviews.findIndex(r => r.id === review.id);
-  if (index !== -1) {
-    reviewStore.reviews[index] = updatedReview;
-  }
-  
-  showNotification('Has marcado que te gusta esta reseña', 'success');
+ await axios.post(`${API_URL}/reviews/${review.id}/like`);
+ 
+ // Actualizar la reseña localmente para mostrar el cambio inmediatamente
+ const updatedReview = { ...review, likes: (review.likes || 0) + 1 };
+ 
+ // Actualizar en el store
+ const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+ if (index !== -1) {
+   reviewStore.reviews[index] = updatedReview;
+ }
+ 
+ showNotification('Has marcado que te gusta esta reseña', 'success');
 } catch (err) {
-  console.error('Error al dar like a la reseña:', err);
-  showNotification('Error al interactuar con la reseña', 'error');
+ console.error('Error al dar like a la reseña:', err);
+ showNotification('Error al interactuar con la reseña', 'error');
 }
 };
 
 // Manejar dislike de reseña
 const handleDislikeReview = async (review) => {
 try {
-  await axios.post(`${API_URL}/reviews/${review.id}/dislike`);
-  
-  // Actualizar la reseña localmente para mostrar el cambio inmediatamente
-  const updatedReview = { ...review, dislikes: (review.dislikes || 0) + 1 };
-  
-  // Actualizar en el store
-  const index = reviewStore.reviews.findIndex(r => r.id === review.id);
-  if (index !== -1) {
-    reviewStore.reviews[index] = updatedReview;
-  }
-  
-  showNotification('Has marcado que no te gusta esta reseña', 'info');
+ await axios.post(`${API_URL}/reviews/${review.id}/dislike`);
+ 
+ // Actualizar la reseña localmente para mostrar el cambio inmediatamente
+ const updatedReview = { ...review, dislikes: (review.dislikes || 0) + 1 };
+ 
+ // Actualizar en el store
+ const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+ if (index !== -1) {
+   reviewStore.reviews[index] = updatedReview;
+ }
+ 
+ showNotification('Has marcado que no te gusta esta reseña', 'info');
 } catch (err) {
-  console.error('Error al dar dislike a la reseña:', err);
-  showNotification('Error al interactuar con la reseña', 'error');
+ console.error('Error al dar dislike a la reseña:', err);
+ showNotification('Error al interactuar con la reseña', 'error');
 }
 };
 
@@ -2096,75 +2122,75 @@ newReview.value.property_id = parseInt(propertyId);
 const submitReview = async () => {
 // Validación básica
 if (!newReview.value.rating) {
-  showNotification('Por favor asigne una calificación', 'error');
-  return;
+ showNotification('Por favor asigne una calificación', 'error');
+ return;
 }
 
 submittingReview.value = true;
 
 try {
-  // Obtener datos del usuario del store
-  const user = authStore.user || JSON.parse(localStorage.getItem('user') || '{}');
-  
-  if (!user || !user.id) {
-    throw new Error('No hay información de usuario disponible. Por favor, inicia sesión nuevamente.');
-  }
-  
-  // Preparar los datos para la API, incluyendo user_id
-  const reviewData = {
-    property_id: parseInt(propertyId),
-    rating: parseInt(newReview.value.rating),
-    comment: newReview.value.comment || '',
-    user_id: user.id,
-    // Opcionalmente, incluir nombre para que el backend no tenga que buscarlo
-    reviewer_name: `${user.first_name || ''} ${user.last_name || ''}`.trim()
-  };
-  
-  console.log('Enviando reseña con datos:', reviewData);
-  
-  // Enviar sin token
-  const response = await axios.post(`${API_URL}/reviews`, reviewData);
-  
-  if (response.data && response.data.success) {
-    // Cerrar modal y limpiar formulario
-    showReviewModal.value = false;
-    newReview.value = {
-      property_id: parseInt(propertyId),
-      rating: 0,
-      comment: ''
-    };
-    
-    // Recargar reseñas
-    await fetchReviews();
-    
-    showNotification('¡Gracias por tu reseña!', 'success');
-  } else {
-    throw new Error(response.data?.message || 'Error al crear la reseña');
-  }
+ // Obtener datos del usuario del store
+ const user = authStore.user || JSON.parse(localStorage.getItem('user') || '{}');
+ 
+ if (!user || !user.id) {
+   throw new Error('No hay información de usuario disponible. Por favor, inicia sesión nuevamente.');
+ }
+ 
+ // Preparar los datos para la API, incluyendo user_id
+ const reviewData = {
+   property_id: parseInt(propertyId),
+   rating: parseInt(newReview.value.rating),
+   comment: newReview.value.comment || '',
+   user_id: user.id,
+   // Opcionalmente, incluir nombre para que el backend no tenga que buscarlo
+   reviewer_name: `${user.first_name || ''} ${user.last_name || ''}`.trim()
+ };
+ 
+ console.log('Enviando reseña con datos:', reviewData);
+ 
+ // Enviar sin token
+ const response = await axios.post(`${API_URL}/reviews`, reviewData);
+ 
+ if (response.data && response.data.success) {
+   // Cerrar modal y limpiar formulario
+   showReviewModal.value = false;
+   newReview.value = {
+     property_id: parseInt(propertyId),
+     rating: 0,
+     comment: ''
+   };
+   
+   // Recargar reseñas
+   await fetchReviews();
+   
+   showNotification('¡Gracias por tu reseña!', 'success');
+ } else {
+   throw new Error(response.data?.message || 'Error al crear la reseña');
+ }
 } catch (err) {
-  console.error('Error al enviar reseña:', err);
-  showNotification('Error al enviar la reseña: ' + (err.message || 'Intenta nuevamente'), 'error');
+ console.error('Error al enviar reseña:', err);
+ showNotification('Error al enviar la reseña: ' + (err.message || 'Intenta nuevamente'), 'error');
 } finally {
-  submittingReview.value = false;
+ submittingReview.value = false;
 }
 };
 
 // Observar cambios en el ID de la propiedad (para navegación entre propiedades)
 watch(() => route.params.id, (newId, oldId) => {
 if (newId !== oldId) {
-  propertyId = newId;
-  fetchPropertyData();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+ propertyId = newId;
+ fetchPropertyData();
+ window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 });
 
 // Observar cambios en la propiedad para actualizar el mapa
 watch(() => property.value, (newProperty) => {
 if (newProperty && newProperty.lat && newProperty.lng) {
-  // Dar tiempo para que el DOM se actualice
-  setTimeout(() => {
-    initializeMap();
-  }, 300);
+ // Dar tiempo para que el DOM se actualice
+ setTimeout(() => {
+   initializeMap();
+ }, 300);
 }
 }, { deep: true });
 
@@ -2175,17 +2201,17 @@ await fetchPropertyData();
 
 // Inicializar el store de autenticación si es necesario
 if (!authStore.isInitialized) {
-  authStore.initialize();
+ authStore.initialize();
 }
 
 // Cargar favoritos
 await favoritesStore.fetchFavorites();
 
- // Cargar email recordado si existe
+// Cargar email recordado si existe
 const rememberedEmail = localStorage.getItem('rememberedEmail');
 if (rememberedEmail) {
-  loginForm.value.email = rememberedEmail;
-  loginForm.value.remember = true;
+ loginForm.value.email = rememberedEmail;
+ loginForm.value.remember = true;
 }
 });
 </script>
@@ -2231,7 +2257,7 @@ span.star,
 [class*="stars"] ★,
 [class*="rating"] .material-icons,
 ★ {
- color: #facc15 !important; /* Amarillo brillante para todas las estrellas */
+color: #facc15 !important; /* Amarillo brillante para todas las estrellas */
 }
 
 /* Estilos globales para estrellas inactivas */
@@ -2245,16 +2271,16 @@ span.star:not(.active),
 [class*="stars"]:not(.active) ★,
 [class*="rating"] .material-icons:not(.active),
 ★:not(.active) {
- color: #d1d5db !important; /* Gris muy claro para estrellas inactivas */
+color: #d1d5db !important; /* Gris muy claro para estrellas inactivas */
 }
 
 /* Reglas específicas para estrellas en ratings */
 .flex.text-yellow-400 .material-icons {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 .flex.text-yellow-400 .material-icons.text-gray-300 {
- color: #d1d5db !important;
+color: #d1d5db !important;
 }
 
 /* Estilos para caracteres Unicode de estrellas */
@@ -2263,7 +2289,7 @@ span.star:not(.active),
 .star-rating,
 [class*="rating"],
 [class*="stars"] {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 /* Estilo para botones like/dislike */
@@ -2302,13 +2328,13 @@ margin-left: 4px;
 
 /* Animación cuando cambia el contador */
 @keyframes pulse {
-0% { transform: scale(1); }
-50% { transform: scale(1.1); }
-100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: #fd5631; }
+  100% { transform: scale(1); }
 }
 
-.view-counter .view-count.updated {
-animation: pulse 0.5s ease-in-out;
+.view-count.updated {
+  animation: pulse 0.5s ease-in-out;
 }
 
 /* Estilos para inputs en formularios */
@@ -2498,21 +2524,21 @@ transition-duration: 300ms;
 /* Efectos de aparición y desaparición */
 @keyframes slideInRight {
 from {
- transform: translateX(100%);
- opacity: 0;
+transform: translateX(100%);
+opacity: 0;
 }
 to {
- transform: translateX(0);
- opacity: 1;
+transform: translateX(0);
+opacity: 1;
 }
 }
 
 @keyframes fadeOut {
 from {
- opacity: 1;
+opacity: 1;
 }
 to {
- opacity: 0;
+opacity: 0;
 }
 }
 
@@ -2548,10 +2574,10 @@ font-size: 16px;
 /* Responsive */
 @media (max-width: 640px) {
 .fixed.bottom-4.right-4 {
- bottom: 1rem;
- right: 1rem;
- left: 1rem;
- width: auto;
+bottom: 1rem;
+right: 1rem;
+left: 1rem;
+width: auto;
 }
 }
 
@@ -2560,13 +2586,13 @@ font-size: 16px;
 .flex .flex ★,
 .reviews-section ★,
 .star-rating ★ {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 /* !important es necesario para anular cualquier otro estilo */
 * {
- --star-color-active: #facc15 !important;
- --star-color-inactive: #d1d5db !important;
+--star-color-active: #facc15 !important;
+--star-color-inactive: #d1d5db !important;
 }
 
 /* Regla de prioridad máxima para asegurar que se aplique */
@@ -2576,7 +2602,7 @@ body span.text-yellow-400,
 body div.text-yellow-400,
 html .material-icons.text-yellow-400,
 html .star-icon.text-yellow-400 {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 body .material-icons.text-gray-300,
@@ -2585,6 +2611,6 @@ body span.text-gray-300,
 body div.text-gray-300,
 html .material-icons.text-gray-300,
 html .star-icon.text-gray-300 {
- color: #d1d5db !important;
+color: #d1d5db !important;
 }
 </style>
