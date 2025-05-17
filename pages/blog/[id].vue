@@ -190,7 +190,7 @@
             <h3 class="text-xl font-bold mb-4">Comentarios ({{ commentCount }})</h3>
             
             <div v-if="comments.length > 0">
-              <div v-for="(comment, index) in comments" :key="comment.id || index" class="mb-6 border-b pb-6 last:border-b-0">
+              <div v-for="(comment, index) in displayedComments" :key="comment.id || index" class="mb-6 border-b pb-6 last:border-b-0">
                 <div class="flex">
                   <div class="mr-4">
                     <div class="rounded-full w-10 h-10 overflow-hidden">
@@ -232,6 +232,39 @@
                   </div>
                 </div>
               </div>
+              
+             <!-- Paginación para comentarios -->
+<div class="flex justify-center mt-6" v-if="comments.length > commentsPerPage">
+  <div class="flex">
+    <button 
+      @click="changePage('prev')"
+      :disabled="commentPage === 1"
+      class="mx-1 px-3 py-1 rounded"
+      :class="commentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-orange-500 text-white hover:bg-orange-600'"
+    >
+      Anterior
+    </button>
+    
+    <button 
+      v-for="page in totalCommentPages" 
+      :key="page" 
+      @click="changePage(page)"
+      class="mx-1 px-3 py-1 rounded"
+      :class="commentPage === page ? 'bg-orange-600 text-white' : 'bg-orange-500 text-white hover:bg-orange-600'"
+    >
+      {{ page }}
+    </button>
+    
+    <button 
+      @click="changePage('next')"
+      :disabled="commentPage === totalCommentPages"
+      class="mx-1 px-3 py-1 rounded"
+      :class="commentPage === totalCommentPages ? 'bg-gray-200 text-gray-500' : 'bg-orange-500 text-white hover:bg-orange-600'"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>
             </div>
             
             <div v-else class="py-4 text-center text-gray-500">
@@ -635,6 +668,10 @@ const newComment = ref({
   content: ''
 })
 
+// Variables para paginación de comentarios
+const commentsPerPage = 5
+const commentPage = ref(1)
+
 // Variables para notificaciones
 const notification = ref({
   show: false,
@@ -686,6 +723,28 @@ const translateCategory = (category) => {
   
   return translations[category] || category
 }
+
+// Propiedades computadas para la paginación de comentarios
+const sortedComments = computed(() => {
+  return [...comments.value].sort((a, b) => {
+    // Ordenar por fecha más reciente primero
+    const dateA = new Date(a.created_at || a.date || 0)
+    const dateB = new Date(b.created_at || b.date || 0)
+    return dateB - dateA
+  })
+})
+
+// Total de páginas para comentarios
+const totalCommentPages = computed(() => {
+  return Math.ceil(comments.value.length / commentsPerPage)
+})
+
+// Comentarios a mostrar según la página actual
+const displayedComments = computed(() => {
+  const start = (commentPage.value - 1) * commentsPerPage
+  const end = start + commentsPerPage
+  return sortedComments.value.slice(start, end)
+})
 
 // Inicializar el store de autenticación si no lo está ya
 onMounted(() => {
@@ -904,6 +963,32 @@ const handleLogin = async () => {
   }
 };
 
+// Función para cambiar de página y hacer scroll al inicio de los comentarios
+const changePage = (page) => {
+  if (page === 'prev') {
+    if (commentPage.value > 1) {
+      commentPage.value--;
+    }
+  } else if (page === 'next') {
+    if (commentPage.value < totalCommentPages.value) {
+      commentPage.value++;
+    }
+  } else {
+    commentPage.value = page;
+  }
+  
+  // Pequeño tiempo de espera para asegurar que el DOM se actualiza antes de hacer scroll
+  setTimeout(() => {
+    // Buscar el elemento de título de comentarios para hacer scroll hasta él
+    const commentSectionTitle = document.querySelector('.reviews-section h3') || 
+                               document.querySelector('.mb-10 h3');
+    
+    if (commentSectionTitle) {
+      commentSectionTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 50);
+};
+
 // Vigilar cambios en la ruta o en el estado de autenticación
 watch([
   () => route.params.id,
@@ -920,7 +1005,6 @@ const redirectToLogin = () => {
   // Mostrar el modal de login
   showLoginModal.value = true
 }
-
 
 // Función simplificada para enviar un comentario
 const submitComment = async () => {
