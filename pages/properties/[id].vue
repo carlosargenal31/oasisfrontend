@@ -291,26 +291,25 @@
           </div>
           
 
-          <!-- Ubicación en mapa -->
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
-            <div class="relative mb-3">
-              <!-- Mapa interactivo de Leaflet -->
-              <div id="propertyMap" class="w-full h-[200px] rounded-md"></div>
-              
-              <!-- Botón para abrir modal de direcciones -->
-              <div class="absolute bottom-3 right-3">
-                <button @click="openDirectionsModal" class="bg-orange-800 text-white py-2 px-4 rounded-md hover:bg-orange-900 transition-colors flex items-center">
-                  <span class="material-icons mr-2">directions</span>
-                  Cómo llegar
-                </button>
-              </div>
-            </div>
-            <!-- Dirección debajo del mapa -->
-            <p class="text-center text-black text-sm mt-2">
-              {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
-            </p>
-          </div>
+        <!-- Ubicación en mapa -->
+<div class="bg-gray-50 rounded-lg p-6 mb-6">
+  <h3 class="location-title text-xl font-bold text-black mb-4">Ubicación</h3>
+  <div class="relative mb-3">
+    <!-- Mapa interactivo de Leaflet -->
+    <div id="propertyMap" class="w-full h-[200px] rounded-md"></div>
+  </div>
+  <!-- Dirección debajo del mapa -->
+  <p class="text-center text-black text-sm mt-2">
+    {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+  </p>
+  <!-- Botón "Cómo llegar" ahora está debajo del mapa -->
+  <div class="flex justify-center mt-3">
+    <button @click="openDirectionsModal" class="bg-orange-800 text-white py-2 px-4 rounded-md hover:bg-orange-900 transition-colors flex items-center">
+      <span class="material-icons mr-2">directions</span>
+      Cómo llegar
+    </button>
+  </div>
+</div>
           
           <!-- Comodidades -->
           <div class="bg-gray-50 rounded-lg p-6 mb-6">
