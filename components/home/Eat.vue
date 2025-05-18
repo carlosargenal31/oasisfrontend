@@ -1,7 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Importar el router
 import { usePropertyService } from '~/services/propertyService';
 import EstrellaRating from '~/components/EstrellaRating.vue'; // Importamos el componente de estrellas
+
+// Inicializar el router
+const router = useRouter();
 
 // Inicializar el servicio de propiedades
 const propertyService = usePropertyService();
@@ -10,6 +14,11 @@ const propertyService = usePropertyService();
 const restaurants = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
+
+// Función para navegar a la página de detalles del restaurante
+const navigateToProperty = (propertyId) => {
+  router.push(`/properties/${propertyId}`);
+};
 
 // Obtener restaurantes para cada columna
 const leftColumnRestaurants = computed(() => {
@@ -196,12 +205,28 @@ onMounted(() => {
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- COLUMNA IZQUIERDA -->
       <div>
-        <!-- Restaurante 1 -->
-        <div v-for="restaurant in leftColumnRestaurants" :key="restaurant.id" 
-             class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all">
-          <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-            <div class="text-3xl text-gray-400 font-light">R</div>
+        <!-- Restaurantes en la columna izquierda -->
+        <div 
+          v-for="restaurant in leftColumnRestaurants" 
+          :key="restaurant.id" 
+          class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
+          @click="navigateToProperty(restaurant.id)"
+        >
+          <!-- Imagen del restaurante -->
+          <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
+            <img 
+              v-if="restaurant.image" 
+              :src="restaurant.image" 
+              :alt="restaurant.name"
+              class="w-full h-full object-cover"
+              @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
+            />
+            <!-- Imagen de respaldo si no hay imagen -->
+            <div v-else class="w-full h-full bg-white flex items-center justify-center">
+              <div class="text-3xl text-gray-400 font-light">R</div>
+            </div>
           </div>
+          
           <div class="flex-1 min-w-0">
             <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
             
@@ -237,12 +262,28 @@ onMounted(() => {
       
       <!-- COLUMNA DERECHA -->
       <div>
-        <!-- Restaurante 2 -->
-        <div v-for="restaurant in rightColumnRestaurants" :key="restaurant.id" 
-             class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all">
-          <div class="w-16 h-16 flex-shrink-0 bg-white rounded-lg flex items-center justify-center mr-4">
-            <div class="text-3xl text-gray-400 font-light">R</div>
+        <!-- Restaurantes en la columna derecha -->
+        <div 
+          v-for="restaurant in rightColumnRestaurants" 
+          :key="restaurant.id" 
+          class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
+          @click="navigateToProperty(restaurant.id)"
+        >
+          <!-- Imagen del restaurante -->
+          <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
+            <img 
+              v-if="restaurant.image" 
+              :src="restaurant.image" 
+              :alt="restaurant.name"
+              class="w-full h-full object-cover"
+              @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
+            />
+            <!-- Imagen de respaldo si no hay imagen -->
+            <div v-else class="w-full h-full bg-white flex items-center justify-center">
+              <div class="text-3xl text-gray-400 font-light">R</div>
+            </div>
           </div>
+          
           <div class="flex-1 min-w-0">
             <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
             
@@ -389,5 +430,15 @@ onMounted(() => {
 /* Ajustamos el flex-shrink para que los iconos no se reduzcan */
 .flex-shrink-0 {
   flex-shrink: 0;
+}
+
+/* Indicador visual de que los elementos son clicables */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Mejorar el efecto de hover */
+.cursor-pointer:hover {
+  background-color: #F3F4F6;
 }
 </style>
