@@ -1,7 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Importar el router
 import { usePropertyService } from '~/services/propertyService';
-import EstrellaRating from '~/components/EstrellaRating.vue'; // Importamos el componente de estrellas
+import EstrellaRating from '~/components/EstrellaRating.vue';
+
+// Inicializar el router
+const router = useRouter();
 
 // Inicializar el servicio de propiedades
 const propertyService = usePropertyService();
@@ -15,6 +19,11 @@ const error = ref(null);
 const currentIndex = ref(0);
 const visibleCount = ref(3); // Número de elementos visibles a la vez en pantallas grandes
 
+// Función para navegar a la página de detalles de la propiedad
+const navigateToProperty = (propertyId) => {
+  router.push(`/properties/${propertyId}`);
+};
+
 // Función para cargar los alojamientos desde la API
 const loadAccommodations = async () => {
   isLoading.value = true;
@@ -22,20 +31,16 @@ const loadAccommodations = async () => {
   
   try {
     // Llamada a la API para obtener propiedades de la categoría "Alojamiento"
-    
     const result = await propertyService.getPropertiesByCategoryFeatured('Alojamiento', {
       limit: 20, // Pedir más propiedades para tener suficientes para el carrusel
       sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero (ya que ordenaremos por rating después)
     });
     
     if (result && result.success) {
-      
-      
       // Transformar las propiedades al formato que necesitamos para el carrusel
       const properties = result.data.properties || [];
       
       if (properties.length === 0) {
-        
         error.value = 'No se encontraron alojamientos disponibles';
         accommodations.value = [];
       } else {
@@ -53,8 +58,6 @@ const loadAccommodations = async () => {
           isFavorite: false // Por defecto no es favorito
         }));
         
-        
-        
         // Guardamos las propiedades en el estado
         accommodations.value = transformedProperties;
         
@@ -66,12 +69,10 @@ const loadAccommodations = async () => {
       }
     } else {
       // Si hay un error en la respuesta
-      
       error.value = 'No se pudieron cargar los alojamientos';
       accommodations.value = [];
     }
   } catch (err) {
-    
     error.value = 'Error al cargar los alojamientos';
     accommodations.value = [];
   } finally {
@@ -287,8 +288,12 @@ onMounted(() => {
       <!-- Grid de alojamientos -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-hidden">
         <!-- Property Card - Iterate through visible items -->
-        <div v-for="accommodation in visibleItems" :key="accommodation.id" 
-             class="bg-white rounded-lg overflow-hidden shadow-md">
+        <div 
+          v-for="accommodation in visibleItems" 
+          :key="accommodation.id" 
+          class="bg-white rounded-lg overflow-hidden shadow-md cursor-pointer"
+          @click="navigateToProperty(accommodation.id)"
+        >
           <!-- Property Image -->
           <div class="relative">
             <img 
@@ -298,7 +303,7 @@ onMounted(() => {
               @error="$event.target.src = 'https://placehold.co/600x400?text=Sin+Imagen'"
             />
             <button 
-              @click="toggleFavorite(accommodation.id)" 
+              @click.stop="toggleFavorite(accommodation.id)" 
               class="absolute top-3 right-3 bg-white rounded-full p-2 shadow heart-btn"
               :class="{ 'favorite': accommodation.isFavorite }"
             >
@@ -325,9 +330,6 @@ onMounted(() => {
             
             <!-- Estrellas de calificación - Usando el componente EstrellaRating -->
             <div class="flex items-center mb-3 estrella-rating-container" style="color: #FBBF24">
-              <!-- Para propósitos de depuración, muestra el valor del rating directamente (ocultar en producción) -->
-           
-              
               <!-- Componente EstrellaRating con clases adicionales para forzar estilos -->
               <div class="estrellas-wrapper" style="color: #FBBF24 !important;">
                 <estrella-rating 
@@ -351,7 +353,6 @@ onMounted(() => {
               </svg>
               <span class="text-sm text-gray-600">{{ accommodation.phone }}</span>
             </div>
-            
           </div>
         </div>
       </div>
@@ -368,7 +369,7 @@ onMounted(() => {
       </button>
       
       <!-- Indicador de paginación (puntos) -->
-      <div v-if="accommodations.length > visibleCount.value" class="flex justify-center mt-6">
+      <div v-if="accommodations.length > visibleCount" class="flex justify-center mt-6">
         <button 
           v-for="i in Math.ceil(accommodations.length / visibleCount)" 
           :key="i" 
@@ -428,5 +429,15 @@ onMounted(() => {
   min-width: 16px;
   min-height: 16px;
   color: inherit;
+}
+
+/* Añadir efecto hover para indicar que el elemento es clicable */
+.cursor-pointer {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cursor-pointer:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 </style>

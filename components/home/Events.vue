@@ -1,49 +1,218 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // Importar el router
+import eventService from '~/services/eventService'; // Importar el servicio de eventos
 
-// Datos de eventos con imágenes de ejemplo
-const events = ref([
-  {
-    id: 1,
-    name: 'Simon Rock Concert',
-    image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    date: 'Nov 15',
-    time: '21:00',
-    price: '$50',
-    isFavorite: false
-  },
-  {
-    id: 2,
-    name: 'Holi Festival',
-    image: 'https://images.unsplash.com/photo-1530988516432-a8e4a6aac9df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    date: 'Dec 2',
-    time: '10:00',
-    price: '$35',
-    isFavorite: false
-  },
-  {
-    id: 3,
-    name: 'Football Match',
-    image: 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    date: 'Nov 11',
-    time: '18:00',
-    price: '$40',
-    isFavorite: false
-  },
-  {
-    id: 4,
-    name: 'Tech Conference',
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    date: 'Nov 25',
-    time: '09:00',
-    price: '$75',
-    isFavorite: false
-  }
-]);
+// Inicializar el router
+const router = useRouter();
+
+// Estado para eventos
+const events = ref([]);
+const isLoading = ref(true);
+const error = ref(null);
 
 // Para la navegación del slider
 const currentIndex = ref(0);
 const visibleCount = ref(2); // Número de elementos visibles en pantallas grandes
+
+// Función para navegar a la página de detalles del evento
+const navigateToEvent = (eventId) => {
+  router.push(`/events/${eventId}`);
+};
+
+// Función para cargar los eventos destacados desde la API
+const loadFeaturedEvents = async () => {
+  isLoading.value = true;
+  error.value = null;
+  
+  try {
+    // Obtener eventos destacados desde la API
+    const result = await eventService.getFeaturedEvents(4); // Obtener 4 eventos destacados
+    
+    if (result && result.data && result.data.data) {
+      // Transformar los eventos al formato que necesitamos para el carrusel
+      const transformedEvents = result.data.data.map(event => ({
+        id: event.id,
+        name: event.event_name || event.title || '', 
+        image: event.image_url || getDefaultImage(event.id),
+        date: formatDate(event.event_date),
+        time: formatTime(event.event_time),
+        price: formatPrice(event.price),
+        location: event.location,
+        type: translateEventType(event.event_type),
+        isFavorite: false // Por defecto no es favorito
+      }));
+      
+      console.log('Eventos destacados transformados:', transformedEvents);
+      
+      // Guardar eventos en el estado
+      events.value = transformedEvents;
+      
+    } else {
+      // Si no hay eventos, usar datos de fallback
+      console.warn('No se encontraron eventos destacados en la respuesta de la API, usando fallback');
+      useFallbackEvents();
+    }
+  } catch (err) {
+    console.error('Error al cargar eventos destacados:', err);
+    error.value = 'Error al cargar los eventos destacados';
+    // En caso de error, usar datos de fallback
+    useFallbackEvents();
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Función para traducir tipos de eventos al español
+const translateEventType = (type) => {
+  if (!type) return '';
+  
+  const translations = {
+    'festival': 'Festival',
+    'concierto': 'Concierto',
+    'feria': 'Feria',
+    'taller': 'Taller',
+    'conferencia': 'Conferencia',
+    'webinar': 'Webinar',
+    'curso': 'Curso',
+    'exposición': 'Exposición',
+    'networking': 'Networking'
+  }
+  
+  return translations[type] || type.charAt(0).toUpperCase() + type.slice(1);
+};
+
+// Función para usar datos de fallback en caso de error
+const useFallbackEvents = () => {
+  // Datos de eventos para fallback
+  events.value = [
+    {
+      id: 1,
+      name: 'Simon Rock Concert',
+      image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+      date: '15 de noviembre, 2025',
+      time: '9:00 PM',
+      price: 'L. 50.00',
+      location: 'Teatro Manuel Bonilla, La Ceiba',
+      type: 'Concierto',
+      isFavorite: false
+    },
+    {
+      id: 2,
+      name: 'Holi Festival de Colores',
+      image: 'https://images.unsplash.com/photo-1530988516432-a8e4a6aac9df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+      date: '2 de diciembre, 2025',
+      time: '10:00 AM',
+      price: 'L. 35.00',
+      location: 'Parque Central, La Ceiba',
+      type: 'Festival',
+      isFavorite: false
+    },
+    {
+      id: 3,
+      name: 'Torneo de Fútbol Catracho',
+      image: 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+      date: '11 de noviembre, 2025',
+      time: '6:00 PM',
+      price: 'L. 40.00',
+      location: 'Estadio Ceibeño, La Ceiba',
+      type: 'Deporte',
+      isFavorite: false
+    },
+    {
+      id: 4,
+      name: 'Conferencia TechCeiba 2025',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+      date: '25 de noviembre, 2025',
+      time: '9:00 AM',
+      price: 'L. 75.00',
+      location: 'Centro de Convenciones, La Ceiba',
+      type: 'Conferencia',
+      isFavorite: false
+    }
+  ];
+};
+
+// Función para formatear fechas (formato español)
+const formatDate = (dateString) => {
+  if (!dateString) return 'Próximamente';
+  
+  try {
+    const date = new Date(dateString);
+    // Opciones para formato español
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    
+    return date.toLocaleDateString('es-ES', options);
+  } catch (error) {
+    console.error('Error al formatear fecha:', error);
+    return dateString;
+  }
+};
+
+// Función para formatear la hora
+const formatTime = (timeString) => {
+  if (!timeString) return 'Hora por confirmar';
+  
+  // Convertir formato HH:MM:SS a HH:MM AM/PM
+  if (timeString.includes(':')) {
+    const [hour, minute] = timeString.split(':');
+    const hourNum = parseInt(hour);
+    
+    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const hour12 = hourNum % 12 || 12;
+    
+    return `${hour12}:${minute} ${ampm}`;
+  }
+  
+  return timeString;
+};
+
+// Función para formatear el precio
+const formatPrice = (price) => {
+  if (price === 0 || price === '0' || price === '0.00') {
+    return 'Gratis';
+  }
+  
+  if (typeof price === 'number') {
+    return `L. ${price.toFixed(2)}`;
+  }
+  
+  if (typeof price === 'string' && price.startsWith('L.')) {
+    return price;
+  }
+  
+  return `L. ${price}`;
+};
+
+// Función para obtener imagen por defecto según ID
+const getDefaultImage = (id) => {
+  // Devolver una imagen predeterminada según el ID
+  const images = [
+    '/images/events/default1.jpg',
+    '/images/events/default2.jpg',
+    '/images/events/default3.jpg',
+    '/images/events/default4.jpg',
+    '/images/events/default5.jpg'
+  ];
+  
+  // Como fallback alternativo si no hay imágenes disponibles
+  const unsplashImages = [
+    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80',
+    'https://images.unsplash.com/photo-1530988516432-a8e4a6aac9df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80',
+    'https://images.unsplash.com/photo-1486286701208-1d58e9338013?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80',
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80'
+  ];
+  
+  const index = id ? (id % images.length) : 0;
+  return images[index] || unsplashImages[index % unsplashImages.length];
+};
+
+// Obtener eventos para visualización en el carrusel
+const visibleItems = computed(() => {
+  const startIndex = currentIndex.value;
+  const endIndex = Math.min(startIndex + visibleCount.value, events.value.length);
+  return events.value.slice(startIndex, endIndex);
+});
 
 // Función para ir al slide anterior
 const prevSlide = () => {
@@ -51,7 +220,7 @@ const prevSlide = () => {
     currentIndex.value--;
   } else {
     // Volver al final si estamos al principio
-    currentIndex.value = events.value.length - visibleCount.value;
+    currentIndex.value = Math.max(0, events.value.length - visibleCount.value);
   }
 };
 
@@ -65,13 +234,6 @@ const nextSlide = () => {
   }
 };
 
-// Calcular los elementos visibles según el índice actual
-const visibleItems = computed(() => {
-  const startIndex = currentIndex.value;
-  const endIndex = Math.min(startIndex + visibleCount.value, events.value.length);
-  return events.value.slice(startIndex, endIndex);
-});
-
 // Función para alternar favoritos
 const toggleFavorite = (id) => {
   const event = events.value.find(item => item.id === id);
@@ -80,179 +242,80 @@ const toggleFavorite = (id) => {
   }
 };
 
-// Para filtros de fecha
-const selectedDate = ref(null);
-const selectedMonth = ref('May');
-const selectedYear = ref('2025');
-
-const filterByDate = (filter) => {
-  selectedDate.value = filter;
-  // Aquí iría la lógica de filtrado basada en el filtro seleccionado
-  currentIndex.value = 0; // Resetea al principio cuando cambia el filtro
-};
-
-// Estado del datepicker
-const showDatepicker = ref(false);
-
-// Función para mostrar/ocultar el datepicker
-const toggleDatepicker = () => {
-  showDatepicker.value = !showDatepicker.value;
-};
-
-// Función para seleccionar una fecha
-const selectDate = (day, month) => {
-  selectedDate.value = `${day} ${month}`;
-  // Aquí iría la lógica para filtrar eventos por la fecha seleccionada
-  showDatepicker.value = false; // Cierra el datepicker
-};
-
-// Función para cambiar de mes
-const changeMonth = (direction) => {
-  // Aquí iría la lógica para cambiar el mes (anterior/siguiente)
-  // Por simplicidad, no implementamos esta funcionalidad completa
-};
+// Cargar eventos al montar el componente
+onMounted(() => {
+  loadFeaturedEvents();
+  
+  // Ajustar la cantidad visible según el ancho de la pantalla
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      visibleCount.value = 1;
+    } else {
+      visibleCount.value = 2;
+    }
+  };
+  
+  // Configurar el listener para resize
+  handleResize();
+  window.addEventListener('resize', handleResize);
+  
+  // Limpiar listener al desmontar
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+});
 </script>
 
 <template>
   <section class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Encabezado con título y filtros de fecha -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <!-- Encabezado con título -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
         ¡La Ceiba está que arde! Próximos eventos
       </h2>
       
-      <!-- Filtros de fecha -->
-      <div class="flex items-center space-x-3">
-        <!-- Selector de fecha -->
-        <div class="relative">
-          <button 
-            @click="toggleDatepicker"
-            class="pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white focus:outline-none text-gray-500"
-            :class="{'border-orange-200 bg-orange-50': showDatepicker}"
-          >
-            Choose date
-          </button>
-          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          
-          <!-- Datepicker (oculto por defecto) -->
-          <div v-if="showDatepicker" class="absolute top-12 left-0 z-50 bg-white rounded-lg shadow-lg p-4 w-80">
-            <!-- Navegación del mes y año -->
-            <div class="flex justify-between items-center mb-4">
-              <button class="p-1 text-black hover:text-gray-600">&lt;</button>
-              <div class="flex items-center">
-                <span class="text-lg font-medium text-black">May</span>
-                <svg class="w-4 h-4 ml-1 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-                <span class="text-lg font-medium ml-3 text-black">2025</span>
-              </div>
-              <button class="p-1 text-black hover:text-gray-600">&gt;</button>
-            </div>
-            
-            <!-- Días de la semana -->
-            <div class="grid grid-cols-7 text-center mb-2">
-              <div class="text-black font-medium">Sun</div>
-              <div class="text-black font-medium">Mon</div>
-              <div class="text-black font-medium">Tue</div>
-              <div class="text-black font-medium">Wed</div>
-              <div class="text-black font-medium">Thu</div>
-              <div class="text-black font-medium">Fri</div>
-              <div class="text-black font-medium">Sat</div>
-            </div>
-            
-            <!-- Días del mes -->
-            <div class="grid grid-cols-7 gap-y-2 text-center">
-              <!-- Primera semana (días anteriores en gris claro) -->
-              <button @click="selectDate(27, 'Apr')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">27</button>
-              <button @click="selectDate(28, 'Apr')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">28</button>
-              <button @click="selectDate(29, 'Apr')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">29</button>
-              <button @click="selectDate(30, 'Apr')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">30</button>
-              <button @click="selectDate(1, 'May')" class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 font-medium hover:bg-orange-200">1</button>
-              <button @click="selectDate(2, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">2</button>
-              <button @click="selectDate(3, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">3</button>
-              
-              <!-- Segunda semana -->
-              <button @click="selectDate(4, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">4</button>
-              <button @click="selectDate(5, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">5</button>
-              <button @click="selectDate(6, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">6</button>
-              <button @click="selectDate(7, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">7</button>
-              <button @click="selectDate(8, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">8</button>
-              <button @click="selectDate(9, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">9</button>
-              <button @click="selectDate(10, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">10</button>
-              
-              <!-- Tercera semana -->
-              <button @click="selectDate(11, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">11</button>
-              <button @click="selectDate(12, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">12</button>
-              <button @click="selectDate(13, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">13</button>
-              <button @click="selectDate(14, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">14</button>
-              <button @click="selectDate(15, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">15</button>
-              <button @click="selectDate(16, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">16</button>
-              <button @click="selectDate(17, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">17</button>
-              
-              <!-- Cuarta semana -->
-              <button @click="selectDate(18, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">18</button>
-              <button @click="selectDate(19, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">19</button>
-              <button @click="selectDate(20, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">20</button>
-              <button @click="selectDate(21, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">21</button>
-              <button @click="selectDate(22, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">22</button>
-              <button @click="selectDate(23, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">23</button>
-              <button @click="selectDate(24, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">24</button>
-              
-              <!-- Quinta semana -->
-              <button @click="selectDate(25, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">25</button>
-              <button @click="selectDate(26, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">26</button>
-              <button @click="selectDate(27, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">27</button>
-              <button @click="selectDate(28, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">28</button>
-              <button @click="selectDate(29, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">29</button>
-              <button @click="selectDate(30, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">30</button>
-              <button @click="selectDate(31, 'May')" class="w-10 h-10 text-black hover:bg-gray-100 rounded-full">31</button>
-              
-              <!-- Sexta semana (días del siguiente mes en gris) -->
-              <button @click="selectDate(1, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">1</button>
-              <button @click="selectDate(2, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">2</button>
-              <button @click="selectDate(3, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">3</button>
-              <button @click="selectDate(4, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">4</button>
-              <button @click="selectDate(5, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">5</button>
-              <button @click="selectDate(6, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">6</button>
-              <button @click="selectDate(7, 'Jun')" class="w-10 h-10 text-gray-400 hover:bg-gray-100 rounded-full">7</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Botones de filtro rápido -->
-        <button 
-          @click="filterByDate('tomorrow')" 
-          class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition"
-          :class="{'bg-orange-100 text-orange-700': selectedDate === 'tomorrow'}"
-        >
-          Tomorrow
-        </button>
-        <button 
-          @click="filterByDate('weekend')" 
-          class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium transition"
-          :class="{'bg-orange-100 text-orange-700': selectedDate === 'weekend'}"
-        >
-          This weekend
-        </button>
-        
-        <!-- Ver todos los eventos -->
-        <a href="/events/grid" class="text-orange-600 font-medium flex items-center hover:underline ml-3">
-          Ver todo
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </a>
-      </div>
+      <!-- Enlace para ver todos los eventos -->
+      <a href="/events/grid" class="text-orange-600 font-medium flex items-center hover:underline">
+        Ver todo
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Estado de carga -->
+    <div v-if="isLoading" class="flex justify-center items-center py-20">
+      <div class="spinner border-4 border-gray-200 border-t-orange-500 rounded-full w-10 h-10 animate-spin"></div>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div v-else-if="error" class="text-center py-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-orange-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <p class="text-lg text-gray-800 mb-4">{{ error }}</p>
+      <button 
+        @click="loadFeaturedEvents" 
+        class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
+      >
+        Intentar de nuevo
+      </button>
+    </div>
+
+    <!-- Mensaje si no hay eventos -->
+    <div v-else-if="events.length === 0" class="text-center py-20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      <p class="text-lg text-gray-800">No se encontraron eventos destacados</p>
     </div>
 
     <!-- Contenedor del carrusel -->
-    <div class="relative">
+    <div v-else class="relative">
       <!-- Botón de navegación izquierda -->
       <button 
         @click="prevSlide" 
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
+        class="absolute -left-5 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
         aria-label="Anterior"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,10 +323,14 @@ const changeMonth = (direction) => {
         </svg>
       </button>
 
-      <!-- Grid de eventos (estilo como la tercera imagen) -->
+      <!-- Grid de eventos destacados -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div v-for="event in visibleItems" :key="event.id" 
-             class="rounded-lg overflow-hidden shadow-md">
+        <div 
+          v-for="event in visibleItems" 
+          :key="event.id" 
+          class="rounded-lg overflow-hidden shadow-md cursor-pointer relative"
+          @click="navigateToEvent(event.id)"
+        >
           <!-- Tarjeta de evento -->
           <div class="relative h-80">
             <!-- Imagen de fondo -->
@@ -271,30 +338,43 @@ const changeMonth = (direction) => {
               :src="event.image" 
               :alt="event.name" 
               class="w-full h-full object-cover"
+              @error="$event.target.src = 'https://placehold.co/800x600?text=Evento'"
             />
+            
+            <!-- Badge Destacado -->
+            <span class="absolute top-3 right-3 bg-green-500 text-white text-xs px-2 py-1 rounded">Destacado</span>
             
             <!-- Overlay para mejorar legibilidad -->
             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
             
             <!-- Información del evento -->
             <div class="absolute bottom-0 left-0 p-6 text-white" style="color: white !important;">
+              <!-- Tipo de evento -->
+              <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded uppercase font-semibold mb-3 inline-block">
+                {{ event.type }}
+              </span>
+              
+              <!-- Título del evento -->
+              <h3 class="text-2xl font-bold mb-3" style="color: white !important;">
+                {{ event.name }}
+              </h3>
+              
               <!-- Fecha y hora -->
               <div class="flex items-center space-x-2 mb-2" style="color: white !important;">
                 <svg class="w-5 h-5" fill="none" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="color: white !important;">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
-                <span style="color: white !important;">{{ event.date }}</span>
-                
-                <svg class="w-5 h-5 ml-4" fill="none" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="color: white !important;">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span style="color: white !important;">{{ event.time }}</span>
+                <span style="color: white !important;">{{ event.date }} | {{ event.time }}</span>
               </div>
               
-              <!-- Nombre del evento -->
-              <h3 class="text-2xl font-bold mb-4" style="color: white !important;">
-                {{ event.name }}
-              </h3>
+              <!-- Ubicación -->
+              <div class="flex items-center mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span style="color: white !important;">{{ event.location }}</span>
+              </div>
             </div>
             
             <!-- Botón de tickets y favoritos -->
@@ -302,11 +382,12 @@ const changeMonth = (direction) => {
               <div class="flex">
                 <button 
                   class="bg-orange-500 hover:bg-orange-600 text-white rounded-l-full py-2 px-4"
+                  @click.stop="navigateToEvent(event.id)"
                 >
-                  Tickets from {{ event.price }}
+                  Tickets desde {{ event.price }}
                 </button>
                 <button 
-                  @click="toggleFavorite(event.id)" 
+                  @click.stop="toggleFavorite(event.id)" 
                   class="bg-orange-500 hover:bg-orange-600 text-white rounded-r-full w-10 h-10 flex items-center justify-center"
                 >
                   <svg 
@@ -333,7 +414,7 @@ const changeMonth = (direction) => {
       <!-- Botón de navegación derecha -->
       <button 
         @click="nextSlide" 
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
+        class="absolute -right-5 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
         aria-label="Siguiente"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -356,6 +437,15 @@ const changeMonth = (direction) => {
 </template>
 
 <style scoped>
+/* Animación de spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Estilos básicos para transiciones suaves */
 button, a {
   transition: all 0.2s ease;
@@ -364,5 +454,51 @@ button, a {
 /* Para el icono de corazón */
 svg {
   transition: fill 0.2s ease;
+}
+
+/* Mejorar contraste del texto sobre fondo de imagen */
+.text-white {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Colores personalizados */
+.text-orange-600 {
+  color: #FD5631;
+}
+
+.bg-orange-500 {
+  background-color: #FD5631;
+}
+
+.bg-orange-600 {
+  background-color: #E04424;
+}
+
+.bg-green-500 {
+  background-color: #10b981;
+}
+
+/* Efectos de hover */
+.hover\:bg-orange-600:hover {
+  background-color: #E04424;
+}
+
+/* Efectos de cursor */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* Shadow effects */
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 </style>
