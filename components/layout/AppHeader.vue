@@ -180,17 +180,8 @@ watch(() => authStore.user, (newValue) => {
         <!-- Acciones del header -->
         <div class="flex items-center gap-4">
           
-          <!-- Botón para Añadir Comercio con el estilo de la imagen 2 -->
-          <NuxtLink 
-            to="/properties/add-property" 
-            class="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800 transition-colors flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span class="text-white font-medium">{{ texts.addProperty }}</span>
-          </NuxtLink>
+          <!-- Botón de Añadir Comercio OCULTO -->
+          <!-- El botón se ha ocultado según lo solicitado -->
           
           <!-- Renderizado condicional con isMounted para evitar errores de hidratación -->
           <client-only>
@@ -286,14 +277,14 @@ watch(() => authStore.user, (newValue) => {
                       </NuxtLink>
                     </li>
                     <!-- Elemento Mis Compras -->
-<li>
-  <NuxtLink to="/account/purchases" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-    <svg class="w-5 h-5 mr-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-    </svg>
-    {{ texts.myPurchases }}
-  </NuxtLink>
-</li>
+                    <li>
+                      <NuxtLink to="/account/purchases" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <svg class="w-5 h-5 mr-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        {{ texts.myPurchases }}
+                      </NuxtLink>
+                    </li>
                     <li>
                       <NuxtLink to="/account/wishlist" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                         <svg class="w-5 h-5 mr-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -321,3 +312,231 @@ watch(() => authStore.user, (newValue) => {
     </div>
   </header>
 </template>
+
+<style>
+/* CSS Final con todos los ajustes específicos */
+
+/* ESTRUCTURA Y ESPACIADO */
+/* Ajustar espaciado del título principal */
+h1:first-of-type,
+.main-title,
+.page-title,
+.container h1 {
+  margin-top: 25px !important;
+  padding-top: 15px !important;
+}
+
+/* Mejorar espaciado y estructura de secciones */
+section,
+.form-section,
+.card,
+.form-card,
+.mb-8 {
+  margin-bottom: 30px !important;
+}
+
+/* Posicionamiento de títulos de sección para que sean visibles al navegar */
+section,
+#basic-info, 
+#location, 
+#details, 
+#price, 
+#photos, 
+#contacts {
+  padding-top: 20px !important;
+  scroll-margin-top: 100px !important; /* Importante para anclas */
+}
+
+/* ELEMENTOS DE FORMULARIO Y COLORES */
+/* Color de texto en campos de entrada */
+input, 
+select, 
+textarea,
+.form-control,
+input.w-full,
+textarea.w-full,
+select.w-full,
+.w-full.px-3.py-2.border {
+  color: #000000 !important;
+  font-weight: normal !important;
+}
+
+/* Etiquetas y títulos */
+label,
+.block.text-sm.font-medium,
+.block.text-sm.font-medium.text-gray-700,
+.text-sm.font-medium.text-gray-700,
+h1, h2, h3, h4, 
+.section-title {
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
+/* Contador de caracteres */
+p.mt-1.text-sm.text-gray-500 {
+  color: #4B5563 !important; /* Gris oscuro */
+}
+
+/* SECCIÓN DE RADIO BUTTONS Y CHECKBOXES */
+/* Separación entre opciones de radio */
+.space-y-2 {
+  margin-top: 15px !important;
+}
+
+.space-y-2 label.inline-flex {
+  display: block !important;
+  margin-bottom: 15px !important;
+  padding: 5px 0 !important;
+}
+
+/* Color azul marino para círculos de selección */
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+  background-color: #fd5631 !important; /* Azul marino */
+  border-color: #fd5631 !important;
+}
+
+/* Estilo para la pregunta sobre empresa */
+.block.text-sm.font-medium.text-gray-700.mb-2 {
+  margin-top: 20px !important;
+  margin-bottom: 15px !important;
+  color: #374151 !important;
+}
+
+/* VISTA PREVIA */
+/* Reducir espacio en vista previa */
+.bg-white.px-4.py-5.sm\:p-6 {
+  padding-top: 10px !important;
+}
+
+.max-h-\[70vh\] {
+  padding-top: 0 !important;
+}
+
+.inline-block.align-bottom.bg-white h1 {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+/* Reducir espacio entre imágenes y precio */
+.grid.grid-cols-12.gap-4.mb-8 {
+  margin-bottom: 20px !important;
+}
+
+/* TEXTO NEGRO EN VISTA PREVIA Y DETALLES DE PROPIEDAD */
+/* Asegurarse que TODO en vista previa sea negro */
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+p.text-sm,
+span.text-gray-700,
+.text-muted,
+button.text-gray-400,
+.bg-gray-200.rounded-lg.h-full.flex.items-center.justify-center,
+.text-gray-400,
+li.flex.items-center span,
+.text-sm.text-gray-600,
+.text-sm.text-gray-500,
+.text-sm.text-gray-400,
+.inline-block.align-bottom.bg-white p,
+.inline-block.align-bottom.bg-white span,
+.inline-block.align-bottom.bg-white li {
+  color: #000000 !important;
+}
+
+/* Específicamente para detalles de propiedad en vista previa */
+.grid.grid-cols-1.md\:grid-cols-3.gap-8 li.flex.items-start span,
+.flex.items-start span,
+.font-medium.mr-2 + span,
+.font-medium + span,
+li span {
+  color: #000000 !important;
+}
+
+/* Detalles específicos de la propiedad (Tipo, Área, etc.) */
+#detalles-propiedad span,
+.detalles-propiedad span,
+[class*="detalles"] span,
+.grid.grid-cols-1.sm\:grid-cols-2.gap-y-2 li span,
+.grid.grid-cols-1.sm\:grid-cols-3.gap-y-2 li span {
+  color: #000000 !important;
+}
+
+/* OTROS ELEMENTOS */
+/* Texto sobre archivos */
+.bg-orange-50.border-l-4.border-orange-500.text-orange-700 p.text-sm {
+  color: #4B5563 !important; /* Gris oscuro */
+}
+
+/* Elementos seleccionados en azul marino */
+.bg-orange-800.text-white,
+.bg-orange-800.text-white.border-orange-800,
+[class*="bg-orange-800"],
+[class*="bg-orange-800"][class*="text-white"] {
+  background-color: #fd5631 !important; /* Azul marino */
+  color: white !important;
+  border-color: #fd5631 !important;
+}
+
+/* Barra de progreso */
+.h-2.bg-orange-800.rounded-full,
+.progress-bar,
+.progress-fill,
+.progress > div,
+[class*="progress"] > div {
+  background-color: #fd5631 !important;
+  transition: width 0.3s ease-in-out !important;
+  background-image: linear-gradient(to right, #2563EB, #fd5631) !important;
+}
+
+/* Mantener botón azul marino con texto blanco */
+.btn-primary, 
+.btn-orange, 
+button.bg-orange-800, 
+button.bg-primary,
+button[type="submit"],
+.px-6.py-3.bg-orange-800 {
+  color: white !important;
+  background-color: #fd5631 !important;
+}
+
+/* Ajustes para navegación lateral */
+.hidden.lg\:block a, 
+.sticky.top-6 a {
+  color: #1E293B !important;
+}
+
+/* Énfasis en asteriscos de campos requeridos */
+span.text-red-500 {
+  color: #f00 !important;
+  font-weight: bold !important;
+}
+
+/* Vista previa - Forzar color negro en TODAS las vistas */
+.max-h-\[70vh\] * {
+  color: #000000 !important;
+}
+.modal-content * {
+  color: #000000 !important;
+}
+.inline-block.align-bottom * {
+  color: #000000 !important;
+}
+
+/* Excepción para íconos y elementos que deben ser blancos */
+.btn-primary *, 
+.btn-orange *, 
+button.bg-orange-800 *, 
+button.bg-primary *,
+button[type="submit"] *,
+.px-6.py-3.bg-orange-800 * {
+  color: white !important;
+}
+
+
+.flex.flex-col.sm\:flex-row.gap-3 div,
+.flex.flex-col.sm\:flex-row.gap-3 span {
+  color: #000000 !important;
+  font-weight: normal !important;
+}
+</style>

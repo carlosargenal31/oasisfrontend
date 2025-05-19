@@ -123,7 +123,7 @@
               <h3 class="text-lg font-bold text-gray-800">Carlos Argeñal</h3>
               <p class="text-gray-500 text-sm mb-2">Arquitecto de Software Web</p>
               <div class="flex items-center justify-between">
-                <a href="mailto:carlos.arg@descubrelaceiba.hn" class="flex items-center text-gray-600 hover:text-orange-600 transition">
+                <a href="mailto:carlosargenal@outlook.es" class="flex items-center text-gray-600 hover:text-orange-600 transition">
                   <MailIcon :size="16" class="mr-1" />
                   <span class="text-sm">Email</span>
                 </a>
