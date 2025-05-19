@@ -3,15 +3,20 @@
   <div>
     <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
       <h2 class="text-lg font-bold text-gray-800 mb-3 sm:mb-0">Gestión de Eventos</h2>
-      <button
-        @click="$emit('open-event-modal', null)"
-        class="flex items-center justify-center bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 shadow-sm"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Añadir Evento
-      </button>
+      <div class="flex items-center">
+        <span v-if="featuredEventsCount >= 3" class="text-xs text-orange-600 mr-3">
+          Máximo de eventos destacados alcanzado (3/3)
+        </span>
+        <button
+          @click="$emit('open-event-modal', null)"
+          class="flex items-center justify-center bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 shadow-sm"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Añadir Evento
+        </button>
+      </div>
     </div>
       
     <!-- Filtros y Búsqueda -->
@@ -42,11 +47,9 @@
           <div class="relative">
             <select v-model="localFilters.event_type" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500" @change="updateFilter('event_type', localFilters.event_type)">
               <option value="">Todos</option>
-              <option v-for="type in eventTypes" :key="type" :value="type">{{ type }}</option>
+              <option v-for="type in standardEventTypes" :key="type" :value="type">{{ type }}</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              
-            </div>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"></div>
           </div>
         </div>
           
@@ -60,9 +63,7 @@
               <option value="pospuesto">Pospuesto</option>
               <option value="completado">Completado</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              
-            </div>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"></div>
           </div>
         </div>
           
@@ -74,9 +75,7 @@
               <option value="upcoming">Próximos</option>
               <option value="past">Pasados</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              
-            </div>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"></div>
           </div>
         </div>
 
@@ -91,9 +90,7 @@
                 <option value="event_type">Tipo</option>
                 <option value="created_at">Fecha de creación</option>
               </select>
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                
-              </div>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"></div>
             </div>
             <button 
               @click="$emit('toggle-sort-direction')" 
@@ -177,9 +174,11 @@
                     @click="$emit('toggle-event-featured', event)"
                     :class="[
                       'p-1.5 rounded-full',
-                      event.is_featured ? 'text-purple-600 hover:text-purple-900 hover:bg-purple-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                      event.is_featured ? 'text-purple-600 hover:text-purple-900 hover:bg-purple-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50',
+                      {'opacity-50 cursor-not-allowed': !canBeHighlighted(event) && !event.is_featured}
                     ]"
-                    :title="event.is_featured ? 'Quitar destacado' : 'Destacar'"
+                    :title="event.is_featured ? 'Quitar destacado' : 'Destacar (máx 3)'"
+                    :disabled="!canBeHighlighted(event) && !event.is_featured"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -187,20 +186,7 @@
                   </button>
                   
                   <button
-                    @click="$emit('toggle-event-home', event)"
-                    :class="[
-                      'p-1.5 rounded-full',
-                      event.is_home ? 'text-blue-600 hover:text-blue-900 hover:bg-blue-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                    ]"
-                    :title="event.is_home ? 'Quitar de portada' : 'Mostrar en portada'"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                  </button>
-                  
-                  <button
-                    @click="$emit('change-event-status', event)"
+                    @click="onSelectNextStatus(event)"
                     class="p-1.5 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-50"
                     title="Cambiar estado"
                   >
@@ -275,6 +261,47 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para Cambiar Estado -->
+    <div v-if="showStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+        <div class="mb-5">
+          <h3 class="text-xl font-bold text-gray-900 mb-2">
+            Cambiar Estado del Evento
+          </h3>
+          <p class="text-gray-600">Seleccione el nuevo estado para el evento "{{ selectedEvent?.event_name }}":</p>
+        </div>
+        <div class="space-y-3 mb-5">
+          <button
+            v-for="status in availableStatuses"
+            :key="status.value"
+            @click="confirmChangeStatus(status.value)"
+            :class="[
+              'w-full flex items-center px-4 py-3 rounded-lg border transition-colors',
+              selectedEvent?.status === status.value 
+                ? 'border-orange-500 bg-orange-50 text-orange-700' 
+                : 'border-gray-200 hover:border-orange-200 hover:bg-orange-50'
+            ]"
+          >
+            <span
+              :class="[
+                'h-3 w-3 rounded-full mr-3',
+                getEventStatusDotClass(status.value)
+              ]"
+            ></span>
+            <span class="font-medium">{{ status.label }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button 
+            @click="cancelChangeStatus()" 
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -330,7 +357,32 @@ export default {
         sortBy: 'event_date',
         sortDirection: 'asc'
       },
-      eventTypes: []
+      eventTypes: [],
+      showStatusModal: false,
+      selectedEvent: null,
+      availableStatuses: [
+        { value: 'activo', label: 'Activo' },
+        { value: 'pospuesto', label: 'Pospuesto' },
+        { value: 'cancelado', label: 'Cancelado' },
+        { value: 'completado', label: 'Completado' }
+      ],
+      // Lista estándar de tipos de eventos
+      standardEventTypes: [
+        'Festival',
+        'Taller', 
+        'Conferencia', 
+        'Concierto', 
+        'Webinar', 
+        'Seminario', 
+        'Charla', 
+        'Feria', 
+        'Networking', 
+        'Curso', 
+        'Exposición', 
+        'Presentación', 
+        'Competencia', 
+        'Reunión'
+      ]
     }
   },
   computed: {
@@ -348,6 +400,10 @@ export default {
     },
     safeDisplayPages() {
       return this.displayPages || [1];
+    },
+    // Contar eventos destacados
+    featuredEventsCount() {
+      return this.safeFilteredEvents.filter(event => event.is_featured).length;
     }
   },
   created() {
@@ -361,7 +417,8 @@ export default {
         types.add(event.event_type);
       }
     });
-    this.eventTypes = Array.from(types).sort();
+    // Combinar con los tipos estándar
+    this.eventTypes = Array.from(new Set([...Array.from(types), ...this.standardEventTypes])).sort();
   },
   methods: {
     searchEvents() {
@@ -370,22 +427,39 @@ export default {
     updateFilter(key, value) {
       this.$emit('update-filter', key, value);
     },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', options);
-      } catch (error) {
-        console.error('Error al formatear fecha:', error);
-        return dateString;
-      }
-    },
+    // En EventsSection.vue - Método formatDate mejorado
+formatDate(dateString) {
+  if (!dateString) return '';
+  
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  try {
+    // Manejar tanto strings como objetos Date
+    let date;
+    if (typeof dateString === 'string') {
+      // Si la fecha ya viene como string, parsearlo
+      date = new Date(dateString);
+    } else {
+      // Si ya es un objeto Date, usarlo directamente
+      date = dateString;
+    }
+    
+    // Verificar que la fecha es válida
+    if (isNaN(date.getTime())) {
+      console.warn('Fecha inválida:', dateString);
+      return dateString; // Devolver el string original si no es una fecha válida
+    }
+    
+    return date.toLocaleDateString('es-ES', options);
+  } catch (error) {
+    console.error('Error al formatear fecha:', error);
+    return dateString; // Devolver el string original en caso de error
+  }
+},
     formatTime(timeString) {
       if (!timeString) return '';
       
       try {
+        // Solo mostrar la parte de hora:minutos
         const [hours, minutes] = timeString.split(':');
         return `${hours}:${minutes}`;
       } catch (error) {
@@ -438,6 +512,35 @@ export default {
     capitalizeFirstLetter(string) {
       if (!string) return '';
       return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    // Verificar si un evento puede ser destacado
+    canBeHighlighted(event) {
+      // Si ya está destacado, siempre permitir (para poder quitarlo)
+      if (event.is_featured) return true;
+      
+      // No permitir destacar eventos cancelados
+      if (event.status === 'cancelado') return false;
+      
+      // Verificar el límite (máximo 3 eventos destacados)
+      return this.featuredEventsCount < 3;
+    },
+    // Método para abrir el modal de cambio de estado
+    onSelectNextStatus(event) {
+      this.selectedEvent = event;
+      this.showStatusModal = true;
+    },
+    // Método para confirmar el cambio de estado
+    confirmChangeStatus(newStatus) {
+      if (this.selectedEvent && newStatus !== this.selectedEvent.status) {
+        this.$emit('change-event-status', this.selectedEvent, newStatus);
+      }
+      this.showStatusModal = false;
+      this.selectedEvent = null;
+    },
+    // Método para cancelar el cambio de estado
+    cancelChangeStatus() {
+      this.showStatusModal = false;
+      this.selectedEvent = null;
     }
   },
   watch: {
@@ -456,7 +559,8 @@ export default {
             types.add(event.event_type);
           }
         });
-        this.eventTypes = Array.from(types).sort();
+        // Combinar con los tipos estándar
+        this.eventTypes = Array.from(new Set([...Array.from(types), ...this.standardEventTypes])).sort();
       },
       deep: true
     }

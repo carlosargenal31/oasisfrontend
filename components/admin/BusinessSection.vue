@@ -189,38 +189,27 @@
                     </svg>
                   </button>
                   
-                  <div class="relative">
+                  <div>
                     <button
+                      v-if="!business.archived || business.isFeatured"
                       @click="$emit('toggle-business-featured', business)"
-                      @mouseenter="$emit('update-tooltip', !canBeHighlighted(business) && !business.isFeatured ? business.id : null)"
-                      @mouseleave="$emit('update-tooltip', null)"
                       :class="[
                         'p-1.5 rounded-full',
                         business.isFeatured ? 'text-purple-600 hover:text-purple-900 hover:bg-purple-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                       ]"
-                      :disabled="!canBeHighlighted(business)"
                       :title="business.isFeatured ? 'Quitar destacado' : 'Destacar'"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                       </svg>
                     </button>
-                    
-                    <!-- Tooltip -->
                     <div 
-                      v-if="showTooltipFor === business.id" 
-                      class="absolute z-10 bg-black bg-opacity-80 text-white text-xs rounded py-1 px-2 -left-20 -bottom-1 w-40"
+                      v-else 
+                      class="p-1.5 rounded-full text-gray-300 opacity-50 cursor-default"
                     >
-                      <div class="absolute bottom-1 left-20 -mb-1 transform rotate-45 w-2 h-2 bg-black bg-opacity-80"></div>
-                      <p v-if="business.category === 'Alojamiento'">
-                        Límite alcanzado: 10 destacados
-                      </p>
-                      <p v-else-if="business.category === 'Restaurante y bar'">
-                        Límite alcanzado: 6 destacados
-                      </p>
-                      <p v-else>
-                        Límite alcanzado
-                      </p>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
                     </div>
                   </div>
                   
@@ -408,11 +397,15 @@ export default {
   },
   methods: {
     searchBusinesses() {
+      // Enviar la búsqueda actual al componente padre
       this.$emit('search-businesses', this.searchQuery);
     },
+    
     updateFilter(key, value) {
       this.$emit('update-filter', key, value);
     },
+    
+    // Método para verificar si un comercio puede ser destacado
     canBeHighlighted(business) {
       // Si ya está destacado, siempre permitir (para poder quitarlo)
       if (business.isFeatured) return true;

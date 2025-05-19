@@ -3,15 +3,20 @@
   <div>
     <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
       <h2 class="text-lg font-bold text-gray-800 mb-3 sm:mb-0">Gestión de Blog Posts</h2>
-      <button
-        @click="$emit('open-blog-modal', null)"
-        class="flex items-center justify-center bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 shadow-sm"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Añadir Post
-      </button>
+      <div class="flex items-center">
+        <span v-if="featuredBlogsCount >= 2" class="text-xs text-orange-600 mr-3">
+          Máximo de blogs destacados alcanzado (2/2)
+        </span>
+        <button
+          @click="$emit('open-blog-modal', null)"
+          class="flex items-center justify-center bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 shadow-sm"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Añadir Post
+        </button>
+      </div>
     </div>
       
     <!-- Filtros y Búsqueda -->
@@ -104,7 +109,7 @@
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Categoría</th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Autor</th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/12">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/12">Destacado</th>
+              
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/6">Acciones</th>
             </tr>
           </thead>
@@ -139,14 +144,7 @@
                   {{ blog.active ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td class="px-4 py-3 text-center">
-                <span v-if="blog.is_featured" class="text-yellow-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                  </svg>
-                </span>
-                <span v-else>-</span>
-              </td>
+              
               <td class="px-4 py-3 whitespace-nowrap">
                 <div class="flex space-x-1">
                   <button
@@ -163,9 +161,11 @@
                     @click="$emit('toggle-blog-featured', blog)"
                     :class="[
                       'p-1.5 rounded-full',
-                      blog.is_featured ? 'text-purple-600 hover:text-purple-900 hover:bg-purple-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                      blog.is_featured ? 'text-purple-600 hover:text-purple-900 hover:bg-purple-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50',
+                      {'opacity-50 cursor-not-allowed': !canBeHighlighted(blog) && !blog.is_featured}
                     ]"
-                    :title="blog.is_featured ? 'Quitar destacado' : 'Destacar'"
+                    :title="blog.is_featured ? 'Quitar destacado' : 'Destacar (máx 2)'"
+                    :disabled="!canBeHighlighted(blog) && !blog.is_featured"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -277,7 +277,7 @@ export default {
       type: Array,
       default: () => []
     },
-    currentPage: {
+   currentPage: {
       type: Number,
       default: 1
     },
@@ -325,6 +325,10 @@ export default {
     },
     safeDisplayPages() {
       return this.displayPages || [1];
+    },
+    // Contar blogs destacados
+    featuredBlogsCount() {
+      return this.safeFilteredBlogs.filter(blog => blog.is_featured).length;
     }
   },
   created() {
@@ -358,6 +362,17 @@ export default {
         console.error('Error al formatear fecha:', error);
         return dateString;
       }
+    },
+    // Verificar si un blog puede ser destacado
+    canBeHighlighted(blog) {
+      // Si ya está destacado, siempre permitir (para poder quitarlo)
+      if (blog.is_featured) return true;
+      
+      // No permitir destacar blogs inactivos
+      if (!blog.active) return false;
+      
+      // Verificar el límite (máximo 2 blogs destacados)
+      return this.featuredBlogsCount < 2;
     }
   },
   watch: {

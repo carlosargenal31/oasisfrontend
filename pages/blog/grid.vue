@@ -389,7 +389,8 @@ const fetchBlogs = async () => {
     
     // Construir parámetros
     const params = new URLSearchParams()
-    
+    // Añadir parámetro para obtener solo blogs activos
+    params.append('active', true)
     // Parámetros de paginación
     // Calcular el offset basado en la página actual y elementos por página
     const offset = (currentPage.value - 1) * itemsPerPage.value
@@ -597,7 +598,7 @@ const fetchFeaturedBlogs = async () => {
   loadingFeatured.value = true
   
   try {
-    const response = await blogService.getFeaturedBlogs()
+    const response = await blogService.getFeaturedBlogs() // Pasar true para indicar que solo queremos activos
     
     if (response?.data?.data) {
       featuredBlogs.value = response.data.data

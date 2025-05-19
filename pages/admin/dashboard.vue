@@ -121,8 +121,7 @@
             @toggle-sort-direction="toggleEventsSortDirection"
             @open-event-modal="openEventModal"
             @toggle-event-featured="toggleEventFeatured"
-            @toggle-event-home="toggleEventHome"
-            @change-event-status="changeEventStatus"
+            @change-event-status="updateEventStatus"
           />
         </div>
 
@@ -372,117 +371,107 @@
       </div>
     </div>
 
-    <!-- Event Modal -->
-    <div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
-      <div class="bg-white rounded-xl p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-          <h3 class="text-xl font-bold text-gray-900">
-            {{ isEditingEvent ? 'Editar Evento' : 'Añadir Evento' }}
-          </h3>
-          <button @click="closeEventModal" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <form @submit.prevent="saveEvent" class="space-y-6">
-          <!-- Contenido del formulario para eventos -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Evento</label>
-                <input v-model="eventForm.event_name" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
-                <input v-model="eventForm.location" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Evento</label>
-                <select v-model="eventForm.event_type" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                  <option value="Cultural">Cultural</option>
-                  <option value="Deportivo">Deportivo</option>
-                  <option value="Musical">Musical</option>
-                  <option value="Gastronómico">Gastronómico</option>
-                  <option value="Educativo">Educativo</option>
-                  <option value="Turístico">Turístico</option>
-                  <option value="Festival">Festival</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Precio (0 para eventos gratuitos)</label>
-                <input v-model.number="eventForm.price" type="number" min="0" step="0.01" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                <select v-model="eventForm.status" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                  <option value="activo">Activo</option>
-                  <option value="pospuesto">Pospuesto</option>
-                  <option value="cancelado">Cancelado</option>
-                  <option value="completado">Completado</option>
-                </select>
-              </div>
-              
-              <div class="flex items-center space-x-4">
-                <div class="flex items-center">
-                  <input v-model="eventForm.is_featured" type="checkbox" id="is_featured" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
-                  <label for="is_featured" class="ml-2 text-sm text-gray-700">Destacado</label>
-                </div>
-                <div class="flex items-center">
-                  <input v-model="eventForm.is_home" type="checkbox" id="is_home" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
-                  <label for="is_home" class="ml-2 text-sm text-gray-700">Mostrar en Portada</label>
-                </div>
-              </div>
-            </div>
-            
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Evento</label>
-                <input v-model="eventForm.event_date" type="date" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-              </div>
-              
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Inicio</label>
-                  <input v-model="eventForm.event_time" type="time" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Fin</label>
-                  <input v-model="eventForm.end_time" type="time" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                <textarea v-model="eventForm.description" rows="5" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"></textarea>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Evento</label>
-                <input type="file" accept="image/*" @change="handleEventImageUpload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
-                <div v-if="eventImagePreview" class="mt-3">
-                  <img :src="eventImagePreview" alt="Vista previa del evento" class="h-40 w-full object-cover rounded-lg border border-gray-200">
-                </div>
-              </div>
-            </div>
+    <!-- Event Modal Actualizado -->
+<div v-if="showEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
+  <div class="bg-white rounded-xl p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+      <h3 class="text-xl font-bold text-gray-900">
+        {{ isEditingEvent ? 'Editar Evento' : 'Añadir Evento' }}
+      </h3>
+      <button @click="closeEventModal" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <form @submit.prevent="saveEvent" class="space-y-6">
+      <!-- Contenido del formulario para eventos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Evento</label>
+            <input v-model="eventForm.event_name" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
           </div>
           
-          <div class="pt-6 border-t border-gray-200 flex items-center justify-end space-x-3">
-            <button type="button" @click="closeEventModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-              Cancelar
-            </button>
-            <button type="submit" class="px-5 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow-sm transition-colors">
-              {{ isEditingEvent ? 'Guardar Cambios' : 'Crear Evento' }}
-            </button>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+            <input v-model="eventForm.location" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
           </div>
-        </form>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Evento</label>
+            <select v-model="eventForm.event_type" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+                            <option value="Taller">Taller</option>
+              <option value="Conferencia">Conferencia</option>
+              <option value="Concierto">Concierto</option>
+              <option value="Webinar">Webinar</option>
+              <option value="Seminario">Seminario</option>
+              <option value="Charla">Charla</option>
+              <option value="Feria">Feria</option>
+              <option value="Networking">Networking</option>
+              <option value="Curso">Curso</option>
+              <option value="Exposición">Exposición</option>
+              <option value="Presentación">Presentación</option>
+              <option value="Competencia">Competencia</option>
+              <option value="Reunión">Reunión</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Precio (0 para eventos gratuitos)</label>
+            <input v-model.number="eventForm.price" type="number" min="0" step="0.01" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+            <select v-model="eventForm.status" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+              <option value="activo">Activo</option>
+              <option value="pospuesto">Pospuesto</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="completado">Completado</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Evento</label>
+            <input v-model="eventForm.event_date" type="date" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Inicio</label>
+            <input v-model="eventForm.event_time" type="time" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+            <small class="text-gray-500">El formato de hora debe ser HH:MM:SS (se añadirán los segundos automáticamente)</small>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea v-model="eventForm.description" rows="5" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Evento</label>
+            <input type="file" accept="image/*" @change="handleEventImageUpload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+            <div v-if="eventImagePreview" class="mt-3">
+              <img :src="eventImagePreview" alt="Vista previa del evento" class="h-40 w-full object-cover rounded-lg border border-gray-200">
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      
+      <div class="pt-6 border-t border-gray-200 flex items-center justify-end space-x-3">
+        <button type="button" @click="closeEventModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" class="px-5 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow-sm transition-colors">
+          {{ isEditingEvent ? 'Guardar Cambios' : 'Crear Evento' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
     <!-- Blog Modal -->
     <div v-if="showBlogModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
@@ -775,7 +764,7 @@ export default {
       archived: false
     });
 
-    // Formularios para events y blogs
+    // Formulario para eventos
     const eventForm = ref({
       id: null,
       event_name: '',
@@ -789,7 +778,6 @@ export default {
       price: 0,
       image_url: '',
       is_featured: false,
-      is_home: false,
       organizer_id: null
     });
 
@@ -900,7 +888,7 @@ export default {
     // COMPUTED PROPERTIES PARA COMERCIOS
     const filteredBusinesses = computed(() => {
       let result = [...businesses.value];
-      
+  
       // Filtro de búsqueda
       if (searchQuery.value.trim()) {
         const query = searchQuery.value.toLowerCase().trim();
@@ -1024,53 +1012,53 @@ export default {
 
     // COMPUTED PROPERTIES PARA BLOGS
     const filteredBlogs = computed(() => {
-      let result = [...blogs.value];
-      
-      // Filtro de búsqueda
-      if (blogsSearchQuery.value.trim()) {
-        const query = blogsSearchQuery.value.toLowerCase().trim();
-        result = result.filter(blog => 
-          blog.title?.toLowerCase().includes(query) ||
-          blog.content?.toLowerCase().includes(query) ||
-          blog.category?.toLowerCase().includes(query)
-        );
-      }
-      
-      // Filtro de categoría
-      if (blogsFilters.value.category) {
-        result = result.filter(blog => blog.category === blogsFilters.value.category);
-      }
-      
-      // Filtro de estado
-      if (blogsFilters.value.active !== '') {
-        const isActive = blogsFilters.value.active === true || blogsFilters.value.active === 'true';
-        result = result.filter(blog => blog.active === isActive);
-      }
-      
-      // Aplicar ordenamiento
-      result.sort((a, b) => {
-        let valueA = a[blogsFilters.value.sortBy];
-        let valueB = b[blogsFilters.value.sortBy];
-        
-        // Manejo especial para fechas
-        if (blogsFilters.value.sortBy === 'published_at' || blogsFilters.value.sortBy === 'created_at') {
-          valueA = valueA ? new Date(valueA).getTime() : 0;
-          valueB = valueB ? new Date(valueB).getTime() : 0;
-        }
-        
-        // Conversión a minúsculas para strings
-        if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-        if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-        
-        if (blogsFilters.value.sortDirection === 'asc') {
-          return valueA > valueB ? 1 : -1;
-        } else {
-          return valueA < valueB ? 1 : -1;
-        }
-      });
-      
-      return result;
-    });
+  let result = [...blogs.value];
+
+  // Filtro de búsqueda
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim();
+    result = result.filter(blog => 
+      (blog.title?.toLowerCase()?.includes(query)) || 
+      (blog.content?.toLowerCase()?.includes(query)) ||
+      (blog.category?.toLowerCase()?.includes(query))
+    );
+  }
+  
+  // Aplicar filtros de categoría
+  if (blogsFilters.value.category) {
+    result = result.filter(blog => blog.category === blogsFilters.value.category);
+  }
+  
+  // Filtro de estado de activo/inactivo
+  if (blogsFilters.value.active !== '') {
+    const isActive = blogsFilters.value.active === true || blogsFilters.value.active === 'true';
+    result = result.filter(blog => blog.active === isActive);
+  }
+  
+  // Aplicar ordenamiento
+  result.sort((a, b) => {
+    let valueA = a[blogsFilters.value.sortBy];
+    let valueB = b[blogsFilters.value.sortBy];
+    
+    // Manejo especial para fechas
+    if (blogsFilters.value.sortBy === 'published_at' || blogsFilters.value.sortBy === 'created_at') {
+      valueA = valueA ? new Date(valueA).getTime() : 0;
+      valueB = valueB ? new Date(valueB).getTime() : 0;
+    }
+    
+    // Conversión a minúsculas para strings
+    if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+    if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+    
+    if (blogsFilters.value.sortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
+    } else {
+      return valueA < valueB ? 1 : -1;
+    }
+  });
+  
+  return result;
+});
 
     // Verificar límites de propiedades destacadas
     const featuredCountByCategory = computed(() => {
@@ -1356,12 +1344,24 @@ export default {
     };
 
     const handleEventImageUpload = (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      eventImageFile.value = file;
-      eventImagePreview.value = URL.createObjectURL(file);
-    };
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Verificar el tamaño (máximo 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showNotification('error', 'Error', 'La imagen no debe superar los 5MB');
+    return;
+  }
+  
+  // Verificar el tipo
+  if (!file.type.startsWith('image/')) {
+    showNotification('error', 'Error', 'El archivo debe ser una imagen');
+    return;
+  }
+  
+  eventImageFile.value = file;
+  eventImagePreview.value = URL.createObjectURL(file);
+};
 
     const handleBlogImageUpload = (event) => {
       const file = event.target.files[0];
@@ -1378,7 +1378,8 @@ export default {
     };
 
     // Buscar comercios
-    const searchBusinesses = () => {
+    const searchBusinesses = (query) => {
+      searchQuery.value = query;
       // Resetear paginación al buscar
       currentPage.value = 1;
     };
@@ -1564,57 +1565,93 @@ export default {
       }
     };
 
-    const loadEvents = async () => {
-      try {
-        isLoading.value = true;
-        const token = localStorage.getItem('access_token');
-        
-        const response = await axios.get('/api/events', {
-          headers: { 'Authorization': `Bearer ${token}` },
-          params: {
-            limit: 100 // Cargar todos los eventos
-          }
-        });
-        
-        if (response.data?.success) {
-          events.value = response.data.data.events || [];
-          
-          // Actualizar estadísticas
-          stats.value.totalEvents = events.value.length;
-        }
-      } catch (error) {
-        console.error('Error al cargar eventos:', error);
-        showNotification('error', 'Error', 'Error al cargar eventos');
-      } finally {
-        isLoading.value = false;
+    // En el método loadEvents de dashboard.vue
+const loadEvents = async () => {
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    // Llamar a la API específica para el panel de admin
+    const response = await axios.get('/api/events/admin', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        limit: 100 // Cargar todos los eventos
       }
-    };
-
-    const loadBlogs = async () => {
-      try {
-        isLoading.value = true;
-        const token = localStorage.getItem('access_token');
-        
-        const response = await axios.get('/api/blogs', {
-          headers: { 'Authorization': `Bearer ${token}` },
-          params: {
-            limit: 100 // Cargar todos los blogs
-          }
-        });
-        
-        if (response.data?.success) {
-          blogs.value = response.data.data.blogs || [];
-          
-          // Actualizar estadísticas
-          stats.value.totalBlogs = blogs.value.length;
+    });
+    
+    if (response.data?.success) {
+      // Procesar los eventos para asegurar formatos correctos
+      events.value = (response.data.data.events || []).map(event => {
+        // Asegurarse de que las fechas están en formato YYYY-MM-DD
+        if (event.event_date && typeof event.event_date === 'string' && event.event_date.includes('T')) {
+          event.event_date = event.event_date.split('T')[0];
         }
-      } catch (error) {
-        console.error('Error al cargar blogs:', error);
-        showNotification('error', 'Error', 'Error al cargar blogs');
-      } finally {
-        isLoading.value = false;
+        
+        // Para booleanos, asegurar que sean true/false
+        event.is_featured = event.is_featured === 1 || event.is_featured === true;
+        
+        return event;
+      });
+      
+      console.log('Eventos cargados y procesados:', events.value);
+      
+      // Actualizar automáticamente eventos pasados a completados SOLO VISUALMENTE
+      events.value.forEach(event => {
+        if (event.status === 'activo') {
+          const eventDate = new Date(event.event_date);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          if (eventDate < today) {
+            // Actualizamos solo en el frontend
+            event.status = 'completado';
+          }
+        }
+      });
+      
+      // Actualizar estadísticas
+      stats.value.totalEvents = events.value.length;
+    }
+  } catch (error) {
+    console.error('Error al cargar eventos:', error);
+    showNotification('error', 'Error', 'Error al cargar eventos');
+  } finally {
+    isLoading.value = false;
+  }
+};
+   const loadBlogs = async () => {
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    // Para el dashboard de admin, cargar todos los blogs tanto activos como inactivos
+    const response = await axios.get('/api/blogs', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        limit: 100, // Cargar todos los blogs
+        // No incluir el parámetro 'active' para recibir tanto activos como inactivos
       }
-    };
+    });
+    
+    if (response.data?.success) {
+      // Asegurarse de que los valores booleanos estén correctamente convertidos
+      blogs.value = (response.data.data.blogs || []).map(blog => ({
+        ...blog,
+        // Convertir is_featured y active de 1/0 a true/false
+        is_featured: blog.is_featured === 1 || blog.is_featured === true,
+        active: blog.active === 1 || blog.active === true || blog.active === undefined
+      }));
+      
+      // Actualizar estadísticas
+      stats.value.totalBlogs = blogs.value.length;
+    }
+  } catch (error) {
+    console.error('Error al cargar blogs:', error);
+    showNotification('error', 'Error', 'Error al cargar blogs');
+  } finally {
+    isLoading.value = false;
+  }
+};
 
     const parseScheduleString = (scheduleString) => {
       // Ejemplo: "Lun-Vie: 09:00 - 18:00"
@@ -1727,45 +1764,181 @@ export default {
       });
     };
 
-    // Métodos para eventos
-    const openEventModal = (event = null) => {
-      // Resetear formulario de evento
+    // Método openEventModal mejorado
+// Método openEventModal mejorado y corregido
+const openEventModal = async (event = null) => {
+  try {
+    // Resetear formulario de evento
+    eventForm.value = {
+      id: null,
+      event_name: '',
+      description: '',
+      location: '',
+      event_date: '',
+      event_time: '',
+      end_time: '',
+      event_type: 'Taller', // Valor predeterminado
+      status: 'activo',
+      price: 0,
+      image_url: '',
+      is_featured: false,  // Siempre inicializar como false
+      organizer_id: user.value.id
+    };
+    
+    eventImageFile.value = null;
+    eventImagePreview.value = null;
+    
+    if (event) {
+      // Modo edición
+      isEditingEvent.value = true;
+      
+      // Clonar el evento para evitar modificar el original
       eventForm.value = {
-        id: null,
-        event_name: '',
-        description: '',
-        location: '',
-        event_date: '',
-        event_time: '',
-        end_time: '',
-        event_type: 'Cultural',
-        status: 'activo',
-        price: 0,
-        image_url: '',
-        is_featured: false,
-        is_home: false,
-        organizer_id: user.value.id
+        id: event.id,
+        event_name: event.event_name,
+        description: event.description || '',
+        location: event.location,
+        event_type: event.event_type,
+        status: event.status || 'activo',
+        price: parseFloat(event.price) || 0,
+        image_url: event.image_url || '',
+        is_featured: event.is_featured === 1 || event.is_featured === true,  // Asegurar que sea booleano
+        organizer_id: event.organizer_id || user.value.id
       };
       
-      eventImageFile.value = null;
-      eventImagePreview.value = null;
-      
-      if (event) {
-        isEditingEvent.value = true;
-        eventForm.value = { ...event };
-        selectedEvent.value = event;
+      // Si tenemos fecha, formatearla correctamente para el input date (YYYY-MM-DD)
+      if (event.event_date) {
+        // Limpiar la fecha para asegurarnos que está en formato YYYY-MM-DD
+        let formattedDate;
         
-        // Si hay una imagen, mostrarla
-        if (event.image_url) {
-          eventImagePreview.value = event.image_url;
+        if (typeof event.event_date === 'string') {
+          // Si es un string ISO (con T), extraer solo la parte de la fecha
+          if (event.event_date.includes('T')) {
+            formattedDate = event.event_date.split('T')[0];
+          } else {
+            // Si ya es un formato simple YYYY-MM-DD, usarlo directamente
+            formattedDate = event.event_date;
+          }
+        } else if (event.event_date instanceof Date) {
+          // Si es un objeto Date, convertirlo a YYYY-MM-DD
+          const year = event.event_date.getFullYear();
+          const month = String(event.event_date.getMonth() + 1).padStart(2, '0');
+          const day = String(event.event_date.getDate()).padStart(2, '0');
+          formattedDate = `${year}-${month}-${day}`;
         }
-      } else {
-        isEditingEvent.value = false;
-        selectedEvent.value = null;
+        
+        console.log('Fecha original:', event.event_date);
+        console.log('Fecha formateada para input:', formattedDate);
+        
+        eventForm.value.event_date = formattedDate;
       }
       
-      showEventModal.value = true;
+      // Si tenemos hora, formatearla para el input time (HH:MM)
+      if (event.event_time) {
+        // Formatear la hora HH:MM:SS a HH:MM para el input time
+        const timeParts = event.event_time.split(':');
+        eventForm.value.event_time = `${timeParts[0]}:${timeParts[1]}`;
+        
+        console.log('Hora original:', event.event_time);
+        console.log('Hora formateada para input:', eventForm.value.event_time);
+      }
+      
+      // Si hay una imagen, mostrarla
+      if (event.image_url) {
+        eventImagePreview.value = event.image_url;
+      }
+      
+      console.log('Formulario para edición:', eventForm.value);
+    } else {
+      // Modo creación
+      isEditingEvent.value = false;
+
+      // Establecer fecha por defecto (hoy)
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      eventForm.value.event_date = `${year}-${month}-${day}`;
+      
+      // Hora por defecto (12:00)
+      eventForm.value.event_time = '12:00';
+    }
+    
+    // Mostrar el modal
+    showEventModal.value = true;
+    
+  } catch (error) {
+    console.error('Error al abrir el modal de evento:', error);
+    showNotification('error', 'Error', 'No se pudo abrir el formulario de evento');
+  }
+};
+    // Método para toggle de featured en los eventos
+    const toggleEventFeatured = async (event) => {
+      try {
+        // Si no está destacado, verificar el límite
+        if (!event.is_featured) {
+          const featuredCount = events.value.filter(e => e.is_featured).length;
+          if (featuredCount >= 3) {
+            showNotification('error', 'Límite alcanzado', 'Solo se permiten 3 eventos destacados. Quite alguno antes de añadir otro.');
+            return;
+          }
+        }
+        
+        const token = localStorage.getItem('access_token');
+        const newFeaturedStatus = !event.is_featured;
+        
+        // Llamar a la API
+        const response = await axios.patch(`/api/events/${event.id}/featured`, {
+          is_featured: newFeaturedStatus
+        }, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.data?.success) {
+          showNotification('success', 'Éxito', `Evento ${newFeaturedStatus ? 'destacado' : 'quitado de destacados'}`);
+          await loadEvents(); // Recargar eventos para actualizar el estado
+        }
+      } catch (error) {
+        console.error('Error al cambiar estado destacado:', error);
+        showNotification('error', 'Error', 'Error al actualizar el estado destacado');
+      }
     };
+
+    // Método para cambiar el estado del evento
+    const updateEventStatus = async (event, newStatus) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    
+    console.log(`Cambiando estado del evento ${event.id} a ${newStatus}`);
+    
+    // Llamar a la API
+    const response = await axios.patch(`/api/events/${event.id}/status`, {
+      status: newStatus
+    }, {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', `Estado del evento cambiado a: ${newStatus}`);
+      await loadEvents(); // Recargar eventos para actualizar la vista
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado del evento:', error);
+    
+    // Si es error 403, mostrar mensaje específico
+    if (error.response?.status === 403) {
+      showNotification('error', 'Error de permisos', 'No tienes permiso para cambiar el estado de este evento. Solo el creador puede modificarlo.');
+    } else {
+      showNotification('error', 'Error', 'Error al actualizar el estado del evento');
+    }
+    
+    // Recargar eventos para asegurar que la UI esté sincronizada
+    await loadEvents();
+  }
+};
 
     // Métodos para blogs
     const openBlogModal = (blog = null) => {
@@ -1987,76 +2160,174 @@ export default {
       }
     };
 
-    // Implementar saveEvent
-    const saveEvent = async () => {
-      try {
-        // Validar campos obligatorios
-        if (!eventForm.value.event_name) {
-          showNotification('error', 'Error', 'El nombre del evento es obligatorio');
-          return;
+  // Método saveEvent completo corregido
+const saveEvent = async () => {
+  try {
+    // Validar campos obligatorios
+    if (!eventForm.value.event_name) {
+      showNotification('error', 'Error', 'El nombre del evento es obligatorio');
+      return;
+    }
+    
+    if (!eventForm.value.event_date) {
+      showNotification('error', 'Error', 'La fecha del evento es obligatoria');
+      return;
+    }
+    
+    if (!eventForm.value.event_time) {
+      showNotification('error', 'Error', 'La hora del evento es obligatoria');
+      return;
+    }
+    
+    if (!eventForm.value.location) {
+      showNotification('error', 'Error', 'La ubicación es obligatoria');
+      return;
+    }
+    
+    if (!eventForm.value.event_type) {
+      showNotification('error', 'Error', 'El tipo de evento es obligatorio');
+      return;
+    }
+    
+    // Mostrar notificación de carga
+    showNotification('success', 'Procesando', 'Guardando datos del evento...');
+    
+    const token = localStorage.getItem('access_token');
+    
+    // Formatear correctamente la hora (HH:MM:SS)
+    let eventTime = eventForm.value.event_time;
+    if (eventTime && eventTime.split(':').length === 2) {
+      eventTime = `${eventTime}:00`;
+    }
+    
+    console.log('Hora formateada:', eventTime);
+    
+    // Convertir precio a número
+    const eventPrice = parseFloat(eventForm.value.price) || 0;
+    
+    // Crear objeto para envío con SOLO los campos necesarios
+    const eventData = {
+      event_name: eventForm.value.event_name.trim(),
+      location: eventForm.value.location.trim(),
+      event_date: eventForm.value.event_date,
+      event_time: eventTime,
+      price: eventPrice,
+      event_type: eventForm.value.event_type,
+      status: eventForm.value.status || 'activo',
+      description: eventForm.value.description || ''
+    };
+    
+    // Para crear evento nuevo, añadir el organizador
+    if (!isEditingEvent.value) {
+      // Importante: usar created_by en lugar de organizer_id
+      eventData.created_by = user.value.id;
+    }
+    
+    console.log('Datos enviados al servidor:', JSON.stringify(eventData, null, 2));
+    
+    // Configuración para la solicitud
+    const config = {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000 // 10 segundos
+    };
+    
+    let response;
+    let eventId;
+    
+    try {
+      if (isEditingEvent.value) {
+        // EDITANDO EVENTO EXISTENTE
+        eventId = eventForm.value.id;
+        
+        response = await axios.put(`/api/events/${eventId}`, eventData, config);
+      } else {
+        // CREANDO NUEVO EVENTO
+        response = await axios.post('/api/events', eventData, config);
+        
+        if (response.data?.success) {
+          eventId = response.data.data.eventId;
+        } else {
+          throw new Error('No se pudo obtener el ID del evento creado');
         }
-        
-        if (!eventForm.value.event_date) {
-          showNotification('error', 'Error', 'La fecha del evento es obligatoria');
-          return;
-        }
-        
-        if (!eventForm.value.event_type) {
-          showNotification('error', 'Error', 'El tipo de evento es obligatorio');
-          return;
-        }
-        
-        const token = localStorage.getItem('access_token');
-        const formData = new FormData();
-        
-        // Agregar campos básicos
-        Object.keys(eventForm.value).forEach(key => {
-          if (eventForm.value[key] !== null && eventForm.value[key] !== undefined) {
-            if (typeof eventForm.value[key] === 'boolean') {
-              formData.append(key, eventForm.value[key] ? '1' : '0');
-            } else {
-              formData.append(key, eventForm.value[key]);
-            }
-          }
-        });
-        
-        // Agregar imagen si hay un archivo nuevo
+      }
+      
+      // Si todo fue exitoso con la creación/edición del evento
+      if (response.data?.success) {
+        // Si hay imagen seleccionada, intentar subirla
         if (eventImageFile.value) {
-          formData.append('image', eventImageFile.value);
+          try {
+            showNotification('success', 'Procesando', 'Subiendo imagen del evento...');
+            
+            const imageFormData = new FormData();
+            imageFormData.append('image', eventImageFile.value);
+            
+            // Subir la imagen
+            const imageResponse = await axios.post('/api/events/image', imageFormData, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            
+            // Si la imagen se subió correctamente, actualizar el evento con la URL
+            if (imageResponse.data?.success && imageResponse.data.data?.imageUrl) {
+              // IMPORTANTE: Solicitud separada SOLO para actualizar la URL de la imagen
+              await axios.patch(`/api/events/${eventId}/image`, {
+                image_url: imageResponse.data.data.imageUrl
+              }, {
+                headers: { 
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              
+              console.log('Imagen subida y asociada al evento correctamente');
+            }
+          } catch (imageError) {
+            console.error('Error al subir la imagen:', imageError);
+            
+            let errorMessage = 'Error al subir la imagen';
+            if (imageError.response?.data?.message) {
+              errorMessage = imageError.response.data.message;
+            }
+            
+            showNotification('warning', 'Advertencia', 'El evento se guardó pero hubo un problema al subir la imagen: ' + errorMessage);
+          }
         }
         
-        // Mostrar notificación de carga
-        showNotification('success', 'Procesando', 'Guardando datos del evento...');
-       
-       // Configuración de la solicitud
-       const config = {
-         headers: { 
-           'Authorization': `Bearer ${token}`,
-           'Content-Type': 'multipart/form-data'
-         }
-       };
-       
-       let response;
-       
-       if (isEditingEvent.value) {
-         response = await axios.put(`/api/events/${eventForm.value.id}`, formData, config);
-       } else {
-         response = await axios.post('/api/events', formData, config);
-       }
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Evento ${isEditingEvent.value ? 'actualizado' : 'creado'} correctamente`);
-         loadEvents();
-         closeEventModal();
-       } else {
-         throw new Error(response.data?.message || 'La respuesta del servidor no indica éxito');
-       }
-     } catch (error) {
-       console.error('Error al guardar evento:', error);
-       showNotification('error', 'Error', 'Error al guardar evento');
-     }
-   };
-
+        // Notificación final de éxito
+        showNotification('success', 'Éxito', `Evento ${isEditingEvent.value ? 'actualizado' : 'creado'} correctamente`);
+        
+        // Recargar eventos y cerrar modal
+        await loadEvents();
+        closeEventModal();
+      }
+    } catch (error) {
+      console.error('Error en la petición principal:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error al guardar evento:', error);
+    
+    // Extraer mensaje de error
+    let errorMessage = 'Error al guardar el evento';
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error;
+    }
+    
+    // Mostrar mensajes específicos de validación si existen
+    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      errorMessage += ': ' + error.response.data.errors.join(', ');
+    }
+    
+    showNotification('error', 'Error', errorMessage);
+  }
+};
    // Implementar saveBlog
    const saveBlog = async () => {
      try {
@@ -2175,122 +2446,6 @@ export default {
      }
    };
 
-   // Métodos para eventos
-   const toggleEventFeatured = async (event) => {
-     try {
-       const token = localStorage.getItem('access_token');
-       const newFeaturedStatus = !event.is_featured;
-       
-       const response = await axios.patch(`/api/events/${event.id}/featured`, {
-         featured: newFeaturedStatus
-       }, {
-         headers: { 'Authorization': `Bearer ${token}` }
-       });
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Evento ${newFeaturedStatus ? 'destacado' : 'quitado de destacados'}`);
-         await loadEvents();
-       }
-     } catch (error) {
-       console.error('Error al cambiar estado destacado:', error);
-       showNotification('error', 'Error', 'Error al actualizar el estado destacado');
-     }
-   };
-
-   const toggleEventHome = async (event) => {
-     try {
-       const token = localStorage.getItem('access_token');
-       const newHomeStatus = !event.is_home;
-       
-       const response = await axios.patch(`/api/events/${event.id}/home`, {
-         home: newHomeStatus
-       }, {
-         headers: { 'Authorization': `Bearer ${token}` }
-       });
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Evento ${newHomeStatus ? 'añadido a' : 'quitado de'} la portada`);
-         await loadEvents();
-       }
-     } catch (error) {
-       console.error('Error al cambiar visibilidad en portada:', error);
-       showNotification('error', 'Error', 'Error al actualizar la visibilidad en portada');
-     }
-   };
-
-   const changeEventStatus = async (event) => {
-     try {
-       const token = localStorage.getItem('access_token');
-       
-       // Determinar el próximo estado (activo -> pospuesto -> cancelado -> completado -> activo)
-       let nextStatus;
-       switch (event.status) {
-         case 'activo': nextStatus = 'pospuesto'; break;
-         case 'pospuesto': nextStatus = 'cancelado'; break;
-         case 'cancelado': nextStatus = 'completado'; break;
-         case 'completado': nextStatus = 'activo'; break;
-         default: nextStatus = 'activo';
-       }
-       
-       const response = await axios.patch(`/api/events/${event.id}/status`, {
-         status: nextStatus
-       }, {
-         headers: { 'Authorization': `Bearer ${token}` }
-       });
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Estado del evento cambiado a: ${nextStatus}`);
-         await loadEvents();
-       }
-     } catch (error) {
-       console.error('Error al cambiar estado del evento:', error);
-       showNotification('error', 'Error', 'Error al actualizar el estado del evento');
-     }
-   };
-
-   // Métodos para blogs
-   const toggleBlogFeatured = async (blog) => {
-     try {
-       const token = localStorage.getItem('access_token');
-       const newFeaturedStatus = !blog.is_featured;
-       
-       const response = await axios.patch(`/api/blogs/${blog.id}/featured`, {
-         featured: newFeaturedStatus
-       }, {
-         headers: { 'Authorization': `Bearer ${token}` }
-       });
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Blog post ${newFeaturedStatus ? 'destacado' : 'quitado de destacados'}`);
-         await loadBlogs();
-       }
-     } catch (error) {
-       console.error('Error al cambiar estado destacado:', error);
-       showNotification('error', 'Error', 'Error al actualizar el estado destacado');
-     }
-   };
-
-   const toggleBlogStatus = async (blog) => {
-     try {
-       const token = localStorage.getItem('access_token');
-       const newActiveStatus = !blog.active;
-       
-       const response = await axios.patch(`/api/blogs/${blog.id}/status`, {
-         active: newActiveStatus
-       }, {
-         headers: { 'Authorization': `Bearer ${token}` }
-       });
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Blog post ${newActiveStatus ? 'activado' : 'desactivado'}`);
-         await loadBlogs();
-       }
-     } catch (error) {
-       console.error('Error al cambiar estado activo:', error);
-       showNotification('error', 'Error', 'Error al actualizar el estado activo');
-     }
-   };
-
    // Mostrar la razón de archivo
    const showArchiveReason = (business) => {
      selectedBusiness.value = business;
@@ -2381,6 +2536,80 @@ export default {
        showNotification('error', 'Error', 'Error al actualizar el estado del comercio');
      }
    };
+
+   const toggleBlogFeatured = async (blog) => {
+  try {
+    // Verificar si puede ser destacado
+    if (!blog.is_featured) {
+      // Verificar límite de blogs destacados (máximo 2)
+      const featuredCount = blogs.value.filter(b => b.is_featured).length;
+      if (featuredCount >= 2) {
+        showNotification('error', 'Límite alcanzado', 'Solo se permiten 2 blogs destacados. Quite alguno antes de añadir otro.');
+        return;
+      }
+      
+      // No permitir destacar blogs inactivos
+      if (!blog.active) {
+        showNotification('error', 'Error', 'No se pueden destacar blogs inactivos');
+        return;
+      }
+    }
+    
+    const token = localStorage.getItem('access_token');
+    const newFeaturedStatus = !blog.is_featured;
+    
+    // Enviar 'is_featured' en lugar de 'featured'
+    const response = await axios.patch(`/api/blogs/${blog.id}/featured`, {
+      is_featured: newFeaturedStatus
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', `Blog ${newFeaturedStatus ? 'destacado' : 'quitado de destacados'}`);
+      await loadBlogs(); // Recargar blogs para actualizar el estado
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado destacado:', error);
+    showNotification('error', 'Error', 'Error al actualizar el estado destacado');
+  }
+};
+   // Método modificado para toggleBlogStatus en dashboard.vue
+const toggleBlogStatus = async (blog) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    const newActiveStatus = !blog.active;
+    
+    // Llamar a la API correcta
+    const response = await axios.patch(`/api/blogs/${blog.id}/status`, {
+      active: newActiveStatus
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', `Blog ${newActiveStatus ? 'activado' : 'desactivado'}`);
+      
+      // Si se desactiva un blog destacado, también quitarle el destacado
+      if (!newActiveStatus && blog.is_featured) {
+        try {
+          await axios.patch(`/api/blogs/${blog.id}/featured`, {
+            featured: false
+          }, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        } catch (featuredError) {
+          console.error('Error al quitar destacado del blog desactivado:', featuredError);
+        }
+      }
+      
+      await loadBlogs(); // Recargar blogs para actualizar el estado
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado activo:', error);
+    showNotification('error', 'Error', 'Error al actualizar el estado activo');
+  }
+};
 
    // Utility methods
    const formatDate = (date) => {
@@ -2588,8 +2817,7 @@ export default {
      cancelArchive,
      confirmArchive,
      toggleEventFeatured,
-     toggleEventHome,
-     changeEventStatus,
+     updateEventStatus,
      toggleBlogFeatured,
      toggleBlogStatus,
      showArchiveReason,

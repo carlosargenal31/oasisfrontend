@@ -249,42 +249,9 @@
           </div>
         </div>
 
-        <!-- Estado del evento -->
-        <div class="mb-6">
-          <h3 class="text-lg font-medium mb-3">Estado</h3>
-          <div class="space-y-2">
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                id="status-active"
-                v-model="statusFilters.activo"
-                @change="filterByStatus"
-                class="mr-2"
-              />
-              <label for="status-active" class="text-sm text-gray-600">Activo</label>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                id="status-postponed"
-                v-model="statusFilters.pospuesto"
-                @change="filterByStatus"
-                class="mr-2"
-              />
-              <label for="status-postponed" class="text-sm text-gray-600">Pospuesto</label>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                id="status-cancelled"
-                v-model="statusFilters.cancelado"
-                @change="filterByStatus"
-                class="mr-2"
-              />
-              <label for="status-cancelled" class="text-sm text-gray-600">Cancelado</label>
-            </div>
-          </div>
-        </div>
+        
+          
+       
       </div>
 
       <!-- Lista de eventos -->
