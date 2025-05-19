@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'; // Importar el router
 import { usePropertyService } from '~/services/propertyService';
+import { useFavoritesStore } from '~/store/favorites'; // Importar el store de favoritos
 import EstrellaRating from '~/components/EstrellaRating.vue';
 
 // Inicializar el router
@@ -9,6 +10,9 @@ const router = useRouter();
 
 // Inicializar el servicio de propiedades
 const propertyService = usePropertyService();
+
+// Inicializar el store de favoritos
+const favoritesStore = useFavoritesStore();
 
 // Estado para almacenar alojamientos
 const accommodations = ref([]);
@@ -55,7 +59,10 @@ const loadAccommodations = async () => {
           email: property.email || 'Sin correo',
           phone: property.phone || 'Sin teléfono',
           schedule: property.schedule || 'Horario no disponible',
-          isFavorite: false // Por defecto no es favorito
+          // Estos campos son necesarios para el store de favoritos
+          title: property.title,
+          category: 'Alojamiento',
+          // No establecemos el isFavorite aquí, lo calcularemos dinámicamente
         }));
         
         // Guardamos las propiedades en el estado
@@ -170,43 +177,35 @@ const visibleItems = computed(() => {
   return accommodations.value.slice(startIndex, endIndex);
 });
 
-// Función para alternar favoritos
-const toggleFavorite = (id) => {
-  const accommodation = accommodations.value.find(item => item.id === id);
-  if (accommodation) {
-    accommodation.isFavorite = !accommodation.isFavorite;
-  }
+// Verificar si una propiedad es favorita
+const isFavorite = (propertyId) => {
+  return favoritesStore.isFavorite(propertyId);
 };
 
-// Función que genera las estrellas de calificación - mantenerla como referencia
-// aunque ya no la usemos directamente en el template
-const generateStars = (rating) => {
-  const stars = [];
-  const fullStars = Math.floor(rating || 0);
-  const hasHalfStar = (rating || 0) - fullStars >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  // Agregar estrellas llenas
-  for (let i = 0; i < fullStars; i++) {
-    stars.push({ type: 'full' });
+// Alternar favorito utilizando el store
+const toggleFavorite = async (id) => {
+  try {
+    // Buscar la propiedad completa por ID
+    const property = accommodations.value.find(item => item.id === id);
+    
+    if (property) {
+      // Llamar al método del store para alternar favorito
+      await favoritesStore.toggleFavorite(property);
+    }
+  } catch (error) {
+    console.error('Error al alternar favorito:', error);
   }
-
-  // Agregar media estrella si es necesario
-  if (hasHalfStar) {
-    stars.push({ type: 'half' });
-  }
-
-  // Agregar estrellas vacías
-  for (let i = 0; i < emptyStars; i++) {
-    stars.push({ type: 'empty' });
-  }
-
-  return stars;
 };
 
 // Cargar datos al montar el componente
-onMounted(() => {
-  loadAccommodations();
+onMounted(async () => {
+  // Primero cargar favoritos para poder mostrarlos correctamente
+  if (!favoritesStore.isInitialized) {
+    await favoritesStore.fetchFavorites();
+  }
+  
+  // Cargar alojamientos
+  await loadAccommodations();
   
   // Ajustar la cantidad visible según el ancho de la pantalla
   const handleResize = () => {
@@ -302,10 +301,11 @@ onMounted(() => {
               class="w-full h-56 md:h-64 object-cover"
               @error="$event.target.src = 'https://placehold.co/600x400?text=Sin+Imagen'"
             />
+            <!-- Botón de favorito usando el store -->
             <button 
               @click.stop="toggleFavorite(accommodation.id)" 
               class="absolute top-3 right-3 bg-white rounded-full p-2 shadow heart-btn"
-              :class="{ 'favorite': accommodation.isFavorite }"
+              :class="{ 'favorite': isFavorite(accommodation.id) }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 heart-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
