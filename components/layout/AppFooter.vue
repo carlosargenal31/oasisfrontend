@@ -58,13 +58,13 @@
                 <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Enlaces rápidos</h4>
                 <ul class="space-y-3">
                   <li>
-                    <router-link to="/properties/sale" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Comercios</router-link>
+                    <router-link to="/properties/rent" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Comercios</router-link>
                   </li>
                   <li>
-                    <router-link to="/properties/add-property" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Eventos</router-link>
+                    <router-link to="/events/grid" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Eventos</router-link>
                   </li>
                   <li>
-                    <router-link to="/properties/rent" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Blog</router-link>
+                    <router-link to="/blog/grid" class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400">Blog</router-link>
                   </li>
                 </ul>
               </div>
