@@ -27,12 +27,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-          <button class="bg-orange text-white px-4 py-2 rounded-md flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Añadir Comercio
-          </button>
           <img class="h-10 w-10 rounded-full" :src="user.profile_image || '/img/default-avatar.png'" alt="Perfil de usuario">
         </div>
       </div>
@@ -70,18 +64,7 @@
               </div>
             </div>
 
-            <!-- Botón Añadir Comercio -->
-<div class="px-4 pb-4">
-  <button 
-    @click="redirectToAddProperty" 
-    class="w-full bg-orange text-white py-2 rounded flex justify-center items-center"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="white">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-    </svg>
-    Añadir Comercio
-  </button>
-</div>
+
 
             <!-- Menú de navegación -->
             <div class="border-t border-gray-200">
@@ -96,12 +79,6 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
                 <span class="text-black">Favoritos</span>
-              </a>
-              <a href="/account/reviews" class="flex items-center px-4 py-3 border-l-4 border-transparent hover:bg-gray-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span class="text-black">Reseñas</span>
               </a>
               
               
@@ -192,21 +169,6 @@
               </div>
             </div>
 
-            <!-- Nombre de empresa -->
-            <div class="border border-gray-200 rounded-lg mb-4">
-              <div class="p-4 flex items-center justify-between">
-                <div>
-                  <label class="block text-black text-sm mb-1">Nombre de empresa</label>
-                  <div class="text-gray-600">{{ user.company_name || 'No especificado' }}</div>
-                </div>
-                <button class="text-gray-500 hover:text-orange" @click="editField('company_name')">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
             <!-- Dirección -->
             <div class="border border-gray-200 rounded-lg mb-4">
               <div class="p-4 flex items-center justify-between">
@@ -281,11 +243,7 @@
     <label class="block text-gray-700 mb-2">Teléfono</label>
     <input v-model="editForm.phone" type="tel" class="w-full border border-gray-300 rounded-lg px-4 py-2">
   </div>
-  
-  <div v-if="editingField === 'company_name'" class="mb-4">
-    <label class="block text-gray-700 mb-2">Nombre de empresa</label>
-    <input v-model="editForm.company_name" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-  </div>
+
   
   <div v-if="editingField === 'address'" class="mb-4">
     <label class="block text-gray-700 mb-2">Dirección</label>
@@ -351,10 +309,7 @@ const logout = async () => {
   window.location.href = '/';
 };
 
-// Función para redirigir a la página de Añadir Comercio
-const redirectToAddProperty = () => {
-  window.location.href = '/properties/add-property';
-};
+
 // Método para iniciar sesión
 // En el método login del componente de login
 const login = async () => {
@@ -394,7 +349,6 @@ const user = ref({
   phone: '',
   profile_image: '',
   short_bio: '',
-  company_name: '',
   address: '',
   social_facebook: '',
   social_linkedin: '',
@@ -449,8 +403,7 @@ const calculateCompleteness = () => {
     { name: 'phone', weight: 10 },
     { name: 'profile_image', weight: 10 },
     { name: 'short_bio', weight: 15 },
-    { name: 'company_name', weight: 5 },
-    { name: 'address', weight: 10 },
+    { name: 'address', weight: 15 },
     { name: 'social_facebook', weight: 5 },
     { name: 'social_linkedin', weight: 5 },
     { name: 'social_twitter', weight: 5 },
@@ -678,7 +631,6 @@ const getFieldLabel = (field) => {
     name: 'nombre completo',
     email: 'email',
     phone: 'teléfono',
-    company_name: 'nombre de empresa',
     address: 'dirección'
   };
   
