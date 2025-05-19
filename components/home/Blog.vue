@@ -177,9 +177,15 @@ onMounted(() => {
 
 <template>
   <section class="container mx-auto px-4 my-8 py-4">
-    <!-- Encabezado con título -->
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">¿Te gustó esto? Hay más</h2>
+    <!-- Encabezado con título y enlace "Explora nuestro blog" -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-2">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 sm:mb-0">¿Te gustó esto? Hay más</h2>
+      <NuxtLink class="text-orange-600 hover:text-orange-800 flex items-center" to="/blog/grid">
+        Explora nuestro blog
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </NuxtLink>
     </div>
 
     <!-- Estado de carga -->
@@ -290,7 +296,15 @@ button, a {
 }
 
 /* Colores personalizados */
-.text-orange-500, .text-orange-600 {
+.text-orange-600 {
+  color: #FD5631;
+}
+
+.hover\:text-orange-800:hover {
+  color: #9C4221;
+}
+
+.text-orange-500 {
   color: #FD5631;
 }
 
@@ -335,4 +349,4 @@ h2 a:hover {
 .rounded-lg {
   border-radius: 0.5rem;
 }
-</style>
+</style> 
