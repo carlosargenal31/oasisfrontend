@@ -128,22 +128,22 @@
         <!-- Blogs Tab -->
         <div v-if="activeTab === 'blogs'" class="animate-fadeIn">
           <blogs-section
-            :blogs="paginatedBlogs"
-            :filters="blogsFilters"
-            :filtered-blogs="filteredBlogs"
-            :current-page="blogsCurrentPage"
-            :total-pages="totalBlogsPages"
-            :pagination-start="blogsPaginationStart"
-            :pagination-end="blogsPaginationEnd"
-            :display-pages="blogsDisplayPages"
-            @search-blogs="searchBlogs"
-            @update-filter="updateBlogsFilter"
-            @change-page="changeBlogsPage"
-            @toggle-sort-direction="toggleBlogsSortDirection"
-            @open-blog-modal="openBlogModal"
-            @toggle-blog-featured="toggleBlogFeatured"
-            @toggle-blog-status="toggleBlogStatus"
-          />
+  :blogs="paginatedBlogs"
+  :filters="blogsFilters"
+  :filtered-blogs="filteredBlogs"
+  :current-page="blogsCurrentPage"
+  :total-pages="totalBlogsPages"
+  :pagination-start="blogsPaginationStart"
+  :pagination-end="blogsPaginationEnd"
+  :display-pages="blogsDisplayPages"
+  @search-blogs="searchBlogs"
+  @update-filter="updateBlogsFilter"
+  @change-page="changeBlogsPage"
+  @toggle-sort-direction="toggleBlogsSortDirection"
+  @open-blog-modal="openBlogModal"
+  @toggle-blog-featured="toggleBlogFeatured"
+  @toggle-blog-status="toggleBlogStatus"
+/>
         </div>
       </div>
     </div>
@@ -473,89 +473,88 @@
   </div>
 </div>
 
-    <!-- Blog Modal -->
-    <div v-if="showBlogModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
-      <div class="bg-white rounded-xl p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-          <h3 class="text-xl font-bold text-gray-900">
-            {{ isEditingBlog ? 'Editar Blog Post' : 'Añadir Blog Post' }}
-          </h3>
-          <button @click="closeBlogModal" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <form @submit.prevent="saveBlog" class="space-y-6">
-          <!-- Contenido del formulario para blogs -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-                <input v-model="blogForm.title" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                <select v-model="blogForm.category" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                  <option value="Noticias">Noticias</option>
-                  <option value="Cultura">Cultura</option>
-                  <option value="Gastronomía">Gastronomía</option>
-                  <option value="Turismo">Turismo</option>
-                  <option value="Eventos">Eventos</option>
-                  <option value="Consejos">Consejos</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-              
-              <div class="flex items-center space-x-4">
-                <div class="flex items-center">
-                  <input v-model="blogForm.is_featured" type="checkbox" id="blog_is_featured" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
-                  <label for="blog_is_featured" class="ml-2 text-sm text-gray-700">Destacado</label>
-                </div>
-                <div class="flex items-center">
-                  <input v-model="blogForm.active" type="checkbox" id="blog_active" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
-                  <label for="blog_active" class="ml-2 text-sm text-gray-700">Activo</label>
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Imagen de Portada</label>
-                <input type="file" accept="image/*" @change="handleBlogImageUpload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
-                <div v-if="blogImagePreview" class="mt-3">
-                  <img :src="blogImagePreview" alt="Vista previa del blog" class="h-40 w-full object-cover rounded-lg border border-gray-200">
-                </div>
-              </div>
-            </div>
-            
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Contenido</label>
-                <textarea v-model="blogForm.content" rows="12" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"></textarea>
-              </div>
-              
-              <div class="text-sm text-gray-500">
-                <p class="mb-1 font-medium">Consejos para escribir:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                  <li>Utiliza párrafos cortos para mejor legibilidad</li>
-                  <li>Incluye subtítulos para organizar el contenido</li>
-                  <li>Agrega información relevante para los visitantes</li>
-                </ul>
-              </div>
+   <!-- REEMPLAZAR TODO EL CÓDIGO DEL MODAL DE BLOG EN dashboard.vue -->
+
+<!-- Blog Modal -->
+<div v-if="showBlogModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
+  <div class="bg-white rounded-xl p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+      <h3 class="text-xl font-bold text-gray-900">
+        {{ isEditingBlog ? 'Editar Blog Post' : 'Añadir Blog Post' }}
+      </h3>
+      <button @click="closeBlogModal" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <form @submit.prevent="saveBlog" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Título <span class="text-red-500">*</span></label>
+            <input v-model="blogForm.title" type="text" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Categoría <span class="text-red-500">*</span></label>
+            <select v-model="blogForm.category" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+              <option value="">Seleccionar categoría</option>
+              <option value="Alojamiento">Alojamiento</option>
+              <option value="Arquitectura">Arquitectura</option>
+              <option value="Gastronomía">Gastronomía</option>
+              <option value="Estilo de Vida">Estilo de Vida</option>
+              <option value="Eventos">Eventos</option>
+              <option value="Viajes">Viajes</option>
+              <option value="Noticias">Noticias</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Imagen de Portada</label>
+            <input type="file" accept="image/*" @change="handleBlogImageUpload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+            <div v-if="blogImagePreview" class="mt-3">
+              <img :src="blogImagePreview" alt="Vista previa del blog" class="h-40 w-full object-cover rounded-lg border border-gray-200">
             </div>
           </div>
           
-          <div class="pt-6 border-t border-gray-200 flex items-center justify-end space-x-3">
-            <button type="button" @click="closeBlogModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-              Cancelar
-            </button>
-            <button type="submit" class="px-5 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow-sm transition-colors">
-              {{ isEditingBlog ? 'Guardar Cambios' : 'Crear Blog Post' }}
-            </button>
+          <!-- Se han eliminado las opciones de Activo y Destacado como solicitado -->
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Contenido <span class="text-red-500">*</span></label>
+            <textarea 
+              v-model="blogForm.content" 
+              rows="12" 
+              required 
+              class="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+              placeholder="Escribe el contenido del blog aquí..."
+            ></textarea>
           </div>
-        </form>
+          
+          <div class="text-sm text-gray-500">
+            <p class="mb-1 font-medium">Consejos para escribir:</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Utiliza párrafos cortos para mejor legibilidad</li>
+              <li>Incluye subtítulos para organizar el contenido</li>
+              <li>Agrega información relevante para los visitantes</li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </div>
+      
+      <div class="pt-6 border-t border-gray-200 flex items-center justify-end space-x-3">
+        <button type="button" @click="closeBlogModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" class="px-5 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow-sm transition-colors">
+          {{ isEditingBlog ? 'Guardar Cambios' : 'Crear Blog Post' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
     <!-- Modal para razón de archivo -->
     <div v-if="showArchiveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1010,55 +1009,7 @@ export default {
       return result;
     });
 
-    // COMPUTED PROPERTIES PARA BLOGS
-    const filteredBlogs = computed(() => {
-  let result = [...blogs.value];
-
-  // Filtro de búsqueda
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase().trim();
-    result = result.filter(blog => 
-      (blog.title?.toLowerCase()?.includes(query)) || 
-      (blog.content?.toLowerCase()?.includes(query)) ||
-      (blog.category?.toLowerCase()?.includes(query))
-    );
-  }
   
-  // Aplicar filtros de categoría
-  if (blogsFilters.value.category) {
-    result = result.filter(blog => blog.category === blogsFilters.value.category);
-  }
-  
-  // Filtro de estado de activo/inactivo
-  if (blogsFilters.value.active !== '') {
-    const isActive = blogsFilters.value.active === true || blogsFilters.value.active === 'true';
-    result = result.filter(blog => blog.active === isActive);
-  }
-  
-  // Aplicar ordenamiento
-  result.sort((a, b) => {
-    let valueA = a[blogsFilters.value.sortBy];
-    let valueB = b[blogsFilters.value.sortBy];
-    
-    // Manejo especial para fechas
-    if (blogsFilters.value.sortBy === 'published_at' || blogsFilters.value.sortBy === 'created_at') {
-      valueA = valueA ? new Date(valueA).getTime() : 0;
-      valueB = valueB ? new Date(valueB).getTime() : 0;
-    }
-    
-    // Conversión a minúsculas para strings
-    if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-    if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-    
-    if (blogsFilters.value.sortDirection === 'asc') {
-      return valueA > valueB ? 1 : -1;
-    } else {
-      return valueA < valueB ? 1 : -1;
-    }
-  });
-  
-  return result;
-});
 
     // Verificar límites de propiedades destacadas
     const featuredCountByCategory = computed(() => {
@@ -1309,11 +1260,124 @@ export default {
       }
     };
 
-    const changeBlogsPage = (page) => {
-      if (page >= 1 && page <= totalBlogsPages.value && page !== '...') {
-        blogsCurrentPage.value = page;
+    // 1. FUNCIÓN PARA CARGAR BLOGS
+const loadBlogs = async () => {
+  try {
+    isLoading.value = true;
+    const token = localStorage.getItem('access_token');
+    
+    // Llamar a la API para obtener todos los blogs (incluyendo inactivos)
+    const response = await axios.get('/api/blogs/admin', {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        limit: 100 // Cargar todos los blogs
       }
-    };
+    });
+    
+    if (response.data?.success) {
+      // Procesar blogs y asegurar que los campos booleanos estén correctos
+      blogs.value = (response.data.data.blogs || []).map(blog => ({
+        ...blog,
+        // Convertir is_featured y active de 1/0 a true/false
+        is_featured: blog.is_featured === 1 || blog.is_featured === true,
+        active: blog.active === 1 || blog.active === true
+      }));
+      
+      console.log(`Blogs cargados: ${blogs.value.length}`);
+      
+      // Actualizar estadísticas
+      stats.value.totalBlogs = blogs.value.length;
+      stats.value.activeBlogs = blogs.value.filter(blog => blog.active).length;
+      stats.value.inactiveBlogs = blogs.value.filter(blog => !blog.active).length;
+    }
+  } catch (error) {
+    console.error('Error al cargar blogs:', error);
+    showNotification('error', 'Error', 'Error al cargar blogs');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 2. FUNCIÓN PARA FILTRAR BLOGS (asegúrate de que esta computed property esté correcta)
+const filteredBlogs = computed(() => {
+  let result = [...blogs.value];
+
+  // Filtro de búsqueda
+  if (blogsSearchQuery.value && blogsSearchQuery.value.trim()) {
+    const query = blogsSearchQuery.value.toLowerCase().trim();
+    console.log('Filtrando blogs con término:', query);
+    
+    result = result.filter(blog => 
+      (blog.title && blog.title.toLowerCase().includes(query)) || 
+      (blog.content && blog.content.toLowerCase().includes(query)) ||
+      (blog.category && blog.category.toLowerCase().includes(query))
+    );
+    
+    console.log('Blogs encontrados:', result.length);
+  }
+  
+  // Aplicar filtros de categoría
+  if (blogsFilters.value.category) {
+    result = result.filter(blog => blog.category === blogsFilters.value.category);
+  }
+  
+  // Filtro de estado de activo/inactivo
+  if (blogsFilters.value.active !== '') {
+    const isActive = blogsFilters.value.active === true || blogsFilters.value.active === 'true';
+    result = result.filter(blog => blog.active === isActive);
+  }
+  
+  // Aplicar ordenamiento
+  result.sort((a, b) => {
+    let valueA = a[blogsFilters.value.sortBy];
+    let valueB = b[blogsFilters.value.sortBy];
+    
+    // Manejo especial para fechas
+    if (blogsFilters.value.sortBy === 'published_at' || blogsFilters.value.sortBy === 'created_at') {
+      valueA = valueA ? new Date(valueA).getTime() : 0;
+      valueB = valueB ? new Date(valueB).getTime() : 0;
+    }
+    
+    // Conversión a minúsculas para strings
+    if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+    if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+    
+    if (blogsFilters.value.sortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
+    } else {
+      return valueA < valueB ? 1 : -1;
+    }
+  });
+  
+  return result;
+});
+
+// Para la búsqueda de blogs
+const searchBlogs = (query) => {
+  console.log('Buscando blogs con término:', query);
+  blogsSearchQuery.value = query;
+  blogsCurrentPage.value = 1;
+};
+
+// Para actualizar filtros de blog
+const updateBlogsFilter = (key, value) => {
+  console.log(`Actualizando filtro de blogs: ${key} = ${value}`);
+  blogsFilters.value[key] = value;
+  blogsCurrentPage.value = 1;
+};
+
+// 5. FUNCIÓN PARA CAMBIAR LA DIRECCIÓN DE ORDENAMIENTO
+const toggleBlogsSortDirection = () => {
+  blogsFilters.value.sortDirection = blogsFilters.value.sortDirection === 'asc' ? 'desc' : 'asc';
+  console.log('Dirección de ordenamiento cambiada:', blogsFilters.value.sortDirection);
+};
+
+// 6. FUNCIÓN PARA CAMBIAR PÁGINA
+const changeBlogsPage = (page) => {
+  if (page >= 1 && page <= totalBlogsPages.value && page !== '...') {
+    blogsCurrentPage.value = page;
+  }
+};
 
     // Métodos para manejo de imágenes
     const handleMainImageUpload = (event) => {
@@ -1363,13 +1427,27 @@ export default {
   eventImagePreview.value = URL.createObjectURL(file);
 };
 
-    const handleBlogImageUpload = (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      blogImageFile.value = file;
-      blogImagePreview.value = URL.createObjectURL(file);
-    };
+    // Función para manejar la carga de imágenes de blog
+const handleBlogImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Verificar el tamaño (máximo 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showNotification('error', 'Error', 'La imagen no debe superar los 5MB');
+    return;
+  }
+  
+  // Verificar el tipo
+  if (!file.type.startsWith('image/')) {
+    showNotification('error', 'Error', 'El archivo debe ser una imagen');
+    return;
+  }
+  
+  blogImageFile.value = file;
+  blogImagePreview.value = URL.createObjectURL(file);
+};
+
 
     const removeAdditionalImage = (index) => {
       additionalImageFiles.value.splice(index, 1);
@@ -1390,11 +1468,7 @@ export default {
       eventsCurrentPage.value = 1;
     };
 
-    // Buscar blogs
-    const searchBlogs = (query) => {
-      blogsSearchQuery.value = query;
-      blogsCurrentPage.value = 1;
-    };
+    
 
     // Inicializar mapa con Leaflet
     const initMap = () => {
@@ -1619,40 +1693,7 @@ const loadEvents = async () => {
     isLoading.value = false;
   }
 };
-   const loadBlogs = async () => {
-  try {
-    isLoading.value = true;
-    const token = localStorage.getItem('access_token');
-    
-    // Para el dashboard de admin, cargar todos los blogs tanto activos como inactivos
-    const response = await axios.get('/api/blogs', {
-      headers: { 'Authorization': `Bearer ${token}` },
-      params: {
-        limit: 100, // Cargar todos los blogs
-        // No incluir el parámetro 'active' para recibir tanto activos como inactivos
-      }
-    });
-    
-    if (response.data?.success) {
-      // Asegurarse de que los valores booleanos estén correctamente convertidos
-      blogs.value = (response.data.data.blogs || []).map(blog => ({
-        ...blog,
-        // Convertir is_featured y active de 1/0 a true/false
-        is_featured: blog.is_featured === 1 || blog.is_featured === true,
-        active: blog.active === 1 || blog.active === true || blog.active === undefined
-      }));
-      
-      // Actualizar estadísticas
-      stats.value.totalBlogs = blogs.value.length;
-    }
-  } catch (error) {
-    console.error('Error al cargar blogs:', error);
-    showNotification('error', 'Error', 'Error al cargar blogs');
-  } finally {
-    isLoading.value = false;
-  }
-};
-
+ 
     const parseScheduleString = (scheduleString) => {
       // Ejemplo: "Lun-Vie: 09:00 - 18:00"
       if (!scheduleString) return;
@@ -1941,38 +1982,53 @@ const openEventModal = async (event = null) => {
 };
 
     // Métodos para blogs
-    const openBlogModal = (blog = null) => {
-      // Resetear formulario de blog
-      blogForm.value = {
-        id: null,
-        title: '',
-        content: '',
-        category: 'Noticias',
-        image_url: '',
-        is_featured: false,
-        active: true,
-        author_id: user.value.id
-      };
-      
-      blogImageFile.value = null;
-      blogImagePreview.value = null;
-      
-      if (blog) {
-        isEditingBlog.value = true;
-        blogForm.value = { ...blog };
-        selectedBlog.value = blog;
-        
-        // Si hay una imagen, mostrarla
-        if (blog.image_url) {
-          blogImagePreview.value = blog.image_url;
-        }
-      } else {
-        isEditingBlog.value = false;
-        selectedBlog.value = null;
-      }
-      
-      showBlogModal.value = true;
+    // Función para abrir el modal de blog
+const openBlogModal = (blog = null) => {
+  // Resetear formulario de blog con valores por defecto
+  blogForm.value = {
+    id: null,
+    title: '',
+    content: '',
+    category: 'Noticias', // Valor por defecto
+    image_url: '',
+    is_featured: false,
+    active: true,
+    author_id: user.value.id
+  };
+  
+  blogImageFile.value = null;
+  blogImagePreview.value = null;
+  
+  if (blog) {
+    isEditingBlog.value = true;
+    selectedBlog.value = blog;
+    
+    // Asignar valores del blog existente
+    blogForm.value = {
+      id: blog.id,
+      title: blog.title || '',
+      content: blog.content || '',
+      category: blog.category || 'Noticias',
+      image_url: blog.image_url || '',
+      // Convertir valores numéricos (1/0) a booleanos
+      is_featured: blog.is_featured === 1 || blog.is_featured === true,
+      active: blog.active === 1 || blog.active === true || blog.active === undefined,
+      author_id: blog.author_id || user.value.id
     };
+    
+    console.log('Formulario para edición:', blogForm.value);
+    
+    // Si hay una imagen, mostrarla
+    if (blog.image_url) {
+      blogImagePreview.value = blog.image_url;
+    }
+  } else {
+    isEditingBlog.value = false;
+    selectedBlog.value = null;
+  }
+  
+  showBlogModal.value = true;
+};
 
     const resetBusinessForm = () => {
       businessForm.value = {
@@ -2032,12 +2088,13 @@ const openEventModal = async (event = null) => {
       eventImagePreview.value = null;
     };
 
-    const closeBlogModal = () => {
-      showBlogModal.value = false;
-      selectedBlog.value = null;
-      blogImageFile.value = null;
-      blogImagePreview.value = null;
-    };
+    // Función para cerrar el modal de blog
+const closeBlogModal = () => {
+  showBlogModal.value = false;
+  selectedBlog.value = null;
+  blogImageFile.value = null;
+  blogImagePreview.value = null;
+};
 
     const saveBusiness = async () => {
       try {
@@ -2328,75 +2385,128 @@ const saveEvent = async () => {
     showNotification('error', 'Error', errorMessage);
   }
 };
-   // Implementar saveBlog
-   const saveBlog = async () => {
-     try {
-       // Validar campos obligatorios
-       if (!blogForm.value.title) {
-         showNotification('error', 'Error', 'El título es obligatorio');
-         return;
-       }
-       
-       if (!blogForm.value.content) {
-         showNotification('error', 'Error', 'El contenido es obligatorio');
-         return;
-       }
-       
-       if (!blogForm.value.category) {
-         showNotification('error', 'Error', 'La categoría es obligatoria');
-         return;
-       }
-       
-       const token = localStorage.getItem('access_token');
-       const formData = new FormData();
-       
-       // Agregar campos básicos
-       Object.keys(blogForm.value).forEach(key => {
-         if (blogForm.value[key] !== null && blogForm.value[key] !== undefined) {
-           if (typeof blogForm.value[key] === 'boolean') {
-             formData.append(key, blogForm.value[key] ? '1' : '0');
-           } else {
-             formData.append(key, blogForm.value[key]);
-           }
-         }
-       });
-       
-       // Agregar imagen si hay un archivo nuevo
-       if (blogImageFile.value) {
-         formData.append('image', blogImageFile.value);
-       }
-       
-       // Mostrar notificación de carga
-       showNotification('success', 'Procesando', 'Guardando blog post...');
-       
-       // Configuración de la solicitud
-       const config = {
-         headers: { 
-           'Authorization': `Bearer ${token}`,
-           'Content-Type': 'multipart/form-data'
-         }
-       };
-       
-       let response;
-       
-       if (isEditingBlog.value) {
-         response = await axios.put(`/api/blogs/${blogForm.value.id}`, formData, config);
-       } else {
-         response = await axios.post('/api/blogs', formData, config);
-       }
-       
-       if (response.data?.success) {
-         showNotification('success', 'Éxito', `Blog post ${isEditingBlog.value ? 'actualizado' : 'creado'} correctamente`);
-         loadBlogs();
-         closeBlogModal();
-       } else {
-         throw new Error(response.data?.message || 'La respuesta del servidor no indica éxito');
-       }
-     } catch (error) {
-       console.error('Error al guardar blog post:', error);
-       showNotification('error', 'Error', 'Error al guardar blog post');
-     }
-   };
+   // Función principal para guardar un blog
+const saveBlog = async () => {
+  try {
+    // Validar campos obligatorios
+    if (!blogForm.value.title) {
+      showNotification('error', 'Error', 'El título es obligatorio');
+      return;
+    }
+    
+    if (!blogForm.value.content) {
+      showNotification('error', 'Error', 'El contenido es obligatorio');
+      return;
+    }
+    
+    if (!blogForm.value.category) {
+      showNotification('error', 'Error', 'La categoría es obligatoria');
+      return;
+    }
+    
+    // Mostrar notificación de carga
+    showNotification('success', 'Procesando', 'Guardando blog post...');
+    
+    const token = localStorage.getItem('access_token');
+    
+    // Crear objeto con los datos necesarios para el blog
+    const blogData = {
+      title: blogForm.value.title.trim(),
+      content: blogForm.value.content.trim(),
+      category: blogForm.value.category,
+      is_featured: blogForm.value.is_featured || false,
+      active: blogForm.value.active !== undefined ? blogForm.value.active : true
+    };
+    
+    // Si se está editando, hay que asegurarse de que el author_id esté presente
+    if (isEditingBlog.value && blogForm.value.author_id) {
+      blogData.author_id = blogForm.value.author_id;
+    }
+    
+    console.log('Datos del blog a enviar:', blogData);
+    
+    let response;
+    let blogId;
+    
+    // Configuración para la solicitud JSON
+    const jsonConfig = {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+    
+    if (isEditingBlog.value) {
+      // EDITANDO BLOG EXISTENTE
+      blogId = blogForm.value.id;
+      response = await axios.put(`/api/blogs/${blogId}`, blogData, jsonConfig);
+    } else {
+      // CREANDO NUEVO BLOG
+      response = await axios.post('/api/blogs', blogData, jsonConfig);
+      
+      if (response.data?.success) {
+        blogId = response.data.data.blogId;
+      } else {
+        throw new Error('No se pudo obtener el ID del blog creado');
+      }
+    }
+    
+    // Si hay imagen seleccionada, subir en una solicitud separada
+    if (blogImageFile.value && blogId) {
+      try {
+        const imageFormData = new FormData();
+        imageFormData.append('image', blogImageFile.value);
+        
+        const imageResponse = await axios.post('/api/blogs/image', imageFormData, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        // Si la imagen se subió correctamente, actualizar el blog con la URL
+        if (imageResponse.data?.success && imageResponse.data.data?.url) {
+          await axios.patch(`/api/blogs/${blogId}/image`, {
+            image_url: imageResponse.data.data.url
+          }, {
+            headers: { 
+              'Authorization': `Bearer ${token}`
+            }
+          });
+        }
+      } catch (imageError) {
+        console.error('Error al subir la imagen:', imageError);
+        showNotification('warning', 'Advertencia', 'El blog se guardó pero hubo un problema al subir la imagen');
+      }
+    }
+    
+    if (response.data?.success) {
+      showNotification('success', 'Éxito', `Blog post ${isEditingBlog.value ? 'actualizado' : 'creado'} correctamente`);
+      loadBlogs();
+      closeBlogModal();
+    } else {
+      throw new Error(response.data?.message || 'La respuesta del servidor no indica éxito');
+    }
+  } catch (error) {
+    console.error('Error al guardar blog post:', error);
+    
+    // Extraer mensaje de error para mostrar
+    let errorMessage = 'Error al guardar blog post';
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error;
+    }
+    
+    // Mostrar mensajes específicos de validación si existen
+    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      errorMessage += ': ' + error.response.data.errors.join(', ');
+    }
+    
+    showNotification('error', 'Error', errorMessage);
+  }
+};
 
    // Métodos para archivar/restaurar comercios
    const initiateArchive = (business) => {
@@ -2537,7 +2647,8 @@ const saveEvent = async () => {
      }
    };
 
-   const toggleBlogFeatured = async (blog) => {
+  // Función para cambiar el estado destacado de un blog
+const toggleBlogFeatured = async (blog) => {
   try {
     // Verificar si puede ser destacado
     if (!blog.is_featured) {
@@ -2574,8 +2685,7 @@ const saveEvent = async () => {
     showNotification('error', 'Error', 'Error al actualizar el estado destacado');
   }
 };
-   // Método modificado para toggleBlogStatus en dashboard.vue
-const toggleBlogStatus = async (blog) => {
+  const toggleBlogStatus = async (blog) => {
   try {
     const token = localStorage.getItem('access_token');
     const newActiveStatus = !blog.active;
@@ -2594,7 +2704,7 @@ const toggleBlogStatus = async (blog) => {
       if (!newActiveStatus && blog.is_featured) {
         try {
           await axios.patch(`/api/blogs/${blog.id}/featured`, {
-            featured: false
+            is_featured: false
           }, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
@@ -2610,7 +2720,6 @@ const toggleBlogStatus = async (blog) => {
     showNotification('error', 'Error', 'Error al actualizar el estado activo');
   }
 };
-
    // Utility methods
    const formatDate = (date) => {
      if (!date) return 'N/A';
@@ -2642,9 +2751,8 @@ const toggleBlogStatus = async (blog) => {
      eventsFilters.value.sortDirection = eventsFilters.value.sortDirection === 'asc' ? 'desc' : 'asc';
    };
 
-   const toggleBlogsSortDirection = () => {
-     blogsFilters.value.sortDirection = blogsFilters.value.sortDirection === 'asc' ? 'desc' : 'asc';
-   };
+   
+
 
    // Actualizar los filtros
    const updateFilter = (key, value) => {
@@ -2657,10 +2765,7 @@ const toggleBlogStatus = async (blog) => {
      eventsCurrentPage.value = 1;
    };
 
-   const updateBlogsFilter = (key, value) => {
-     blogsFilters.value[key] = value;
-     blogsCurrentPage.value = 1;
-   };
+   
 
    const updateTooltip = (businessId) => {
      showTooltipFor.value = businessId;

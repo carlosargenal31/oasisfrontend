@@ -116,60 +116,8 @@ const verifyAndRefreshToken = async () => {
 export default {
   // ---- FUNCIONES PARA BLOGS ----
   
-  // Obtener todos los blogs con filtros opcionales
-  // Obtener todos los blogs con filtros opcionales
-getBlogs(params = {}) {
-  // Crear una copia de los parámetros para no modificar el objeto original
-  const queryParams = { ...params };
   
-  // Por defecto, filtrar para mostrar solo activos si no se especifica
-  if (queryParams.active === undefined) {
-    queryParams.active = true;
-  }
-  
-  // Transformar los parámetros de ordenación
-  if (queryParams.sort) {
-    // Manejar los valores amigables para el usuario
-    if (queryParams.sort === 'newest') {
-      queryParams.sort_by = 'published_at';
-      queryParams.sort_order = 'desc';
-    } else if (queryParams.sort === 'oldest') {
-      queryParams.sort_by = 'published_at';
-      queryParams.sort_order = 'asc';
-    } else if (queryParams.sort === 'popular') {
-      queryParams.sort_by = 'comments_count';
-      queryParams.sort_order = 'desc';
-    }
-    
-    // Eliminar el parámetro original 'sort' para evitar conflictos
-    delete queryParams.sort;
-  }
-  
-  return axiosPublic.get(`${API_URL}/blogs`, { params: queryParams })
-    .catch(error => {
-      // Manejar errores de red en desarrollo
-      if (error.message && error.message.includes('Network Error') && process.env.NODE_ENV !== 'production') {
-        return handleNetworkError(error, { data: [] });
-      }
-      throw error;
-    });
-},
 
-  // Obtener blogs destacados
-  getFeaturedBlogs(limit = 2) {
-  return axiosPublic.get(`${API_URL}/blogs/featured`, {
-    params: { 
-      limit,
-      active: true  // Añadir filtro para mostrar solo activos
-    }
-  }).catch(error => {
-    // Manejar errores de red en desarrollo
-    if (error.message && error.message.includes('Network Error') && process.env.NODE_ENV !== 'production') {
-      return handleNetworkError(error, { data: [] });
-    }
-    throw error;
-  });
-},
 
   // Obtener un blog específico por ID
   getBlog(id) {
@@ -339,8 +287,61 @@ getBlogs(params = {}) {
     });
   },
 
-  // Método para obtener todos los blogs (sin paginación) - útil para opciones de fallback
-  // Método para obtener todos los blogs (sin paginación) - útil para opciones de fallback
+ // Modificar la función getBlogs para asegurar que active=true por defecto
+getBlogs(params = {}) {
+  // Crear una copia de los parámetros para no modificar el objeto original
+  const queryParams = { ...params };
+  
+  // Por defecto, filtrar para mostrar solo activos si no se especifica
+  if (queryParams.active === undefined) {
+    queryParams.active = true;
+  }
+  
+  // Transformar los parámetros de ordenación
+  if (queryParams.sort) {
+    // Manejar los valores amigables para el usuario
+    if (queryParams.sort === 'newest') {
+      queryParams.sort_by = 'published_at';
+      queryParams.sort_order = 'desc';
+    } else if (queryParams.sort === 'oldest') {
+      queryParams.sort_by = 'published_at';
+      queryParams.sort_order = 'asc';
+    } else if (queryParams.sort === 'popular') {
+      queryParams.sort_by = 'comments_count';
+      queryParams.sort_order = 'desc';
+    }
+    
+    // Eliminar el parámetro original 'sort' para evitar conflictos
+    delete queryParams.sort;
+  }
+  
+  return axiosPublic.get(`${API_URL}/blogs`, { params: queryParams })
+    .catch(error => {
+      // Manejar errores de red en desarrollo
+      if (error.message && error.message.includes('Network Error') && process.env.NODE_ENV !== 'production') {
+        return handleNetworkError(error, { data: [] });
+      }
+      throw error;
+    });
+},
+
+// Asegurar que getFeaturedBlogs también solicite blogs activos
+getFeaturedBlogs(limit = 2) {
+  return axiosPublic.get(`${API_URL}/blogs/featured`, {
+    params: { 
+      limit,
+      active: true  // Añadir filtro para mostrar solo activos
+    }
+  }).catch(error => {
+    // Manejar errores de red en desarrollo
+    if (error.message && error.message.includes('Network Error') && process.env.NODE_ENV !== 'production') {
+      return handleNetworkError(error, { data: [] });
+    }
+    throw error;
+  });
+},
+
+// Método para obtener todos los blogs (sin paginación) - útil para opciones de fallback
 getAllBlogs() {
   return axiosPublic.get(`${API_URL}/blogs`, {
     params: { 

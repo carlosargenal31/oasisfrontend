@@ -126,34 +126,14 @@
               </svg>
             </a>
           </div>
-          <!-- Excerpt text -->
-          <div class="text-gray-800 mb-6 font-medium">
-            {{ blog.excerpt || 'La Ceiba, conocida como la capital ecoturística de Honduras, cuenta con excelente conectividad aérea a través del Aeropuerto Internacional Golosón, facilitando el acceso a esta hermosa región y a las Islas de la Bahía.' }}
-          </div>
+          
           
           <!-- Article Content -->
           <div class="prose prose-lg max-w-none mb-8 text-gray-600">
             <div v-if="blog.content" v-html="formattedContent"></div>
           
             <!-- Default content for preview (if no actual content) -->
-            <template v-if="!blog.content">
-              <p class="text-gray-600">
-                La Ceiba, conocida como la capital ecoturística de Honduras, es un destino que ofrece una excelente conectividad para los viajeros. Con transporte regular desde y hacia los principales centros del país, viajar a La Ceiba es una opción conveniente y rápida para los turistas y viajeros de negocios.
-              </p>
-              <p class="mb-6">
-                La ciudad sirve como la principal puerta de entrada a esta región de Honduras. Ubicada a orillas del Mar Caribe, ofrece acceso diario a destinos como Tegucigalpa, San Pedro Sula, Roatán y Guanaja.
-              </p>
-              <!-- Quote block -->
-              <blockquote class="text-2xl text-gray-800 mt-8 mb-8 italic relative px-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 absolute left-0 top-0 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                </svg>
-                La Ceiba es la puerta de entrada a las maravillas naturales de Honduras, con conexiones que facilitan el acceso a destinos como Roatán, Utila y el Parque Nacional Pico Bonito.
-              </blockquote>
-              <p>
-                Para aquellos que desean visitar las Islas de la Bahía desde La Ceiba, los viajes a Roatán y Utila son particularmente populares. La ciudad ofrece diversas alternativas de transporte para explorar toda la belleza de esta región caribeña.
-              </p>
-            </template>
+            
           </div>
           
          

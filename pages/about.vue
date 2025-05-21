@@ -117,11 +117,11 @@
           <!-- Miembro 2 - Carlos Argeñal -->
           <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition group">
             <div class="h-56 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Carlos Argueñal" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <img src="@/assets/images/argenal.png" alt="Carlos Argueñal" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             </div>
             <div class="p-4">
               <h3 class="text-lg font-bold text-gray-800">Carlos Argeñal</h3>
-              <p class="text-gray-500 text-sm mb-2">Arquitecto de Software Web</p>
+              <p class="text-gray-500 text-sm mb-2">Arquitecto de Aplicaciones Web Full Stack</p>
               <div class="flex items-center justify-between">
                 <a href="mailto:carlosargenal@outlook.es" class="flex items-center text-gray-600 hover:text-orange-600 transition">
                   <MailIcon :size="16" class="mr-1" />
@@ -220,7 +220,7 @@
           <!-- Miembro 6 - Greco Pavon -->
           <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition group">
             <div class="h-56 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Greco Pavon" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <img src="@/assets/images/greco.png" alt="Greco Pavon" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             </div>
             <div class="p-4">
               <h3 class="text-lg font-bold text-gray-800">Greco Pavon</h3>
@@ -295,7 +295,7 @@
           <!-- Miembro 9 - Jenci Lemus -->
           <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition group">
             <div class="h-56 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Jenci Lemus" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <img src="@/assets/images/jenci.png" alt="Jenci Lemus" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             </div>
             <div class="p-4">
               <h3 class="text-lg font-bold text-gray-800">Jenci Lemus</h3>
@@ -320,7 +320,7 @@
           <!-- Miembro 10 - Carlos Sosa -->
           <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition group">
             <div class="h-56 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Carlos Sosa" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <img src="@/assets/images/sosa.png" alt="Carlos Sosa" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             </div>
             <div class="p-4">
               <h3 class="text-lg font-bold text-gray-800">Carlos Sosa</h3>

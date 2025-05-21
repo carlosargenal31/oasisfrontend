@@ -24,20 +24,20 @@
       <!-- Búsqueda -->
       <div class="relative mb-4">
         <input 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="Buscar posts..." 
-          class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-          @keyup.enter="searchBlogs"
-        />
-        <button 
-          @click="searchBlogs" 
-          class="absolute right-3 top-2 text-gray-400 hover:text-orange-600"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
+  type="text" 
+  v-model="searchQuery" 
+  placeholder="Buscar posts..." 
+  class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+  @keyup.enter="$emit('search-blogs', searchQuery)"
+/>
+<button 
+  @click="$emit('search-blogs', searchQuery)" 
+  class="absolute right-3 top-2 text-gray-400 hover:text-orange-600"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+</button>
       </div>
         
       <!-- Filtros -->
@@ -45,10 +45,10 @@
         <div class="col-span-1">
           <label class="block text-xs font-medium text-gray-700 mb-1">Categoría</label>
           <div class="relative">
-            <select v-model="localFilters.category" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500" @change="updateFilter('category', localFilters.category)">
-              <option value="">Todas</option>
-              <option v-for="category in blogCategories" :key="category" :value="category">{{ category }}</option>
-            </select>
+            <select v-model="localFilters.category" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500" @change="$emit('update-filter', 'category', localFilters.category)">
+  <option value="">Todas</option>
+  <option v-for="category in blogCategories" :key="category" :value="category">{{ category }}</option>
+</select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               
             </div>
@@ -58,11 +58,13 @@
         <div class="col-span-1">
           <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
           <div class="relative">
-            <select v-model="localFilters.active" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500" @change="updateFilter('active', localFilters.active)">
-              <option value="">Todos</option>
-              <option :value="true">Activo</option>
-              <option :value="false">Inactivo</option>
-            </select>
+            <!-- Selector de estado activo/inactivo -->
+<select v-model="localFilters.active" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500" @change="$emit('update-filter', 'active', localFilters.active)">
+  <option value="">Todos</option>
+  <option :value="true">Activo</option>
+  <option :value="false">Inactivo</option>
+</select>
+
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               
             </div>
@@ -73,11 +75,12 @@
           <label class="block text-xs font-medium text-gray-700 mb-1">Ordenar por</label>
           <div class="flex items-center">
             <div class="relative flex-grow">
-              <select v-model="localFilters.sortBy" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" @change="updateFilter('sortBy', localFilters.sortBy)">
-                <option value="published_at">Fecha publicación</option>
-                <option value="title">Título</option>
-                <option value="category">Categoría</option>
-              </select>
+              <!-- Selector de ordenamiento -->
+<select v-model="localFilters.sortBy" class="appearance-none w-full p-2 pl-3 pr-8 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" @change="$emit('update-filter', 'sortBy', localFilters.sortBy)">
+  <option value="published_at">Fecha publicación</option>
+  <option value="title">Título</option>
+  <option value="category">Categoría</option>
+</select>
               <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 
               </div>
@@ -258,6 +261,7 @@
 </template>
 
 <script>
+
 export default {
   props: {
     blogs: {
@@ -277,7 +281,7 @@ export default {
       type: Array,
       default: () => []
     },
-   currentPage: {
+    currentPage: {
       type: Number,
       default: 1
     },
@@ -326,16 +330,34 @@ export default {
     safeDisplayPages() {
       return this.displayPages || [1];
     },
-    // Contar blogs destacados
+    // Contar blogs destacados (solo los activos)
     featuredBlogsCount() {
-      return this.safeFilteredBlogs.filter(blog => blog.is_featured).length;
+      return this.safeFilteredBlogs.filter(blog => blog.is_featured && blog.active).length;
+    },
+    // Contar blogs activos
+    activeBlogsCount() {
+      return this.safeFilteredBlogs.filter(blog => blog.active).length;
+    },
+    // Contar blogs inactivos
+    inactiveBlogsCount() {
+      return this.safeFilteredBlogs.filter(blog => !blog.active).length;
+    },
+    // Conteo por categorías (solo activos)
+    categoryCountsActive() {
+      const counts = {};
+      this.safeFilteredBlogs.filter(blog => blog.active).forEach(blog => {
+        if (blog.category) {
+          counts[blog.category] = (counts[blog.category] || 0) + 1;
+        }
+      });
+      return counts;
     }
   },
   created() {
     // Sincronizar valores locales con props
     this.localFilters = { ...this.filters };
     
-    // Extraer categorías únicas
+    // Extraer categorías únicas de todos los blogs (activos e inactivos)
     const categories = new Set();
     this.safeBlogs.forEach(blog => {
       if (blog.category) {
@@ -345,36 +367,32 @@ export default {
     this.blogCategories = Array.from(categories).sort();
   },
   methods: {
-    searchBlogs() {
-      this.$emit('search-blogs', this.searchQuery);
-    },
-    updateFilter(key, value) {
-      this.$emit('update-filter', key, value);
-    },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      
-      try {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', options);
-      } catch (error) {
-        console.error('Error al formatear fecha:', error);
-        return dateString;
-      }
-    },
-    // Verificar si un blog puede ser destacado
-    canBeHighlighted(blog) {
-      // Si ya está destacado, siempre permitir (para poder quitarlo)
-      if (blog.is_featured) return true;
-      
-      // No permitir destacar blogs inactivos
-      if (!blog.active) return false;
-      
-      // Verificar el límite (máximo 2 blogs destacados)
-      return this.featuredBlogsCount < 2;
-    }
+  // Verificar si un blog puede ser destacado
+  canBeHighlighted(blog) {
+    // Si ya está destacado, siempre permitir (para poder quitarlo)
+    if (blog.is_featured) return true;
+    
+    // No permitir destacar blogs inactivos
+    if (!blog.active) return false;
+    
+    // Verificar el límite (máximo 2 blogs destacados activos)
+    return this.featuredBlogsCount < 2;
   },
+  
+  // Formatear fecha para mostrar
+  formatDate(dateString) {
+    if (!dateString) return '';
+    
+    try {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', options);
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return dateString;
+    }
+  }
+},
   watch: {
     filters: {
       handler(newFilters) {
