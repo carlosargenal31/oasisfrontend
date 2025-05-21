@@ -1,8 +1,9 @@
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router'; // Importar el router
+import { useRouter } from 'vue-router';
 import { usePropertyService } from '~/services/propertyService';
-import EstrellaRating from '~/components/EstrellaRating.vue'; // Importamos el componente de estrellas
+import EstrellaRating from '~/components/EstrellaRating.vue';
 
 // Inicializar el router
 const router = useRouter();
@@ -15,21 +16,50 @@ const restaurants = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
+// Estado para el carrusel
+const currentPage = ref(0);
+const itemsPerPage = 6; // 6 restaurantes por página (3 en cada columna)
+
 // Función para navegar a la página de detalles del restaurante
 const navigateToProperty = (propertyId) => {
   router.push(`/properties/${propertyId}`);
 };
 
+// Obtener restaurantes para la página actual
+const paginatedRestaurants = computed(() => {
+  const start = currentPage.value * itemsPerPage;
+  const end = start + itemsPerPage;
+  return restaurants.value.slice(start, end);
+});
+
 // Obtener restaurantes para cada columna
 const leftColumnRestaurants = computed(() => {
-  if (restaurants.value.length === 0) return [];
-  return restaurants.value.slice(0, 3); // Obtener los primeros 3 restaurantes para la columna izquierda
+  if (paginatedRestaurants.value.length === 0) return [];
+  return paginatedRestaurants.value.slice(0, Math.ceil(paginatedRestaurants.value.length / 2));
 });
 
 const rightColumnRestaurants = computed(() => {
-  if (restaurants.value.length === 0) return [];
-  return restaurants.value.slice(3, 6); // Obtener los siguientes 3 restaurantes para la columna derecha
+  if (paginatedRestaurants.value.length === 0) return [];
+  return paginatedRestaurants.value.slice(Math.ceil(paginatedRestaurants.value.length / 2));
 });
+
+// Calcular el número total de páginas
+const totalPages = computed(() => {
+  return Math.ceil(restaurants.value.length / itemsPerPage);
+});
+
+// Funciones para navegar entre páginas
+const nextPage = () => {
+  if (currentPage.value < totalPages.value - 1) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 0) {
+    currentPage.value--;
+  }
+};
 
 // Función para cargar los restaurantes desde la API
 const loadRestaurants = async () => {
@@ -38,22 +68,21 @@ const loadRestaurants = async () => {
   
   try {
     // Llamada a la API para obtener propiedades de la categoría "Restaurante y bar"
+    // Aumentamos el límite para obtener más restaurantes (ejemplo: 18 para tener 3 páginas)
     const result = await propertyService.getPropertiesByCategoryFeatured('Restaurante y bar', {
-      limit: 6, // Solo necesitamos 6 para el grid estático
-      sort: 'newest' // Cambiar a 'newest' para obtener los más recientes primero
+      limit: 18, // Aumentamos a 18 para tener más páginas en el carrusel
+      sort: 'newest'
     });
     
     if (result && result.success) {
       console.log('Resultado de la API:', result.data);
       
-      // Transformar las propiedades al formato que necesitamos para el grid
       const properties = result.data.properties || [];
       
       if (properties.length === 0) {
         console.warn('No se encontraron restaurantes en la respuesta de la API');
         error.value = 'No se encontraron restaurantes disponibles';
         restaurants.value = [];
-        
       } else {
         // Primero convertimos las propiedades al formato deseado
         const transformedProperties = properties.map(property => ({
@@ -86,7 +115,6 @@ const loadRestaurants = async () => {
       restaurants.value = [];
     }
   } catch (err) {
-    
     console.error('Error al cargar restaurantes:', err);
     error.value = 'Error al cargar los restaurantes';
     restaurants.value = [];
@@ -160,7 +188,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="max-w-7xl mx-auto px-4 py-8"  v-if="restaurants.length > 0" >
+  <section class="max-w-7xl mx-auto px-4 py-8" v-if="restaurants.length > 0">
     <!-- Encabezado de la sección -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800 mb-2 md:mb-0">
@@ -194,127 +222,170 @@ onMounted(() => {
     </div>
     
     <!-- Mensaje si no hay resultados -->
-    <div v-else-if="restaurants.length === 0" class="text-center py-20">
+    <div v-else-if="paginatedRestaurants.length === 0" class="text-center py-20">
       <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
       </svg>
       <p class="text-lg text-gray-800">No se encontraron restaurantes disponibles.</p>
     </div>
     
-    <!-- Grid de restaurantes (2 columnas) -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- COLUMNA IZQUIERDA -->
-      <div>
-        <!-- Restaurantes en la columna izquierda -->
-        <div 
-          v-for="restaurant in leftColumnRestaurants" 
-          :key="restaurant.id" 
-          class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
-          @click="navigateToProperty(restaurant.id)"
-        >
-          <!-- Imagen del restaurante -->
-          <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
-            <img 
-              v-if="restaurant.image" 
-              :src="restaurant.image" 
-              :alt="restaurant.name"
-              class="w-full h-full object-cover"
-              @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
-            />
-            <!-- Imagen de respaldo si no hay imagen -->
-            <div v-else class="w-full h-full bg-white flex items-center justify-center">
-              <div class="text-3xl text-gray-400 font-light">R</div>
-            </div>
-          </div>
-          
-          <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
-            
-            <!-- Estrellas de calificación -->
-            <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
-              <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
-                <estrella-rating 
-                  :calificacion="restaurant.rating || 0"
-                  :mostrarNumero="true"
-                />
+    <!-- Grid de restaurantes (2 columnas) con controles de carrusel -->
+    <div v-else class="relative">
+      <!-- Botón de navegación ANTERIOR -->
+      <button 
+        v-if="totalPages > 1"
+        @click="prevPage" 
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="currentPage === 0"
+        :class="{ 'opacity-50 cursor-not-allowed': currentPage === 0 }"
+        aria-label="Anterior"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      <!-- Botón de navegación SIGUIENTE -->
+      <button 
+        v-if="totalPages > 1"
+        @click="nextPage" 
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="currentPage === totalPages - 1"
+        :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages - 1 }"
+        aria-label="Siguiente"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      <!-- Grid de restaurantes (2 columnas) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- COLUMNA IZQUIERDA -->
+        <div>
+          <!-- Restaurantes en la columna izquierda -->
+          <div 
+            v-for="restaurant in leftColumnRestaurants" 
+            :key="restaurant.id" 
+            class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
+            @click="navigateToProperty(restaurant.id)"
+          >
+            <!-- Imagen del restaurante -->
+            <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
+              <img 
+                v-if="restaurant.image" 
+                :src="restaurant.image" 
+                :alt="restaurant.name"
+                class="w-full h-full object-cover"
+                @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
+              />
+              <!-- Imagen de respaldo si no hay imagen -->
+              <div v-else class="w-full h-full bg-white flex items-center justify-center">
+                <div class="text-3xl text-gray-400 font-light">R</div>
               </div>
             </div>
             
-            <!-- Dirección -->
-            <div class="flex items-start mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
+              
+              <!-- Estrellas de calificación -->
+              <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
+                <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
+                  <estrella-rating 
+                    :calificacion="restaurant.rating || 0"
+                    :mostrarNumero="true"
+                  />
+                </div>
+              </div>
+              
+              <!-- Dirección -->
+              <div class="flex items-start mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
+              </div>
+              
+              <!-- Teléfono -->
+              <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
+                <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                {{ restaurant.phone }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- COLUMNA DERECHA -->
+        <div>
+          <!-- Restaurantes en la columna derecha -->
+          <div 
+            v-for="restaurant in rightColumnRestaurants" 
+            :key="restaurant.id" 
+            class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
+            @click="navigateToProperty(restaurant.id)"
+          >
+            <!-- Imagen del restaurante -->
+            <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
+              <img 
+                v-if="restaurant.image" 
+                :src="restaurant.image" 
+                :alt="restaurant.name"
+                class="w-full h-full object-cover"
+                @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
+              />
+              <!-- Imagen de respaldo si no hay imagen -->
+              <div v-else class="w-full h-full bg-white flex items-center justify-center">
+                <div class="text-3xl text-gray-400 font-light">R</div>
+              </div>
             </div>
             
-            <!-- Teléfono -->
-            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
-              <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              {{ restaurant.phone }}
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
+              
+              <!-- Estrellas de calificación -->
+              <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
+                <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
+                  <estrella-rating 
+                    :calificacion="restaurant.rating || 0"
+                    :mostrarNumero="true"
+                  />
+                </div>
+              </div>
+              
+              <!-- Dirección -->
+              <div class="flex items-start mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
+              </div>
+              
+              <!-- Teléfono -->
+              <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
+                <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                {{ restaurant.phone }}
+              </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- COLUMNA DERECHA -->
-      <div>
-        <!-- Restaurantes en la columna derecha -->
-        <div 
-          v-for="restaurant in rightColumnRestaurants" 
-          :key="restaurant.id" 
-          class="bg-gray-50 rounded-lg p-4 mb-6 flex hover:shadow-md hover:transform hover:translate-y-[-2px] transition-all cursor-pointer"
-          @click="navigateToProperty(restaurant.id)"
-        >
-          <!-- Imagen del restaurante -->
-          <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden mr-4">
-            <img 
-              v-if="restaurant.image" 
-              :src="restaurant.image" 
-              :alt="restaurant.name"
-              class="w-full h-full object-cover"
-              @error="$event.target.src = 'https://placehold.co/64x64?text=R'"
-            />
-            <!-- Imagen de respaldo si no hay imagen -->
-            <div v-else class="w-full h-full bg-white flex items-center justify-center">
-              <div class="text-3xl text-gray-400 font-light">R</div>
-            </div>
-          </div>
-          
-          <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ restaurant.name }}</h3>
-            
-            <!-- Estrellas de calificación -->
-            <div class="flex items-center mb-2 estrella-rating-container" style="color: #FBBF24">
-              <div class="estrellas-wrapper" style="color: #FBBF24 !important; transform: scale(0.8); transform-origin: left;">
-                <estrella-rating 
-                  :calificacion="restaurant.rating || 0"
-                  :mostrarNumero="true"
-                />
-              </div>
-            </div>
-            
-            <!-- Dirección -->
-            <div class="flex items-start mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 mt-0.5 flex-shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span class="text-sm text-gray-600 line-clamp-2">{{ restaurant.address }}</span>
-            </div>
-            
-            <!-- Teléfono -->
-            <div v-if="restaurant.phone !== 'Sin teléfono'" class="flex items-center text-sm text-gray-500">
-              <svg class="mr-1 text-gray-500 w-4 h-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              {{ restaurant.phone }}
-            </div>
-          </div>
-        </div>
+      <!-- Indicadores de paginación (puntos) -->
+      <div v-if="totalPages > 1" class="flex justify-center mt-4 space-x-2">
+        <button 
+          v-for="page in totalPages" 
+          :key="page" 
+          @click="currentPage = page - 1" 
+          class="w-2.5 h-2.5 rounded-full transition-colors"
+          :class="currentPage === page - 1 ? 'bg-orange-500' : 'bg-gray-300 hover:bg-gray-400'"
+          aria-label="Ir a la página"
+        ></button>
       </div>
     </div>
   </section>
@@ -440,5 +511,38 @@ onMounted(() => {
 /* Mejorar el efecto de hover */
 .cursor-pointer:hover {
   background-color: #F3F4F6;
+}
+
+/* Estilos para botones de control del carrusel */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.transition-colors {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Estilos para los botones de navegación */
+.carousel-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Escondemos los botones en móvil y los mostramos en tablet/desktop */
+@media (max-width: 768px) {
+  .carousel-nav-button {
+    display: none;
+  }
 }
 </style>

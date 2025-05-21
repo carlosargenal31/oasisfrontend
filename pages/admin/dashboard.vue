@@ -484,7 +484,7 @@
       </h3>
       <button @click="closeBlogModal" class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
@@ -1035,15 +1035,7 @@ export default {
       // Si está archivado, no permitir destacar
       if (business.archived) return false;
       
-      // Verificar límites por categoría
-      if (business.category === 'Alojamiento') {
-        return featuredCountByCategory.value['Alojamiento'] < 10;
-      } else if (business.category === 'Restaurante y bar') {
-        return featuredCountByCategory.value['Restaurante y bar'] < 6;
-      } else if (business.category === 'Entretenimiento') {
-        return true; // Sin límite para entretenimiento
-      }
-      
+      // Eliminar la validación por categoría para permitir destacar sin límite
       return true;
     };
 
@@ -2582,16 +2574,10 @@ const saveBlog = async () => {
 
    const toggleBusinessFeatured = async (business) => {
      try {
-       // Verificar si puede ser destacado
+       // Verificar si puede ser destacado (solo por estado archivado)
        if (!business.isFeatured && !canBeHighlighted(business)) {
-         let message = '';
-         if (business.category === 'Alojamiento') {
-           message = 'Ya hay 10 propiedades destacadas en la categoría Alojamiento. Quite alguna antes de añadir otra.';
-         } else if (business.category === 'Restaurante y bar') {
-           message = 'Ya hay 6 propiedades destacadas en la categoría Restaurante y bar. Quite alguna antes de añadir otra.';
-         }
-         
-         showNotification('error', 'Error', message);
+         // Este mensaje solo se activará si está archivado
+         showNotification('error', 'Error', 'No se pueden destacar comercios inactivos');
          return;
        }
        
