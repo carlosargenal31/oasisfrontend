@@ -58,17 +58,28 @@
     <div class="flex flex-col md:flex-row">
       <!-- Left sidebar -->
       <div class="w-full md:w-1/4 md:pr-6 mb-8 md:mb-0">
-        <!-- Sort by -->
-        <div class="mb-6">
-          <div class="flex items-center mb-2">
-            <span class="text-sm text-gray-500">Ordenar por:</span>
-          </div>
-          <select v-model="sortOption" @change="handleSortChange" class="w-full p-2 border rounded-md text-sm">
-            <option value="newest">Más recientes</option>
-            <option value="oldest">Más antiguos</option>
-            <option value="popular">Populares</option>
-          </select>
-        </div>
+        <!-- Componente de ordenación optimizado -->
+<div class="mb-6">
+  <div class="flex items-center mb-2">
+    <span class="text-sm text-gray-500">Ordenar por:</span>
+  </div>
+  <select 
+    v-model="sortOption" 
+    @change="handleSortChange" 
+    class="w-full p-2 border rounded-md text-sm"
+    :disabled="loading"
+  >
+    <option value="newest">Más recientes</option>
+    <option value="oldest">Más antiguos</option>
+    
+  </select>
+  
+  <!-- Indicador de carga sencillo -->
+  <div v-if="loading" class="mt-2 text-xs text-gray-500 flex items-center">
+    <div class="mr-2 h-3 w-3 rounded-full border-2 border-t-transparent border-orange-500 animate-spin"></div>
+    <span>Cargando...</span>
+  </div>
+</div>
 
         <!-- Search -->
         <div class="mb-6">
@@ -379,147 +390,110 @@ const fetchCommentCounts = async () => {
   }
 }
 
+// 2. Función mejorada de fetchBlogs que maneja mejor los errores de API
 const fetchBlogs = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   
   try {
-    // Construir URL con parámetros
-    const baseUrl = '/api/blogs' // Ajustar a tu ruta real de API
+    // Preparar parámetros para el servicio
+    const params = {
+      offset: (currentPage.value - 1) * itemsPerPage.value,
+      limit: itemsPerPage.value,
+      active: true
+    };
     
-    // Construir parámetros
-    const params = new URLSearchParams()
-    // Añadir parámetro para obtener solo blogs activos
-    params.append('active', true)
-    // Parámetros de paginación
-    // Calcular el offset basado en la página actual y elementos por página
-    const offset = (currentPage.value - 1) * itemsPerPage.value
-    params.append('offset', offset)
-    params.append('limit', itemsPerPage.value)
-    
-    // Parámetros de ordenación
+    // Configurar parámetros de ordenación
     if (sortOption.value === 'newest') {
-      params.append('sort_by', 'published_at')
-      params.append('sort_order', 'desc')
+      params.sort_by = 'published_at';
+      params.sort_order = 'desc';
     } else if (sortOption.value === 'oldest') {
-      params.append('sort_by', 'published_at')
-      params.append('sort_order', 'asc')
+      params.sort_by = 'published_at';
+      params.sort_order = 'asc';
     } else if (sortOption.value === 'popular') {
-      params.append('sort_by', 'comments_count')
-      params.append('sort_order', 'desc')
+      params.sort_by = 'comments_count';
+      params.sort_order = 'desc';
     }
     
-    // Parámetros de filtrado
+    // Añadir parámetros de filtrado
     if (searchTerm.value) {
-      params.append('search', searchTerm.value)
+      params.search = searchTerm.value;
     }
     
     if (activeCategory.value) {
-      params.append('category', activeCategory.value)
+      params.category = activeCategory.value;
     }
     
-    // Construir URL completa
-    const url = `${baseUrl}?${params.toString()}`
-    apiUrl.value = url // Para depuración
+    // Para depuración, mostrar la URL que se utilizaría
+    const urlParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      urlParams.append(key, value);
+    });
+    apiUrl.value = `/api/blogs?${urlParams.toString()}`;
     
-    // Hacer la solicitud directamente con axios en lugar de usar el servicio
-    const response = await axios.get(url)
+    // Intentar usar primero el método fetchAllBlogs y aplicar filtros manualmente
+    const allBlogsResponse = await blogService.getAllBlogs();
     
-    // Procesar respuesta
-    if (response?.data?.data?.blogs) {
-      blogs.value = response.data.data.blogs
-      totalBlogsCount.value = response.data.data.total || response.data.data.blogs.length * 2
-    } else if (Array.isArray(response?.data?.data)) {
-      blogs.value = response.data.data
-      totalBlogsCount.value = response.data.meta?.total || 
-                             response.data.pagination?.total || 
-                             response.headers['x-total-count'] || 
-                             blogs.value.length * 2
-    } else if (Array.isArray(response?.data)) {
-      blogs.value = response.data
-      totalBlogsCount.value = response.headers['x-total-count'] || blogs.value.length * 2
-    } else {
-      throw new Error('Formato de respuesta no reconocido')
+    // Procesar datos de todos los blogs
+    let allBlogsData = [];
+    
+    if (allBlogsResponse?.data?.data?.blogs) {
+      allBlogsData = allBlogsResponse.data.data.blogs;
+    } else if (Array.isArray(allBlogsResponse?.data?.data)) {
+      allBlogsData = allBlogsResponse.data.data;
+    } else if (Array.isArray(allBlogsResponse?.data)) {
+      allBlogsData = allBlogsResponse.data;
     }
     
-    // Debemos tener al menos 1 página
-    if (totalBlogsCount.value < itemsPerPage.value) {
-      totalBlogsCount.value = blogs.value.length > 0 ? blogs.value.length : itemsPerPage.value
+    // Guardar todos los blogs para uso futuro
+    allBlogs.value = allBlogsData;
+    
+    // Aplicar filtros manualmente
+    let filteredBlogs = [...allBlogsData];
+    
+    // Filtrar por categoría si es necesario
+    if (activeCategory.value) {
+      filteredBlogs = filteredBlogs.filter(blog => blog.category === activeCategory.value);
     }
     
-    // Obtener conteo de comentarios para cada blog
+    // Filtrar por término de búsqueda si es necesario
+    if (searchTerm.value) {
+      const search = searchTerm.value.toLowerCase();
+      filteredBlogs = filteredBlogs.filter(blog => 
+        (blog.title?.toLowerCase()?.includes(search)) || 
+        (blog.content?.toLowerCase()?.includes(search))
+      );
+    }
+    
+    // Filtrar solo blogs activos
+    filteredBlogs = filteredBlogs.filter(blog => blog.active !== false);
+    
+    // Aplicar ordenación manualmente
+    if (sortOption.value === 'newest') {
+      filteredBlogs.sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
+    } else if (sortOption.value === 'oldest') {
+      filteredBlogs.sort((a, b) => new Date(a.published_at || a.created_at) - new Date(b.published_at || b.created_at));
+    } else if (sortOption.value === 'popular') {
+      filteredBlogs.sort((a, b) => (b.comments_count || 0) - (a.comments_count || 0));
+    }
+    
+    // Aplicar paginación
+    totalBlogsCount.value = filteredBlogs.length;
+    const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+    const endIndex = startIndex + itemsPerPage.value;
+    blogs.value = filteredBlogs.slice(startIndex, endIndex);
+    
+    // Obtener conteo de comentarios si es necesario
     if (blogs.value.length > 0) {
-      await fetchCommentCounts()
+      await fetchCommentCounts();
     }
     
   } catch (err) {
-    console.error('Error fetching blogs:', err)
-    
-    // Intentar con blogService como respaldo
-    try {
-      // Preparar parámetros para el servicio
-      const params = {
-        offset: (currentPage.value - 1) * itemsPerPage.value, // Calcular offset correctamente
-        limit: itemsPerPage.value
-      }
-      
-      // Ajustar los parámetros de ordenación para el blogService
-      if (sortOption.value === 'newest') {
-        params.sort_by = 'published_at'
-        params.sort_order = 'desc'
-      } else if (sortOption.value === 'oldest') {
-        params.sort_by = 'published_at'
-        params.sort_order = 'asc'
-      } else if (sortOption.value === 'popular') {
-        params.sort_by = 'comments_count'
-        params.sort_order = 'desc'
-      }
-      
-      if (searchTerm.value) {
-        params.search = searchTerm.value
-      }
-      
-      if (activeCategory.value) {
-        params.category = activeCategory.value
-      }
-      
-      const response = await blogService.getBlogs(params)
-      
-      if (response?.data?.data?.blogs) {
-        blogs.value = response.data.data.blogs
-        totalBlogsCount.value = response.data.data.total || response.data.data.blogs.length * 2
-      } else if (Array.isArray(response?.data?.data)) {
-        blogs.value = response.data.data
-        totalBlogsCount.value = response.data.meta?.total || 
-                               response.data.pagination?.total || 
-                               blogs.value.length * 2
-      } else if (Array.isArray(response?.data)) {
-        blogs.value = response.data
-        totalBlogsCount.value = blogs.value.length * 2
-      }
-      
-      // Asegúrate de que tenemos al menos 1 página
-      if (totalBlogsCount.value < itemsPerPage.value) {
-        totalBlogsCount.value = blogs.value.length > 0 ? blogs.value.length : itemsPerPage.value
-      }
-      
-      // Obtener conteo de comentarios para cada blog
-      if (blogs.value.length > 0) {
-        await fetchCommentCounts()
-      }
-      
-    } catch (serviceErr) {
-      console.error('Error de respaldo con blogService:', serviceErr)
-      error.value = 'Error al cargar los blogs. Por favor, intenta de nuevo más tarde.'
-      
-      // Si todo falla, intentar con allBlogs como último recurso
-      if (allBlogs.value.length > 0) {
-        blogs.value = allBlogs.value.slice(0, itemsPerPage.value)
-        totalBlogsCount.value = allBlogs.value.length
-      }
-    }
+    console.error('Error al obtener blogs:', err);
+    error.value = 'Error al cargar los blogs. Por favor, intenta de nuevo más tarde.';
+    blogs.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -593,30 +567,39 @@ const fetchAllBlogs = async () => {
   }
 }
 
-// Obtener blogs destacados desde la API
+// 3. Función simplificada para obtener blogs destacados
 const fetchFeaturedBlogs = async () => {
-  loadingFeatured.value = true
+  loadingFeatured.value = true;
   
   try {
-    const response = await blogService.getFeaturedBlogs() // Pasar true para indicar que solo queremos activos
+    // Intentar obtener blogs destacados a través del servicio
+    const response = await blogService.getAllBlogs();
     
-    if (response?.data?.data) {
-      featuredBlogs.value = response.data.data
+    let allBlogsData = [];
+    
+    if (response?.data?.data?.blogs) {
+      allBlogsData = response.data.data.blogs;
+    } else if (Array.isArray(response?.data?.data)) {
+      allBlogsData = response.data.data;
     } else if (Array.isArray(response?.data)) {
-      featuredBlogs.value = response.data
-    } else {
-      featuredBlogs.value = []
+      allBlogsData = response.data;
     }
+    
+    // Filtrar manualmente los blogs destacados
+    featuredBlogs.value = allBlogsData
+      .filter(blog => blog.is_featured && blog.active !== false)
+      .sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at))
+      .slice(0, 2);
     
     // Obtener conteo de comentarios para blogs destacados
     if (featuredBlogs.value.length > 0) {
-      await fetchCommentCounts()
+      await fetchCommentCounts();
     }
   } catch (err) {
-    console.error('Error fetching featured blogs:', err)
-    featuredBlogs.value = []
+    console.error('Error al obtener blogs destacados:', err);
+    featuredBlogs.value = [];
   } finally {
-    loadingFeatured.value = false
+    loadingFeatured.value = false;
   }
 }
 
@@ -703,13 +686,12 @@ const changePage = (page) => {
   fetchBlogs()
 }
 
-// Manejar cambio en la ordenación
+// 1. Función corregida para manejar cambios en la ordenación
 const handleSortChange = () => {
-  console.log('Cambiando orden a:', sortOption.value)
-  currentPage.value = 1
-  fetchBlogs()
+  console.log('Cambiando orden a:', sortOption.value);
+  currentPage.value = 1;
+  fetchBlogs();
 }
-
 // Filtrar por categoría
 const filterByCategory = (category) => {
   activeCategory.value = category
