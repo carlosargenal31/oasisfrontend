@@ -192,13 +192,36 @@
                       </div>
                     </div>
                     <p class="text-black mb-3">{{ review.comment }}</p>
+                    <!-- AQUÍ ESTÁ LA ACTUALIZACIÓN PARA LOS LIKES/DISLIKES -->
                     <div class="flex items-center">
-                      <button @click="handleLikeReview(review)" class="flex items-center text-black hover:text-orange-800 mr-4">
-                        <span class="material-icons mr-1 text-sm">thumb_up</span>
+                      <button 
+                        @click="handleLikeReview(review)" 
+                        class="flex items-center mr-4 transition-all duration-200"
+                        :class="{
+                          'text-orange-800': hasUserLiked(review.id),
+                          'text-black hover:text-orange-800': !hasUserLiked(review.id),
+                          'opacity-50 cursor-not-allowed': isProcessingLike(review.id)
+                        }"
+                        :disabled="isProcessingLike(review.id)"
+                      >
+                        <span class="material-icons mr-1 text-sm" :class="hasUserLiked(review.id) ? 'text-orange-800' : ''">
+                          {{ hasUserLiked(review.id) ? 'thumb_up' : 'thumb_up_off_alt' }}
+                        </span>
                         <span>({{ review.likes || 0 }})</span>
                       </button>
-                      <button @click="handleDislikeReview(review)" class="flex items-center text-black hover:text-red-500">
-                        <span class="material-icons mr-1 text-sm">thumb_down</span>
+                      <button 
+                        @click="handleDislikeReview(review)" 
+                        class="flex items-center transition-all duration-200"
+                        :class="{
+                          'text-red-500': hasUserDisliked(review.id),
+                          'text-black hover:text-red-500': !hasUserDisliked(review.id),
+                          'opacity-50 cursor-not-allowed': isProcessingLike(review.id)
+                        }"
+                        :disabled="isProcessingLike(review.id)"
+                      >
+                        <span class="material-icons mr-1 text-sm" :class="hasUserDisliked(review.id) ? 'text-red-500' : ''">
+                          {{ hasUserDisliked(review.id) ? 'thumb_down' : 'thumb_down_off_alt' }}
+                        </span>
                         <span>({{ review.dislikes || 0 }})</span>
                       </button>
                     </div>
@@ -473,184 +496,184 @@
                     id="remember" 
                     v-model="loginForm.remember"
                     class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
-                  />
-                  <label for="remember" class="ml-2 block text-sm text-gray-700">
-                    Recordar mi correo
-                  </label>
-                </div>
-                
-                <!-- Mensaje de error -->
-                <div v-if="loginError" class="text-red-500 text-sm py-2 px-3 bg-red-50 rounded">
-                  {{ loginError }}
-                </div>
-                
-                <!-- Botones -->
-                <div class="flex flex-col space-y-3">
-                  <button 
-                    type="submit" 
-                    class="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition"
-                    :disabled="loginSubmitting"
-                  >
-                  <span v-if="loginSubmitting" class="flex items-center justify-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Iniciando sesión...
-           </span>
-           <span v-else>Iniciar sesión</span>
-         </button>
-         
-         <div class="text-center text-sm text-gray-500 mt-2">
-           ¿No tienes cuenta? 
-           <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
-         </div>
-         
-         <div class="text-center text-xs text-gray-400 mt-1">
-           <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
-         </div>
-       </div>
-     </form>
-   </div>
- </div>
+                 />
+                 <label for="remember" class="ml-2 block text-sm text-gray-700">
+                   Recordar mi correo
+                 </label>
+               </div>
+               
+               <!-- Mensaje de error -->
+               <div v-if="loginError" class="text-red-500 text-sm py-2 px-3 bg-red-50 rounded">
+                 {{ loginError }}
+               </div>
+               
+               <!-- Botones -->
+               <div class="flex flex-col space-y-3">
+                 <button 
+                   type="submit" 
+                   class="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition"
+                   :disabled="loginSubmitting"
+                 >
+                 <span v-if="loginSubmitting" class="flex items-center justify-center">
+                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+             </svg>
+             Iniciando sesión...
+          </span>
+          <span v-else>Iniciar sesión</span>
+        </button>
+        
+        <div class="text-center text-sm text-gray-500 mt-2">
+          ¿No tienes cuenta? 
+          <a href="/register" class="text-orange-500 hover:underline">Regístrate aquí</a>
+        </div>
+        
+        <div class="text-center text-xs text-gray-400 mt-1">
+          <a href="/forgot-password" class="hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-     <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
-     <div v-else>
-       <!-- Información del usuario -->
-       <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
-         Comentando como: {{ userData.first_name }} {{ userData.last_name }}
-       </div>
-       
-       <!-- Formulario de reseña -->
-       <form @submit.prevent="submitReview">
-         <div class="mb-4">
-           <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
-           <div class="flex space-x-2">
-             <button 
-               type="button"
-               v-for="star in 5"
-               :key="star"
-               @click="newReview.rating = star"
-               class="text-3xl focus:outline-none"
-             >
-               <span class="material-icons star-icon" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
-             </button>
-           </div>
-         </div>
-         <div class="mb-4">
-           <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
-           <textarea 
-             v-model="newReview.comment" 
-             rows="4" 
-             class="w-full px-3 py-2 border rounded-md text-black"
-             placeholder="Comparte tu experiencia con este negocio"
-             required
-           ></textarea>
-         </div>
-         <button 
-           type="submit" 
-           class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
-           :disabled="submittingReview"
-         >
-           <span v-if="submittingReview" class="text-white">Enviando...</span>
-           <span v-else class="text-white">Enviar Reseña</span>
-         </button>
-       </form>
-     </div>
-   </div>
- </div>
- 
- <!-- Modal de Direcciones (Oculto por defecto) -->
+    <!-- BLOQUE PARA USUARIOS AUTENTICADOS -->
+    <div v-else>
+      <!-- Información del usuario -->
+      <div class="mb-4 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+        Comentando como: {{ userData.first_name }} {{ userData.last_name }}
+      </div>
+      
+      <!-- Formulario de reseña -->
+      <form @submit.prevent="submitReview">
+        <div class="mb-4">
+          <label class="block text-black mb-2">Calificación <span class="text-red-500">*</span></label>
+          <div class="flex space-x-2">
+            <button 
+              type="button"
+              v-for="star in 5"
+              :key="star"
+              @click="newReview.rating = star"
+              class="text-3xl focus:outline-none"
+            >
+              <span class="material-icons star-icon" :class="newReview.rating >= star ? 'text-yellow-400' : 'text-gray-300'">star</span>
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-black mb-2">Reseña <span class="text-red-500">*</span></label>
+          <textarea 
+            v-model="newReview.comment" 
+            rows="4" 
+            class="w-full px-3 py-2 border rounded-md text-black"
+            placeholder="Comparte tu experiencia con este negocio"
+            required
+          ></textarea>
+        </div>
+        <button 
+          type="submit" 
+          class="w-full bg-orange-800 text-white font-medium py-2 px-4 rounded hover:bg-orange-900"
+          :disabled="submittingReview"
+        >
+          <span v-if="submittingReview" class="text-white">Enviando...</span>
+          <span v-else class="text-white">Enviar Reseña</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Direcciones (Oculto por defecto) -->
 <div v-if="showDirectionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
- <div class="bg-white rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
-   <div class="flex justify-between items-center mb-4">
-     <h3 class="text-xl font-semibold text-black">Cómo llegar a {{ property.title }}</h3>
-     <button @click="closeDirectionsModal" class="text-gray-500 hover:text-gray-700">
-       <span class="text-2xl">&times;</span>
-     </button>
-   </div>
-     
-     <!-- Formulario para dirección de origen -->
-     <div class="mb-4">
-       <label for="starting-point" class="block text-sm font-medium text-gray-700 mb-1">Punto de partida:</label>
-       <div class="flex">
-         <input 
-           type="text" 
-           id="starting-point" 
-           v-model="startingPoint"
-           placeholder="Ingresa tu dirección o ubicación"
-           class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
-         />
-         <button 
-           @click="calculateRoute"
-           class="bg-orange-800 text-white px-4 py-2 rounded-r-md hover:bg-orange-900 transition-colors"
-           :disabled="directionsLoading"
-         >
-           <span v-if="directionsLoading">Calculando...</span>
-           <span v-else>Calcular Ruta</span>
-         </button>
-       </div>
-       <p v-if="directionsError" class="mt-2 text-red-500 text-sm">{{ directionsError }}</p>
-     </div>
-     
-     <!-- Mapa para mostrar direcciones -->
-     <div id="directionsMap" class="w-full h-[400px] rounded-md mb-4"></div>
-     
-     <!-- Información de la ruta si se encuentra -->
-     <div v-if="directionsFound" class="bg-green-50 p-4 rounded-md mb-4">
-       <h4 class="font-medium text-black mb-2">Información de la ruta:</h4>
-       <p class="text-black"><strong>Distancia:</strong> {{ directionsDistance }} km</p>
-       <p class="text-black"><strong>Tiempo estimado:</strong> {{ directionsTime }} minutos</p>
-     </div>
-     
-     <!-- Información del destino -->
-     <div class="bg-gray-50 p-4 rounded-md">
-       <h4 class="font-medium text-black mb-2">Destino:</h4>
-       <p class="text-black"><strong>{{ property.title }}</strong></p>
-       <p class="text-black">{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
-       <p v-if="property.phone" class="text-black mt-2">
-         <span class="material-icons align-middle text-sm mr-1">phone</span>
-         <a :href="`tel:${property.phone}`" class="text-orange-800 hover:underline">{{ property.phone }}</a>
-       </p>
-       <p v-if="property.schedule" class="text-black mt-1">
-         <span class="material-icons align-middle text-sm mr-1">schedule</span>
-         {{ formatSchedule(property.schedule) }}
-       </p>
-     </div>
-   </div>
- </div>
+<div class="bg-white rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold text-black">Cómo llegar a {{ property.title }}</h3>
+    <button @click="closeDirectionsModal" class="text-gray-500 hover:text-gray-700">
+      <span class="text-2xl">&times;</span>
+    </button>
+  </div>
+    
+    <!-- Formulario para dirección de origen -->
+    <div class="mb-4">
+      <label for="starting-point" class="block text-sm font-medium text-gray-700 mb-1">Punto de partida:</label>
+      <div class="flex">
+        <input 
+          type="text" 
+          id="starting-point" 
+          v-model="startingPoint"
+          placeholder="Ingresa tu dirección o ubicación"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+        />
+        <button 
+          @click="calculateRoute"
+          class="bg-orange-800 text-white px-4 py-2 rounded-r-md hover:bg-orange-900 transition-colors"
+          :disabled="directionsLoading"
+        >
+          <span v-if="directionsLoading">Calculando...</span>
+          <span v-else>Calcular Ruta</span>
+        </button>
+      </div>
+      <p v-if="directionsError" class="mt-2 text-red-500 text-sm">{{ directionsError }}</p>
+    </div>
+    
+    <!-- Mapa para mostrar direcciones -->
+    <div id="directionsMap" class="w-full h-[400px] rounded-md mb-4"></div>
+    
+    <!-- Información de la ruta si se encuentra -->
+    <div v-if="directionsFound" class="bg-green-50 p-4 rounded-md mb-4">
+      <h4 class="font-medium text-black mb-2">Información de la ruta:</h4>
+      <p class="text-black"><strong>Distancia:</strong> {{ directionsDistance }} km</p>
+      <p class="text-black"><strong>Tiempo estimado:</strong> {{ directionsTime }} minutos</p>
+    </div>
+    
+    <!-- Información del destino -->
+    <div class="bg-gray-50 p-4 rounded-md">
+      <h4 class="font-medium text-black mb-2">Destino:</h4>
+      <p class="text-black"><strong>{{ property.title }}</strong></p>
+      <p class="text-black">{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+      <p v-if="property.phone" class="text-black mt-2">
+        <span class="material-icons align-middle text-sm mr-1">phone</span>
+        <a :href="`tel:${property.phone}`" class="text-orange-800 hover:underline">{{ property.phone }}</a>
+      </p>
+      <p v-if="property.schedule" class="text-black mt-1">
+        <span class="material-icons align-middle text-sm mr-1">schedule</span>
+        {{ formatSchedule(property.schedule) }}
+      </p>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- Estado de no encontrado -->
 <div v-else class="flex justify-center items-center min-h-[600px]">
- <p class="text-xl text-black">Negocio no encontrada</p>
+<p class="text-xl text-black">Negocio no encontrada</p>
 </div>
 
 <!-- Notificación Toast -->
 <div 
- v-if="notification.show" 
- class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-300"
- :class="{
-   'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
-   'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
-   'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
- }"
+v-if="notification.show" 
+class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-300"
+:class="{
+  'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
+  'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
+  'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
+}"
 >
- <div class="flex items-center">
-   <div 
-     class="w-6 h-6 mr-2 flex items-center justify-center rounded-full"
-     :class="{
-       'bg-green-200 text-green-600': notification.type === 'success',
-       'bg-red-200 text-red-600': notification.type === 'error',
-       'bg-blue-200 text-blue-600': notification.type === 'info'
-     }"
-   >
-     <span v-if="notification.type === 'success'" class="material-icons text-sm">check</span>
-     <span v-if="notification.type === 'error'" class="material-icons text-sm">error</span>
-     <span v-if="notification.type === 'info'" class="material-icons text-sm">info</span>
-   </div>
-   <p>{{ notification.message }}</p>
- </div>
+<div class="flex items-center">
+  <div 
+    class="w-6 h-6 mr-2 flex items-center justify-center rounded-full"
+    :class="{
+      'bg-green-200 text-green-600': notification.type === 'success',
+      'bg-red-200 text-red-600': notification.type === 'error',
+      'bg-blue-200 text-blue-600': notification.type === 'info'
+    }"
+  >
+    <span v-if="notification.type === 'success'" class="material-icons text-sm">check</span>
+    <span v-if="notification.type === 'error'" class="material-icons text-sm">error</span>
+    <span v-if="notification.type === 'info'" class="material-icons text-sm">info</span>
+  </div>
+  <p>{{ notification.message }}</p>
+</div>
 </div>
 </div>
 </template>
@@ -715,193 +738,436 @@ const directionsTime = ref(null);
 
 // Variables para el inicio de sesión
 const loginForm = ref({
- email: '',
- password: '',
- remember: false
+email: '',
+password: '',
+remember: false
 });
 const loginError = ref('');
 const loginSubmitting = ref(false);
 
 // Variables para notificaciones
 const notification = ref({
- show: false,
- message: '',
- type: 'success' // 'success', 'error', 'info'
+show: false,
+message: '',
+type: 'success' // 'success', 'error', 'info'
 });
+
+// NUEVAS VARIABLES PARA EL SISTEMA DE LIKES/DISLIKES
+const userLikes = ref(new Set()); // IDs de reseñas que el usuario ha dado like
+const userDislikes = ref(new Set()); // IDs de reseñas que el usuario ha dado dislike
+const processingLikes = ref(new Set()); // Para evitar clicks múltiples mientras se procesa
+
+// Función para generar o recuperar un ID único para usuarios no autenticados
+const getDeviceId = () => {
+ let deviceId = localStorage.getItem('deviceId');
+ if (!deviceId) {
+   // Generar un ID único basado en timestamp y número aleatorio
+   deviceId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+   localStorage.setItem('deviceId', deviceId);
+ }
+ return deviceId;
+};
+
+// Función para verificar si el usuario ya dio like/dislike
+const hasUserLiked = (reviewId) => userLikes.value.has(reviewId);
+const hasUserDisliked = (reviewId) => userDislikes.value.has(reviewId);
+const isProcessingLike = (reviewId) => processingLikes.value.has(reviewId);
+
+// Cargar likes/dislikes del usuario desde localStorage
+const loadUserInteractions = async () => {
+ try {
+   // Cargar desde localStorage usando el deviceId
+   const deviceId = getDeviceId();
+   const storageKey = `review_interactions_${propertyId}`;
+   const storedData = localStorage.getItem(storageKey);
+   
+   if (storedData) {
+     const data = JSON.parse(storedData);
+     userLikes.value = new Set(data.likes || []);
+     userDislikes.value = new Set(data.dislikes || []);
+   }
+   
+   // Si el usuario está autenticado, también intentar cargar desde la API
+   if (isAuthenticated.value && userData.value?.id) {
+     try {
+       const response = await axios.get(`${API_URL}/reviews/user-interactions`, {
+         params: { 
+           property_id: propertyId,
+           user_id: userData.value.id 
+         }
+       });
+       
+       if (response.data?.success) {
+         // Combinar datos de la API con los locales
+         const apiLikes = new Set(response.data.data.likes || []);
+         const apiDislikes = new Set(response.data.data.dislikes || []);
+         
+         userLikes.value = new Set([...userLikes.value, ...apiLikes]);
+         userDislikes.value = new Set([...userDislikes.value, ...apiDislikes]);
+         
+         // Actualizar localStorage con los datos combinados
+         saveUserInteractions();
+       }
+     } catch (error) {
+       console.log('No se pudieron cargar interacciones del servidor:', error);
+     }
+   }
+ } catch (error) {
+   console.error('Error cargando interacciones del usuario:', error);
+ }
+};
+
+// Guardar interacciones en localStorage
+const saveUserInteractions = () => {
+ const storageKey = `review_interactions_${propertyId}`;
+ const data = {
+   likes: [...userLikes.value],
+   dislikes: [...userDislikes.value],
+   lastUpdated: new Date().toISOString()
+ };
+ localStorage.setItem(storageKey, JSON.stringify(data));
+};
+
+// Función mejorada para manejar likes
+const handleLikeReview = async (review) => {
+ // Verificar si ya está procesando
+ if (isProcessingLike(review.id)) {
+   showNotification('Por favor espera...', 'info');
+   return;
+ }
+ 
+ // Verificar si el usuario ya dio like
+ if (hasUserLiked(review.id)) {
+   showNotification('Ya has marcado que te gusta esta reseña', 'info');
+   return;
+ }
+ 
+ // Agregar a procesando
+ processingLikes.value.add(review.id);
+ 
+ try {
+   // Si había dado dislike, primero lo quitamos
+   let previousDislike = false;
+   if (hasUserDisliked(review.id)) {
+     previousDislike = true;
+     userDislikes.value.delete(review.id);
+   }
+   
+   // Preparar datos para enviar
+   const requestData = {
+     device_id: getDeviceId(),
+     user_id: isAuthenticated.value && userData.value?.id ? userData.value.id : null
+   };
+   
+   // Hacer la petición al servidor
+   const response = await axios.post(`${API_URL}/reviews/${review.id}/like`, requestData);
+   
+   if (response.data?.success) {
+     // Agregar a likes del usuario
+     userLikes.value.add(review.id);
+     
+     // Actualizar la reseña localmente
+     const updatedReview = { 
+       ...review, 
+       likes: (review.likes || 0) + 1,
+       dislikes: previousDislike ? Math.max(0, (review.dislikes || 0) - 1) : (review.dislikes || 0)
+     };
+     
+     // Actualizar en el store
+     const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+     if (index !== -1) {
+       reviewStore.reviews[index] = updatedReview;
+     }
+     
+     // Guardar en localStorage
+     saveUserInteractions();
+     
+     showNotification('Has marcado que te gusta esta reseña', 'success');
+   } else {
+     // Si el servidor rechaza porque ya dio like
+     if (response.data?.message?.includes('already liked')) {
+       userLikes.value.add(review.id);
+       saveUserInteractions();
+       showNotification('Ya habías marcado que te gusta esta reseña', 'info');
+     } else {
+       throw new Error(response.data?.message || 'Error al procesar like');
+     }
+   }
+ } catch (err) {
+   console.error('Error al dar like a la reseña:', err);
+   
+   // Si es un error 409 (conflicto), significa que ya dio like
+   if (err.response?.status === 409) {
+     userLikes.value.add(review.id);
+     saveUserInteractions();
+     showNotification('Ya habías marcado que te gusta esta reseña', 'info');
+   } else {
+     showNotification('Error al interactuar con la reseña', 'error');
+   }
+ } finally {
+   // Quitar de procesando
+   processingLikes.value.delete(review.id);
+ }
+};
+
+// Función mejorada para manejar dislikes
+const handleDislikeReview = async (review) => {
+ // Verificar si ya está procesando
+ if (isProcessingLike(review.id)) {
+   showNotification('Por favor espera...', 'info');
+   return;
+ }
+ 
+ // Verificar si el usuario ya dio dislike
+ if (hasUserDisliked(review.id)) {
+   showNotification('Ya has marcado que no te gusta esta reseña', 'info');
+   return;
+ }
+ 
+ // Agregar a procesando
+ processingLikes.value.add(review.id);
+ 
+ try {
+   // Si había dado like, primero lo quitamos
+   let previousLike = false;
+   if (hasUserLiked(review.id)) {
+     previousLike = true;
+     userLikes.value.delete(review.id);
+   }
+   
+   // Preparar datos para enviar
+   const requestData = {
+     device_id: getDeviceId(),
+     user_id: isAuthenticated.value && userData.value?.id ? userData.value.id : null
+   };
+   
+   // Hacer la petición al servidor
+   const response = await axios.post(`${API_URL}/reviews/${review.id}/dislike`, requestData);
+   
+   if (response.data?.success) {
+     // Agregar a dislikes del usuario
+     userDislikes.value.add(review.id);
+     
+     // Actualizar la reseña localmente
+     const updatedReview = { 
+       ...review, 
+       dislikes: (review.dislikes || 0) + 1,
+       likes: previousLike ? Math.max(0, (review.likes || 0) - 1) : (review.likes || 0)
+     };
+     
+     // Actualizar en el store
+     const index = reviewStore.reviews.findIndex(r => r.id === review.id);
+     if (index !== -1) {
+       reviewStore.reviews[index] = updatedReview;
+     }
+     
+     // Guardar en localStorage
+     saveUserInteractions();
+     
+     showNotification('Has marcado que no te gusta esta reseña', 'info');
+   } else {
+     // Si el servidor rechaza porque ya dio dislike
+     if (response.data?.message?.includes('already disliked')) {
+       userDislikes.value.add(review.id);
+       saveUserInteractions();
+       showNotification('Ya habías marcado que no te gusta esta reseña', 'info');
+     } else {
+       throw new Error(response.data?.message || 'Error al procesar dislike');
+     }
+   }
+ } catch (err) {
+   console.error('Error al dar dislike a la reseña:', err);
+   
+   // Si es un error 409 (conflicto), significa que ya dio dislike
+   if (err.response?.status === 409) {
+     userDislikes.value.add(review.id);
+     saveUserInteractions();
+     showNotification('Ya habías marcado que no te gusta esta reseña', 'info');
+   } else {
+     showNotification('Error al interactuar con la reseña', 'error');
+   }
+ } finally {
+   // Quitar de procesando
+   processingLikes.value.delete(review.id);
+ }
+};
 
 // Función para mostrar notificación
 const showNotification = (message, type = 'success') => {
- notification.value = {
-   show: true,
-   message,
-   type
- }
+notification.value = {
+  show: true,
+  message,
+  type
+}
 
- // Ocultar después de 3 segundos
- setTimeout(() => {
-   notification.value.show = false;
- }, 3000);
+// Ocultar después de 3 segundos
+setTimeout(() => {
+  notification.value.show = false;
+}, 3000);
 };
 
 // Función para manejar el inicio de sesión
 const handleLogin = async () => {
- loginError.value = '';
- loginSubmitting.value = true;
+loginError.value = '';
+loginSubmitting.value = true;
 
- try {
-   // Llamar a la función de login del store de autenticación
-   const result = await authStore.login({
-     email: loginForm.value.email,
-     password: loginForm.value.password,
-     remember: loginForm.value.remember
-   });
-   
-   if (result.success) {
-     // Verificar que el token se guardó correctamente
-     const token = localStorage.getItem('token');
-     console.log('Token guardado correctamente:', !!token);
-     
-     // Forzar una re-validación del estado
-     if (typeof authStore.validateSession === 'function') {
-       authStore.validateSession();
-     }
-     
-     // Mostrar notificación de éxito en lugar de alert
-     showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes dejar una reseña.`, 'success');
-     
-     // Limpiar el formulario de login pero mantener el email si remember está activado
-     if (!loginForm.value.remember) {
-       loginForm.value.email = '';
-     }
-     loginForm.value.password = '';
-   } else {
-     // Mostrar error específico si está disponible
-     loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
-     showNotification('Error al iniciar sesión. Verifica tus credenciales.', 'error');
-   }
- } catch (err) {
-   console.error('Error al iniciar sesión:', err);
-   loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
-   showNotification('Error al iniciar sesión. Inténtalo de nuevo más tarde.', 'error');
- } finally {
-   loginSubmitting.value = false;
- }
+try {
+  // Llamar a la función de login del store de autenticación
+  const result = await authStore.login({
+    email: loginForm.value.email,
+    password: loginForm.value.password,
+    remember: loginForm.value.remember
+  });
+  
+  if (result.success) {
+    // Verificar que el token se guardó correctamente
+    const token = localStorage.getItem('token');
+    console.log('Token guardado correctamente:', !!token);
+    
+    // Forzar una re-validación del estado
+    if (typeof authStore.validateSession === 'function') {
+      authStore.validateSession();
+    }
+    
+    // Mostrar notificación de éxito en lugar de alert
+    showNotification(`Bienvenido ${authStore.user.first_name}! Ahora puedes dejar una reseña.`, 'success');
+    
+    // Limpiar el formulario de login pero mantener el email si remember está activado
+    if (!loginForm.value.remember) {
+      loginForm.value.email = '';
+    }
+    loginForm.value.password = '';
+    
+    // Recargar interacciones del usuario ahora que está autenticado
+    await loadUserInteractions();
+  } else {
+    // Mostrar error específico si está disponible
+    loginError.value = result.error || 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+    showNotification('Error al iniciar sesión. Verifica tus credenciales.', 'error');
+  }
+} catch (err) {
+  console.error('Error al iniciar sesión:', err);
+  loginError.value = 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.';
+  showNotification('Error al iniciar sesión. Inténtalo de nuevo más tarde.', 'error');
+} finally {
+  loginSubmitting.value = false;
+}
 };
 
 // Verificar si una propiedad es favorita
 const isFavorite = computed(() => {
- return property.value ? favoritesStore.isFavorite(property.value.id) : false;
+return property.value ? favoritesStore.isFavorite(property.value.id) : false;
 });
 
 // Alternar estado de favorito
 const toggleFavorite = async () => {
- if (!property.value) return;
+if (!property.value) return;
 
- try {
-   await favoritesStore.toggleFavorite(property.value);
-   
-   // Mostrar notificación basada en el estado actual
-   if (isFavorite.value) {
-     showNotification('Negocio añadida a favoritos', 'success');
-   } else {
-     showNotification('Negocio eliminada de favoritos', 'info');
-   }
- } catch (error) {
-   console.error('Error toggling favorite:', error);
-   showNotification('Error al actualizar favoritos', 'error');
- }
+try {
+  await favoritesStore.toggleFavorite(property.value);
+  
+  // Mostrar notificación basada en el estado actual
+  if (isFavorite.value) {
+    showNotification('Negocio añadida a favoritos', 'success');
+  } else {
+    showNotification('Negocio eliminada de favoritos', 'info');
+  }
+} catch (error) {
+  console.error('Error toggling favorite:', error);
+  showNotification('Error al actualizar favoritos', 'error');
+}
 };
 
 // Datos para nuevo formulario de reseña
 const newReview = ref({
- property_id: null,
- rating: 0,
- comment: ''
+property_id: null,
+rating: 0,
+comment: ''
 });
 
 // Obtener reseñas del store
 const reviews = computed(() => {
- return reviewStore.getReviewsForProperty(propertyId);
+return reviewStore.getReviewsForProperty(propertyId);
 });
 
 // Reseñas ordenadas según el criterio seleccionado
 const sortedReviews = computed(() => {
- const reviewsList = [...reviews.value];
+const reviewsList = [...reviews.value];
 
- switch (sortOption.value) {
-   case 'newest':
-     return reviewsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-   case 'oldest':
-     return reviewsList.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-   case 'highest':
-     return reviewsList.sort((a, b) => b.rating - a.rating);
-   case 'lowest':
-     return reviewsList.sort((a, b) => a.rating - b.rating);
-   default:
-     return reviewsList;
- }
+switch (sortOption.value) {
+  case 'newest':
+    return reviewsList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  case 'oldest':
+    return reviewsList.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  case 'highest':
+    return reviewsList.sort((a, b) => b.rating - a.rating);
+  case 'lowest':
+    return reviewsList.sort((a, b) => a.rating - b.rating);
+  default:
+    return reviewsList;
+}
 });
 
 // Calcular calificación promedio
 const averageRating = computed(() => {
- if (!property.value || !property.value.average_rating) {
-   return reviewStore.getAverageRating(propertyId).toFixed(1);
- }
- return parseFloat(property.value.average_rating).toFixed(1);
+if (!property.value || !property.value.average_rating) {
+  return reviewStore.getAverageRating(propertyId).toFixed(1);
+}
+return parseFloat(property.value.average_rating).toFixed(1);
 });
 
 // Calcular total de páginas
 const totalPages = computed(() => {
- return Math.ceil(reviews.value.length / reviewsPerPage);
+return Math.ceil(reviews.value.length / reviewsPerPage);
 });
 
 // Reseñas a mostrar según paginación
 const displayedReviews = computed(() => {
- const start = (currentPage.value - 1) * reviewsPerPage;
- const end = start + reviewsPerPage;
- return sortedReviews.value.slice(start, end);
+const start = (currentPage.value - 1) * reviewsPerPage;
+const end = start + reviewsPerPage;
+return sortedReviews.value.slice(start, end);
 });
 
 // Obtener imagen de avatar para un revisor
 const getReviewerAvatar = (review) => {
- // En producción, podrías usar un servicio como Gravatar o avatares basados en iniciales
- return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_name)}&background=random`;
+// En producción, podrías usar un servicio como Gravatar o avatares basados en iniciales
+return `https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer_name)}&background=random`;
 };
 
 // Propiedad computada para verificar si hay redes sociales
 const hasSocialLinks = computed(() => {
- if (hostData && hostData.socialLinks) {
-   return Object.values(hostData.socialLinks).some(link => !!link);
- }
- // Si la propiedad tiene datos de redes sociales directamente
- if (property.value) {
-   return !!(
-     property.value.host_social_facebook ||
-     property.value.host_social_twitter ||
-     property.value.host_social_instagram ||
-     property.value.host_social_linkedin ||
-     property.value.host_social_pinterest
-   );
- }
- return false;
+if (hostData && hostData.socialLinks) {
+  return Object.values(hostData.socialLinks).some(link => !!link);
+}
+// Si la propiedad tiene datos de redes sociales directamente
+if (property.value) {
+  return !!(
+    property.value.host_social_facebook ||
+    property.value.host_social_twitter ||
+    property.value.host_social_instagram ||
+    property.value.host_social_linkedin ||
+    property.value.host_social_pinterest
+  );
+}
+return false;
 });
 
 // Función para obtener enlaces de redes sociales
 const getSocialLink = (socialNetwork) => {
- // Primero verificar si tenemos datos en hostData
- if (hostData && hostData.socialLinks && hostData.socialLinks[socialNetwork]) {
-   return hostData.socialLinks[socialNetwork];
- }
+// Primero verificar si tenemos datos en hostData
+if (hostData && hostData.socialLinks && hostData.socialLinks[socialNetwork]) {
+  return hostData.socialLinks[socialNetwork];
+}
 
- // Si no, verificar si tenemos datos en la propiedad
- if (property.value) {
-   const propKey = `host_social_${socialNetwork}`;
-   if (property.value[propKey]) {
-     return property.value[propKey];
-   }
- }
+// Si no, verificar si tenemos datos en la propiedad
+if (property.value) {
+  const propKey = `host_social_${socialNetwork}`;
+  if (property.value[propKey]) {
+    return property.value[propKey];
+  }
+}
 
- return null;
+return null;
 };
 
 // Modificar la función para obtener el token de autenticación
@@ -912,583 +1178,264 @@ const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 // Modificar la función goToLogin para que simplemente abra el modal
 const goToLogin = () => {
- // Si ya estamos mostrando el formulario de reseña, el formulario de login ya está visible
- if (showReviewModal.value) {
-   return;
- }
+// Si ya estamos mostrando el formulario de reseña, el formulario de login ya está visible
+if (showReviewModal.value) {
+  return;
+}
 
- // Abrir el modal de reseña que ahora contiene el formulario de login
- openReviewModal();
+// Abrir el modal de reseña que ahora contiene el formulario de login
+openReviewModal();
 };
 
 // Cargar datos del propietario
 const fetchHostData = async () => {
- if (!property.value || !property.value.host_id) return;
+if (!property.value || !property.value.host_id) return;
 
- // Establecer valores por defecto de la propiedad actual
- hostName.value = property.value.host_name || 'Anfitrión';
- hostRole.value = property.value.host_role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
+// Establecer valores por defecto de la propiedad actual
+hostName.value = property.value.host_name || 'Anfitrión';
+hostRole.value = property.value.host_role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
 
- // Si tenemos ratings o reviews en la propiedad, usarlos
- if (property.value.host_average_rating) {
-   hostRating.value = parseFloat(property.value.host_average_rating);
- }
+// Si tenemos ratings o reviews en la propiedad, usarlos
+if (property.value.host_average_rating) {
+  hostRating.value = parseFloat(property.value.host_average_rating);
+}
 
- if (property.value.host_review_count) {
-   hostReviews.value = property.value.host_review_count;
- }
+if (property.value.host_review_count) {
+  hostReviews.value = property.value.host_review_count;
+}
 
- // Si no estamos autenticados o no hay token, usar método alternativo
- if (!isAuthenticated()) {
-   console.log('No hay token de autenticación, usando métodos alternativos');
-   await fetchHostPropertiesAndReviews();
-   return;
- }
+// Si no estamos autenticados o no hay token, usar método alternativo
+if (!isAuthenticated()) {
+  console.log('No hay token de autenticación, usando métodos alternativos');
+  await fetchHostPropertiesAndReviews();
+  return;
+}
 
- try {
-   // Realizar la petición para obtener los datos del propietario con autenticación
-   const token = localStorage.getItem('token');
-   
-   const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
-     headers: {
-       'Authorization': `Bearer ${token}`
-     }
-   });
-   
-   if (response.data && response.data.success) {
-     hostData.value = response.data.data;
-     
-     // Actualizar variables con datos reales
-     hostName.value = `${hostData.value.first_name || ''} ${hostData.value.last_name || ''}`.trim() || hostName.value;
-     hostRole.value = hostData.value.role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
-     
-     // Si hay datos de rating y reseñas del anfitrión (todas sus propiedades), asignarlos
-     if (hostData.value.average_rating) {
-       hostRating.value = parseFloat(hostData.value.average_rating);
-     }
-     
-     if (hostData.value.total_reviews) {
-       hostReviews.value = hostData.value.total_reviews;
-     }
-     
-     // Si hay propiedades, asignarlas
-     if (hostData.value.properties_list && Array.isArray(hostData.value.properties_list)) {
-       hostProperties.value = hostData.value.properties_list;
-     }
-     
-     console.log('Datos del anfitrión cargados:', hostData.value);
-   }
- } catch (err) {
-   console.error('Error al cargar datos del propietario:', err);
-   
-   // En caso de error de autenticación u otro error, intentar método alternativo
-   await fetchHostPropertiesAndReviews();
- }
+try {
+  // Realizar la petición para obtener los datos del propietario con autenticación
+  const token = localStorage.getItem('token');
+  
+  const response = await axios.get(`${API_URL}/users/${property.value.host_id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (response.data && response.data.success) {
+    hostData.value = response.data.data;
+    // Actualizar variables con datos reales
+    hostName.value = `${hostData.value.first_name || ''} ${hostData.value.last_name || ''}`.trim() || hostName.value;
+    hostRole.value = hostData.value.role === 'agent' ? 'Agente Inmobiliario' : 'Propietario';
+    
+    // Si hay datos de rating y reseñas del anfitrión (todas sus propiedades), asignarlos
+    if (hostData.value.average_rating) {
+      hostRating.value = parseFloat(hostData.value.average_rating);
+    }
+    
+    if (hostData.value.total_reviews) {
+      hostReviews.value = hostData.value.total_reviews;
+    }
+    
+    // Si hay propiedades, asignarlas
+    if (hostData.value.properties_list && Array.isArray(hostData.value.properties_list)) {
+      hostProperties.value = hostData.value.properties_list;
+    }
+    
+    console.log('Datos del anfitrión cargados:', hostData.value);
+  }
+} catch (err) {
+  console.error('Error al cargar datos del propietario:', err);
+  
+  // En caso de error de autenticación u otro error, intentar método alternativo
+  await fetchHostPropertiesAndReviews();
+}
 };
 
 // Función mejorada para obtener propiedades y reseñas del anfitrión
 const fetchHostPropertiesAndReviews = async () => {
- if (!property.value || !property.value.host_id) return;
+if (!property.value || !property.value.host_id) return;
 
- // Inicializar objeto hostData si no existe
- if (!hostData.value) {
-   hostData.value = {
-     socialLinks: {}
-   };
- } else if (!hostData.value.socialLinks) {
-   hostData.value.socialLinks = {};
- }
+// Inicializar objeto hostData si no existe
+if (!hostData.value) {
+  hostData.value = {
+    socialLinks: {}
+  };
+} else if (!hostData.value.socialLinks) {
+  hostData.value.socialLinks = {};
+}
 
- // Verificar si la propiedad tiene links sociales directamente
- if (property.value.host_social_facebook) {
-   hostData.value.socialLinks.facebook = property.value.host_social_facebook;
- }
- if (property.value.host_social_twitter) {
-   hostData.value.socialLinks.twitter = property.value.host_social_twitter;
- }
- if (property.value.host_social_instagram) {
-   hostData.value.socialLinks.instagram = property.value.host_social_instagram;
- }
- if (property.value.host_social_linkedin) {
-   hostData.value.socialLinks.linkedin = property.value.host_social_linkedin;
- }
- if (property.value.host_social_pinterest) {
-   hostData.value.socialLinks.pinterest = property.value.host_social_pinterest;
- }
+// Verificar si la propiedad tiene links sociales directamente
+if (property.value.host_social_facebook) {
+  hostData.value.socialLinks.facebook = property.value.host_social_facebook;
+}
+if (property.value.host_social_twitter) {
+  hostData.value.socialLinks.twitter = property.value.host_social_twitter;
+}
+if (property.value.host_social_instagram) {
+  hostData.value.socialLinks.instagram = property.value.host_social_instagram;
+}
+if (property.value.host_social_linkedin) {
+  hostData.value.socialLinks.linkedin = property.value.host_social_linkedin;
+}
+if (property.value.host_social_pinterest) {
+  hostData.value.socialLinks.pinterest = property.value.host_social_pinterest;
+}
 
- // Si ya tenemos bio del anfitrión en la propiedad, usarla
- if (property.value.host_bio) {
-   hostData.value.bio = property.value.host_bio;
- }
+// Si ya tenemos bio del anfitrión en la propiedad, usarla
+if (property.value.host_bio) {
+  hostData.value.bio = property.value.host_bio;
+}
 
- try {
-   // 1. Obtener todas las propiedades del anfitrión
-   const propertiesResponse = await axios.get(`${API_URL}/properties`, {
-     params: { host_id: property.value.host_id, limit: 100 }
-   });
-   
-   if (propertiesResponse.data && propertiesResponse.data.success) {
-     const properties = propertiesResponse.data.data.properties;
-     hostProperties.value = properties || [];
-     
-     // 2. Si tenemos propiedades, obtener todas las reseñas para calcular el rating
-     if (properties && properties.length > 0) {
-       let totalRating = 0;
-       let reviewCount = 0;
-       let totalReviews = 0;
-       
-       // Para cada propiedad, obtener sus reseñas
-       for (const prop of properties) {
-         try {
-           const reviewsResponse = await axios.get(`${API_URL}/reviews`, {
-             params: { property_id: prop.id }
-           });
-           
-           if (reviewsResponse.data && reviewsResponse.data.success) {
-             const reviews = reviewsResponse.data.data.reviews || [];
-             totalReviews += reviews.length;
-             
-             // Sumar ratings para el promedio
-             reviews.forEach(review => {
-               if (review && typeof review.rating === 'number') {
-                 totalRating += review.rating;
-                 reviewCount++;
-               }
-             });
-           }
-         } catch (error) {
-           console.warn(`Error al obtener reseñas para la negocio ${prop.id}:`, error);
-         }
-       }
-       
-       // Actualizar contadores solo si no tenemos datos previos
-       if (hostReviews.value === 0) {
-         hostReviews.value = totalReviews;
-       }
-       
-       // Calcular y actualizar promedio solo si no tenemos datos previos
-       if (hostRating.value === 0 && reviewCount > 0) {
-         hostRating.value = totalRating / reviewCount;
-       }
-       
-       // Actualizar también en el objeto hostData
-       hostData.value.average_rating = hostRating.value;
-       hostData.value.total_reviews = hostReviews.value;
-       hostData.value.properties_count = properties.length;
-       
-       console.log(`Anfitrión: ${totalReviews} reseñas, rating ${hostRating.value.toFixed(1)} y ${properties.length} negocios`);
-     }
-   }
- } catch (error) {
-   console.error('Error al obtener negocios y reseñas del anfitrión:', error);
- }
+try {
+  // 1. Obtener todas las propiedades del anfitrión
+  const propertiesResponse = await axios.get(`${API_URL}/properties`, {
+    params: { host_id: property.value.host_id, limit: 100 }
+  });
+  
+  if (propertiesResponse.data && propertiesResponse.data.success) {
+    const properties = propertiesResponse.data.data.properties;
+    hostProperties.value = properties || [];
+    
+    // 2. Si tenemos propiedades, obtener todas las reseñas para calcular el rating
+    if (properties && properties.length > 0) {
+      let totalRating = 0;
+      let reviewCount = 0;
+      let totalReviews = 0;
+      
+      // Para cada propiedad, obtener sus reseñas
+      for (const prop of properties) {
+        try {
+          const reviewsResponse = await axios.get(`${API_URL}/reviews`, {
+            params: { property_id: prop.id }
+          });
+          
+          if (reviewsResponse.data && reviewsResponse.data.success) {
+            const reviews = reviewsResponse.data.data.reviews || [];
+            totalReviews += reviews.length;
+            
+            // Sumar ratings para el promedio
+            reviews.forEach(review => {
+              if (review && typeof review.rating === 'number') {
+                totalRating += review.rating;
+                reviewCount++;
+              }
+            });
+          }
+        } catch (error) {
+          console.warn(`Error al obtener reseñas para la negocio ${prop.id}:`, error);
+        }
+      }
+      
+      // Actualizar contadores solo si no tenemos datos previos
+      if (hostReviews.value === 0) {
+        hostReviews.value = totalReviews;
+      }
+      
+      // Calcular y actualizar promedio solo si no tenemos datos previos
+      if (hostRating.value === 0 && reviewCount > 0) {
+        hostRating.value = totalRating / reviewCount;
+      }
+      
+      // Actualizar también en el objeto hostData
+      hostData.value.average_rating = hostRating.value;
+      hostData.value.total_reviews = hostReviews.value;
+      hostData.value.properties_count = properties.length;
+      
+      console.log(`Anfitrión: ${totalReviews} reseñas, rating ${hostRating.value.toFixed(1)} y ${properties.length} negocios`);
+    }
+  }
+} catch (error) {
+  console.error('Error al obtener negocios y reseñas del anfitrión:', error);
+}
 };
 
 // Ver otras propiedades del anfitrión
 const viewHostProperties = () => {
- if (!property.value || !property.value.host_id) return;
+if (!property.value || !property.value.host_id) return;
 
- // Navegar a la página de propiedades del anfitrión
- router.push(`/host/${property.value.host_id}`);
+// Navegar a la página de propiedades del anfitrión
+router.push(`/host/${property.value.host_id}`);
 };
 
 // Obtener imagenes de la base de datos de Oasis
 const getPropertyImage = (imageNumber) => {
- const imageNum = String(imageNumber).padStart(2, '0');
- return `https://oasiscontenedor.blob.core.windows.net/business-images/${imageNum}.jpg`;
+const imageNum = String(imageNumber).padStart(2, '0');
+return `https://oasiscontenedor.blob.core.windows.net/business-images/${imageNum}.jpg`;
 };
 
 const navigateToBooking = () => {
- router.push(`/bookings/${property.value.id}`);
+router.push(`/bookings/${property.value.id}`);
 };
 
 // Obtener una imagen aleatoria entre 1 y 65
 const getRandomPropertyImage = () => {
- const randomNum = Math.floor(Math.random() * 65) + 1;
- return getPropertyImage(randomNum);
+const randomNum = Math.floor(Math.random() * 65) + 1;
+return getPropertyImage(randomNum);
 };
 
 // Propiedad computada para imágenes de propiedad
 const propertyImages = computed(() => {
- if (!property.value) {
-   return [
-     getPropertyImage(1),
-     getPropertyImage(2),
-     getPropertyImage(3),
-     getPropertyImage(4)
-   ];
- }
+if (!property.value) {
+  return [
+    getPropertyImage(1),
+    getPropertyImage(2),
+    getPropertyImage(3),
+    getPropertyImage(4)
+  ];
+}
 
- // Imágenes disponibles
- const images = [];
+// Imágenes disponibles
+const images = [];
 
- // Si la propiedad tiene su propia imagen, la usamos como primera
- if (property.value.image) {
-   images.push(property.value.image);
- }
+// Si la propiedad tiene su propia imagen, la usamos como primera
+if (property.value.image) {
+  images.push(property.value.image);
+}
 
- // Añadir imágenes adicionales si existen
- if (property.value.additional_images && Array.isArray(property.value.additional_images)) {
-   images.push(...property.value.additional_images);
- }
+// Añadir imágenes adicionales si existen
+if (property.value.additional_images && Array.isArray(property.value.additional_images)) {
+  images.push(...property.value.additional_images);
+}
 
- // Si no hay suficientes imágenes, añadir imágenes genéricas basadas en el ID
- while (images.length < 4) {
-   const baseIndex = (images.length % 65) + 1; // Usar módulo para quedarnos en el rango 1-65
-   images.push(getPropertyImage(baseIndex));
- }
+// Si no hay suficientes imágenes, añadir imágenes genéricas basadas en el ID
+while (images.length < 4) {
+  const baseIndex = (images.length % 65) + 1; // Usar módulo para quedarnos en el rango 1-65
+  images.push(getPropertyImage(baseIndex));
+}
 
- return images;
+return images;
 });
 
 // Función para inicializar el mapa con Leaflet
 const initializeMap = () => {
- // Verificar si tenemos coordenadas y el elemento del mapa existe
- if (!property.value || !property.value.lat || !property.value.lng) return;
+// Verificar si tenemos coordenadas y el elemento del mapa existe
+if (!property.value || !property.value.lat || !property.value.lng) return;
 
- // Verificar si el elemento del DOM existe
- const mapElement = document.getElementById('propertyMap');
- if (!mapElement) return;
+// Verificar si el elemento del DOM existe
+const mapElement = document.getElementById('propertyMap');
+if (!mapElement) return;
 
- // Verificar si el mapa ya está inicializado
- if (propertyMap.value) {
-   propertyMap.value.remove();
-   propertyMap.value = null;
- }
+// Verificar si el mapa ya está inicializado
+if (propertyMap.value) {
+  propertyMap.value.remove();
+  propertyMap.value = null;
+}
 
- // Asegurarse de que Leaflet está disponible
- if (typeof window.L !== 'undefined') {
-   // Crear el mapa
-   propertyMap.value = window.L.map('propertyMap').setView(
-     [property.value.lat, property.value.lng], 
-     15
-   );
-   
-   // Añadir capa de OpenStreetMap (completamente gratuito)
-   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-   }).addTo(propertyMap.value);
-   
-   // Añadir marcador en la ubicación de la propiedad
-   const icon = window.L.icon({
-     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-     iconSize: [25, 41],
-     iconAnchor: [12, 41],
-     popupAnchor: [1, -34],
-     shadowSize: [41, 41]
-   });
-   
-   // Marcador con popup con información del negocio
-   const marker = window.L.marker([property.value.lat, property.value.lng], {icon: icon}).addTo(propertyMap.value);
-   marker.bindPopup(`
-     <strong>${property.value.title}</strong><br>
-     ${property.value.address}, ${property.value.city}<br>
-     <a href="tel:${property.value.phone}">${property.value.phone}</a>
-   `).openPopup();
- } else {
-   // Si Leaflet no está disponible, cargar los scripts necesarios
-   loadLeafletScripts();
- }
-};
-
-// Función para cargar los scripts de Leaflet si no están disponibles
-const loadLeafletScripts = () => {
- // Cargar CSS de Leaflet
- if (!document.getElementById('leaflet-css')) {
-   const link = document.createElement('link');
-   link.id = 'leaflet-css';
-   link.rel = 'stylesheet';
-   link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-   document.head.appendChild(link);
- }
-
- // Cargar JavaScript de Leaflet
- if (!document.getElementById('leaflet-js')) {
-   const script = document.createElement('script');
-   script.id = 'leaflet-js';
-   script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
-   script.onload = () => {
-       // Cargar Leaflet Routing Machine para direcciones
-       const routingScript = document.createElement('script');
-       routingScript.id = 'leaflet-routing-js';
-       routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
-       routingScript.onload = () => {
-         // Cargar CSS de Leaflet Routing Machine
-         const routingCss = document.createElement('link');
-         routingCss.id = 'leaflet-routing-css';
-         routingCss.rel = 'stylesheet';
-         routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
-         document.head.appendChild(routingCss);
-         
-         // Una vez cargado todo, inicializar el mapa
-         initializeMap();
-       };
-       document.head.appendChild(routingScript);
-     };
-     document.head.appendChild(script);
-   }
- };
- 
- // Función para abrir el modal de direcciones
- const openDirectionsModal = () => {
-   // Ocultar el mapa principal cuando se abre el modal
-   const mainMapElement = document.getElementById('propertyMap');
-   if (mainMapElement) {
-     mainMapElement.style.visibility = 'hidden';
-   }
- 
-   showDirectionsModal.value = true;
- 
-   // Intentar obtener la ubicación actual del usuario si el navegador lo permite
-   if (navigator.geolocation) {
-     navigator.geolocation.getCurrentPosition(
-       async (position) => {
-         // Obtener coordenadas
-         const lat = position.coords.latitude;
-         const lng = position.coords.longitude;
-         
-         try {
-           // Usar nuestro servicio de geocodificación inversa
-           const geocoded = await routeService.geocodeAddress(`${lat},${lng}`);
-           if (geocoded && geocoded.display_name) {
-             startingPoint.value = geocoded.display_name;
-           } else {
-             // Si falla, simplemente usamos las coordenadas
-             startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-           }
-         } catch (err) {
-           console.error('Error obteniendo dirección:', err);
-           // Si falla, simplemente usamos las coordenadas
-           startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-         }
-       },
-       (error) => {
-         console.warn('Error obteniendo ubicación:', error);
-         // Dejar el campo vacío para que el usuario lo complete
-         startingPoint.value = '';
-       }
-     );
-   }
- 
-   // Crear una nueva instancia del mapa de direcciones
-   // Usamos un pequeño retraso para asegurar que el DOM esté listo
-   setTimeout(() => {
-     initializeDirectionsMap();
-   }, 300);
- };
- 
- // Añadir esta función para cerrar el modal y restaurar el mapa principal
- const closeDirectionsModal = () => {
-   showDirectionsModal.value = false;
- 
-   // Restaurar la visibilidad del mapa principal
-   setTimeout(() => {
-     const mainMapElement = document.getElementById('propertyMap');
-     if (mainMapElement) {
-       mainMapElement.style.visibility = 'visible';
-     }
-     
-     // Reiniciar el mapa principal si es necesario
-     if (propertyMap.value && typeof propertyMap.value.invalidateSize === 'function') {
-       propertyMap.value.invalidateSize();
-     }
-   }, 300);
- };
- 
- // Función para inicializar el mapa de direcciones
- const initializeDirectionsMap = () => {
-   // Verificar si tenemos coordenadas y el elemento del mapa existe
-   if (!property.value || !property.value.lat || !property.value.lng) return;
- 
-   // Verificar si el elemento del DOM existe
-   const mapElement = document.getElementById('directionsMap');
-   if (!mapElement) return;
- 
-   try {
-     // Si Leaflet está disponible
-     if (typeof window.L !== 'undefined') {
-       // Crear una variable local para el mapa de direcciones (no usar propertyMap)
-       let directionsMap;
-       
-       // Verificar si ya existe un mapa en este elemento
-       if (mapElement._leaflet_id) {
-         // Si ya existe, eliminarlo primero
-         window.L.DomUtil.empty(mapElement);
-       }
-       
-       // Crear mapa para direcciones (con una nueva instancia)
-       directionsMap = window.L.map('directionsMap', {
-         attributionControl: true, 
-         zoomControl: true,
-         minZoom: 2,
-         maxZoom: 18
-       }).setView([property.value.lat, property.value.lng], 13);
-       
-       // Añadir capa de OpenStreetMap
-       window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-       }).addTo(directionsMap);
-       
-       // Añadir marcador de destino (la propiedad)
-       const destIcon = window.L.icon({
-         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-         iconSize: [25, 41],
-         iconAnchor: [12, 41],
-         popupAnchor: [1, -34],
-         shadowSize: [41, 41]
-       });
-       
-       const marker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
-         .addTo(directionsMap)
-         .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`)
-         .openPopup();
-       
-       // Guardar referencia al mapa en una variable separada para el mapa de direcciones
-       // NO USAR propertMap para esto, crear una nueva variable
-       routingMap.value = directionsMap;
-       
-       // Cargar el plugin Routing Machine si existe
-       if (window.L.Routing && typeof window.L.Routing.control === 'function') {
-         console.log("Leaflet Routing Machine está disponible");
-       } else {
-         console.log("Cargando Leaflet Routing Machine...");
-         // Carga dinámica del script y CSS de Leaflet Routing Machine
-         loadLeafletRoutingScripts();
-       }
-     } else {
-       // Si no están disponibles las bibliotecas, cargarlas
-       loadLeafletScripts();
-     }
-   } catch (error) {
-     console.error("Error inicializando mapa de direcciones:", error);
-   }
- };
- 
- // Función para cargar scripts de Leaflet Routing Machine
- const loadLeafletRoutingScripts = () => {
-   // Cargar CSS de Leaflet Routing Machine
-   if (!document.getElementById('leaflet-routing-css')) {
-     const routingCss = document.createElement('link');
-     routingCss.id = 'leaflet-routing-css';
-     routingCss.rel = 'stylesheet';
-     routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
-     document.head.appendChild(routingCss);
-   }
- 
-   // Cargar JavaScript de Leaflet Routing Machine
-   if (!document.getElementById('leaflet-routing-js')) {
-     const routingScript = document.createElement('script');
-     routingScript.id = 'leaflet-routing-js';
-     routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
-     routingScript.onload = () => {
-       console.log("Leaflet Routing Machine cargado con éxito");
-     };
-     document.head.appendChild(routingScript);
-   }
- };
- 
-// Función modificada para calcular y mostrar ruta
-const calculateRoute = async () => {
-  // Validar que tenemos un punto de inicio
-  if (!startingPoint.value.trim()) {
-    directionsError.value = "Por favor, ingresa un punto de partida";
-    showNotification("Por favor, ingresa un punto de partida", 'error');
-    return;
-  }
-
-  directionsLoading.value = true;
-  directionsError.value = null;
-  directionsFound.value = false;
-
-  try {
-    // Llamar al backend para calcular la ruta
-    const response = await axios.get(`${API_URL}/routes/calculate`, {
-      params: {
-        originAddress: startingPoint.value, 
-        destinationLat: property.value.lat,
-        destinationLng: property.value.lng
-      }
-    });
-    
-    console.log("Respuesta del cálculo de ruta:", response.data);
-    
-    if (response.data) {
-      // Actualizar el mapa con los resultados
-      updateRouteMap(response.data);
-      
-      // Actualizar UI con información de la ruta
-      if (response.data.success && response.data.route) {
-        // Ruta exacta encontrada
-        directionsDistance.value = response.data.route.distance;
-        directionsTime.value = response.data.route.duration;
-        directionsFound.value = true;
-        directionsError.value = null;
-        showNotification("Ruta calculada correctamente", 'success');
-      } else if (response.data.straightLine) {
-        // Distancia en línea recta (aproximación)
-        directionsDistance.value = response.data.straightLine.distance;
-        directionsTime.value = response.data.straightLine.duration;
-        directionsFound.value = true;
-        directionsError.value = response.data.straightLine.errorMessage;
-        showNotification("Se muestra una aproximación de la ruta", 'info');
-      } else {
-        throw new Error("No se pudo calcular la ruta");
-      }
-    } else {
-      throw new Error("Respuesta inválida del servidor");
-    }
-  } catch (error) {
-    console.error('Error al calcular ruta:', error);
-    directionsError.value = error.message || "Ocurrió un error al calcular la ruta";
-    showNotification("Error al calcular la ruta", 'error');
-  } finally {
-    directionsLoading.value = false;
-  }
-};
- 
-// Función para actualizar el mapa con la ruta
-const updateRouteMap = (routeData) => {
-  const map = routingMap.value;
+// Asegurarse de que Leaflet está disponible
+if (typeof window.L !== 'undefined') {
+  // Crear el mapa
+  propertyMap.value = window.L.map('propertyMap').setView(
+    [property.value.lat, property.value.lng], 
+    15
+  );
   
-  if (!map) {
-    console.error("El mapa de direcciones no está inicializado correctamente");
-    return;
-  }
-  
-  // Limpiar marcadores previos
-  map.eachLayer(function(layer) {
-    if (layer instanceof window.L.Marker || layer instanceof window.L.Routing.Control || layer instanceof window.L.Polyline) {
-      map.removeLayer(layer);
-    }
-  });
-  
-  // Añadir capa base
+  // Añadir capa de OpenStreetMap (completamente gratuito)
   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+  }).addTo(propertyMap.value);
   
-  // Coordenadas de origen y destino
-  const origin = routeData.origin;
-  const destination = routeData.destination;
-  
-  // Añadir marcador de origen (verde)
-  const startIcon = window.L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-  
-  const startMarker = window.L.marker([origin.lat, origin.lng], {icon: startIcon})
-    .addTo(map)
-    .bindPopup('Punto de inicio');
-  
-  // Añadir marcador de destino (rojo)
-  const destIcon = window.L.icon({
+  // Añadir marcador en la ubicación de la propiedad
+  const icon = window.L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
     iconSize: [25, 41],
@@ -1497,754 +1444,1033 @@ const updateRouteMap = (routeData) => {
     shadowSize: [41, 41]
   });
   
-  const destMarker = window.L.marker([destination.lat, destination.lng], {icon: destIcon})
-    .addTo(map)
-    .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`);
-  
-  // Si success es true y tenemos ruta detallada
-  if (routeData.success && routeData.route && routeData.route.coordinates && routeData.route.coordinates.length > 0) {
-    // Ruta detallada exitosa
-    const routePolyline = window.L.polyline(routeData.route.coordinates, {
-      color: '#fd5631',
-      weight: 5,
-      opacity: 0.8
-    }).addTo(map);
+  // Marcador con popup con información del negocio
+  const marker = window.L.marker([property.value.lat, property.value.lng], {icon: icon}).addTo(propertyMap.value);
+  marker.bindPopup(`
+    <strong>${property.value.title}</strong><br>
+    ${property.value.address}, ${property.value.city}<br>
+    <a href="tel:${property.value.phone}">${property.value.phone}</a>
+  `).openPopup();
+} else {
+  // Si Leaflet no está disponible, cargar los scripts necesarios
+  loadLeafletScripts();
+}
+};
+
+// Función para cargar los scripts de Leaflet si no están disponibles
+const loadLeafletScripts = () => {
+// Cargar CSS de Leaflet
+if (!document.getElementById('leaflet-css')) {
+  const link = document.createElement('link');
+  link.id = 'leaflet-css';
+  link.rel = 'stylesheet';
+  link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+  document.head.appendChild(link);
+}
+
+// Cargar JavaScript de Leaflet
+if (!document.getElementById('leaflet-js')) {
+  const script = document.createElement('script');
+  script.id = 'leaflet-js';
+  script.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+  script.onload = () => {
+      // Cargar Leaflet Routing Machine para direcciones
+      const routingScript = document.createElement('script');
+      routingScript.id = 'leaflet-routing-js';
+      routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
+      routingScript.onload = () => {
+        // Cargar CSS de Leaflet Routing Machine
+        const routingCss = document.createElement('link');
+        routingCss.id = 'leaflet-routing-css';
+        routingCss.rel = 'stylesheet';
+        routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
+        document.head.appendChild(routingCss);
+        
+        // Una vez cargado todo, inicializar el mapa
+        initializeMap();
+      };
+      document.head.appendChild(routingScript);
+    };
+    document.head.appendChild(script);
+  }
+};
+
+// Función para abrir el modal de direcciones
+const openDirectionsModal = () => {
+  // Ocultar el mapa principal cuando se abre el modal
+  const mainMapElement = document.getElementById('propertyMap');
+  if (mainMapElement) {
+    mainMapElement.style.visibility = 'hidden';
+  }
+
+  showDirectionsModal.value = true;
+
+  // Intentar obtener la ubicación actual del usuario si el navegador lo permite
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        // Obtener coordenadas
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        try {
+          // Usar nuestro servicio de geocodificación inversa
+          const geocoded = await routeService.geocodeAddress(`${lat},${lng}`);
+          if (geocoded && geocoded.display_name) {
+            startingPoint.value = geocoded.display_name;
+          } else {
+            // Si falla, simplemente usamos las coordenadas
+            startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          }
+        } catch (err) {
+          console.error('Error obteniendo dirección:', err);
+          // Si falla, simplemente usamos las coordenadas
+          startingPoint.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        }
+      },
+      (error) => {
+        console.warn('Error obteniendo ubicación:', error);
+        // Dejar el campo vacío para que el usuario lo complete
+        startingPoint.value = '';
+      }
+    );
+  }
+
+  // Crear una nueva instancia del mapa de direcciones
+  // Usamos un pequeño retraso para asegurar que el DOM esté listo
+  setTimeout(() => {
+    initializeDirectionsMap();
+  }, 300);
+};
+
+// Añadir esta función para cerrar el modal y restaurar el mapa principal
+const closeDirectionsModal = () => {
+  showDirectionsModal.value = false;
+
+  // Restaurar la visibilidad del mapa principal
+  setTimeout(() => {
+    const mainMapElement = document.getElementById('propertyMap');
+    if (mainMapElement) {
+      mainMapElement.style.visibility = 'visible';
+    }
     
-    map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
-  } 
-  // Si hay una ruta con geometría en formato polyline
-  else if (routeData.success && routeData.route && routeData.route.geometry) {
-    try {
-      let coordinates = [];
+    // Reiniciar el mapa principal si es necesario
+    if (propertyMap.value && typeof propertyMap.value.invalidateSize === 'function') {
+      propertyMap.value.invalidateSize();
+    }
+  }, 300);
+};
+
+// Función para inicializar el mapa de direcciones
+const initializeDirectionsMap = () => {
+  // Verificar si tenemos coordenadas y el elemento del mapa existe
+  if (!property.value || !property.value.lat || !property.value.lng) return;
+
+  // Verificar si el elemento del DOM existe
+  const mapElement = document.getElementById('directionsMap');
+  if (!mapElement) return;
+
+  try {
+    // Si Leaflet está disponible
+    if (typeof window.L !== 'undefined') {
+      // Crear una variable local para el mapa de direcciones (no usar propertyMap)
+      let directionsMap;
       
-      // Intentar decodificar el polyline
-      if (typeof window.L.Polyline.fromEncoded === 'function') {
-        // Si está disponible el plugin para decodificar polylines
-        const decodedPath = window.L.Polyline.fromEncoded(routeData.route.geometry).getLatLngs();
-        coordinates = decodedPath;
-      } else {
-        // Intentar decodificar manualmente si es posible
-        console.warn("No se encontró la función para decodificar polyline. Usando línea recta.");
-        coordinates = [
-          [origin.lat, origin.lng],
-          [destination.lat, destination.lng]
-        ];
+      // Verificar si ya existe un mapa en este elemento
+      if (mapElement._leaflet_id) {
+        // Si ya existe, eliminarlo primero
+        window.L.DomUtil.empty(mapElement);
       }
       
-      // Crear polyline con las coordenadas
-      const routePolyline = window.L.polyline(coordinates, {
-        color: '#fd5631',
-        weight: 5,
-        opacity: 0.8
-      }).addTo(map);
+      // Crear mapa para direcciones (con una nueva instancia)
+      directionsMap = window.L.map('directionsMap', {
+        attributionControl: true, 
+        zoomControl: true,
+        minZoom: 2,
+        maxZoom: 18
+      }).setView([property.value.lat, property.value.lng], 13);
       
-      map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
-    } catch (error) {
-      console.error("Error al decodificar geometría de la ruta:", error);
-      showLineDistance();
-    }
-  } 
-  // Si estamos en modo línea recta
-  else {
-    showLineDistance();
-  }
-  
-  // Función interna para mostrar la línea recta
-  function showLineDistance() {
-    // Crear línea recta con estilo diferente para indicar que es aproximación
-    const straightLinePolyline = window.L.polyline([
-      [origin.lat, origin.lng],
-      [destination.lat, destination.lng]
-    ], {
-      color: '#fd5631',
-      dashArray: '6, 10', // Línea punteada
-      weight: 4,
-      opacity: 0.7
-    }).addTo(map);
-    
-    // Ajustar zoom para ver ambos puntos
-    map.fitBounds(straightLinePolyline.getBounds(), { padding: [50, 50] });
-    
-    // Añadir botón "Ver en Google Maps" si existe distancia en línea recta
-    if (routeData.straightLine) {
-      // Mostrar la información de distancia aproximada
-      directionsDistance.value = routeData.straightLine.distance;
-      directionsTime.value = routeData.straightLine.duration;
-      directionsFound.value = true;
-      directionsError.value = routeData.straightLine.errorMessage;
+      // Añadir capa de OpenStreetMap
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(directionsMap);
       
-      // Crear botón para Google Maps
-      const googleMapsButton = document.createElement("button");
-      googleMapsButton.className = "mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center w-full";
-      googleMapsButton.innerHTML = '<span class="material-icons mr-2">map</span>Ver ruta en Google Maps';
-      
-      googleMapsButton.addEventListener("click", () => {
-        // Crear URL para Google Maps direcciones
-        const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&travelmode=driving`;
-        window.open(googleMapsUrl, '_blank');
+      // Añadir marcador de destino (la propiedad)
+      const destIcon = window.L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
       });
       
-      // Añadir el botón al contenedor de información
-      setTimeout(() => {
-        const directionsInfo = document.querySelector('.bg-green-50');
-        if (directionsInfo) {
-          directionsInfo.appendChild(googleMapsButton);
-        }
-      }, 100);
+      const marker = window.L.marker([property.value.lat, property.value.lng], {icon: destIcon})
+        .addTo(directionsMap)
+        .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`)
+        .openPopup();
+      
+      // Guardar referencia al mapa en una variable separada para el mapa de direcciones
+      // NO USAR propertMap para esto, crear una nueva variable
+      routingMap.value = directionsMap;
+      
+      // Cargar el plugin Routing Machine si existe
+      if (window.L.Routing && typeof window.L.Routing.control === 'function') {
+        console.log("Leaflet Routing Machine está disponible");
+      } else {
+        console.log("Cargando Leaflet Routing Machine...");
+        // Carga dinámica del script y CSS de Leaflet Routing Machine
+        loadLeafletRoutingScripts();
+      }
+    } else {
+      // Si no están disponibles las bibliotecas, cargarlas
+      loadLeafletScripts();
     }
+  } catch (error) {
+    console.error("Error inicializando mapa de direcciones:", error);
   }
+};
+
+// Función para cargar scripts de Leaflet Routing Machine
+const loadLeafletRoutingScripts = () => {
+  // Cargar CSS de Leaflet Routing Machine
+  if (!document.getElementById('leaflet-routing-css')) {
+    const routingCss = document.createElement('link');
+    routingCss.id = 'leaflet-routing-css';
+    routingCss.rel = 'stylesheet';
+    routingCss.href = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css';
+    document.head.appendChild(routingCss);
+  }
+
+  // Cargar JavaScript de Leaflet Routing Machine
+  if (!document.getElementById('leaflet-routing-js')) {
+    const routingScript = document.createElement('script');
+    routingScript.id = 'leaflet-routing-js';
+    routingScript.src = 'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js';
+    routingScript.onload = () => {
+      console.log("Leaflet Routing Machine cargado con éxito");
+    };
+    document.head.appendChild(routingScript);
+  }
+};
+
+// Función modificada para calcular y mostrar ruta
+const calculateRoute = async () => {
+ // Validar que tenemos un punto de inicio
+ if (!startingPoint.value.trim()) {
+   directionsError.value = "Por favor, ingresa un punto de partida";
+   showNotification("Por favor, ingresa un punto de partida", 'error');
+   return;
+ }
+
+ directionsLoading.value = true;
+ directionsError.value = null;
+ directionsFound.value = false;
+
+ try {
+   // Llamar al backend para calcular la ruta
+   const response = await axios.get(`${API_URL}/routes/calculate`, {
+     params: {
+       originAddress: startingPoint.value, 
+       destinationLat: property.value.lat,
+       destinationLng: property.value.lng
+     }
+   });
+   
+   console.log("Respuesta del cálculo de ruta:", response.data);
+   
+   if (response.data) {
+     // Actualizar el mapa con los resultados
+     updateRouteMap(response.data);
+     
+     // Actualizar UI con información de la ruta
+     if (response.data.success && response.data.route) {
+       // Ruta exacta encontrada
+       directionsDistance.value = response.data.route.distance;
+       directionsTime.value = response.data.route.duration;
+       directionsFound.value = true;
+       directionsError.value = null;
+       showNotification("Ruta calculada correctamente", 'success');
+     } else if (response.data.straightLine) {
+       // Distancia en línea recta (aproximación)
+       directionsDistance.value = response.data.straightLine.distance;
+       directionsTime.value = response.data.straightLine.duration;
+       directionsFound.value = true;
+       directionsError.value = response.data.straightLine.errorMessage;
+       showNotification("Se muestra una aproximación de la ruta", 'info');
+     } else {
+       throw new Error("No se pudo calcular la ruta");
+     }
+   } else {
+     throw new Error("Respuesta inválida del servidor");
+   }
+ } catch (error) {
+   console.error('Error al calcular ruta:', error);
+   directionsError.value = error.message || "Ocurrió un error al calcular la ruta";
+   showNotification("Error al calcular la ruta", 'error');
+ } finally {
+   directionsLoading.value = false;
+ }
+};
+
+// Función para actualizar el mapa con la ruta
+const updateRouteMap = (routeData) => {
+ const map = routingMap.value;
+ 
+ if (!map) {
+   console.error("El mapa de direcciones no está inicializado correctamente");
+   return;
+ }
+ 
+ // Limpiar marcadores previos
+ map.eachLayer(function(layer) {
+   if (layer instanceof window.L.Marker || layer instanceof window.L.Routing.Control || layer instanceof window.L.Polyline) {
+     map.removeLayer(layer);
+   }
+ });
+ 
+ // Añadir capa base
+ window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+ }).addTo(map);
+ 
+ // Coordenadas de origen y destino
+ const origin = routeData.origin;
+ const destination = routeData.destination;
+ 
+ // Añadir marcador de origen (verde)
+ const startIcon = window.L.icon({
+   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
+ 
+ const startMarker = window.L.marker([origin.lat, origin.lng], {icon: startIcon})
+   .addTo(map)
+   .bindPopup('Punto de inicio');
+ 
+ // Añadir marcador de destino (rojo)
+ const destIcon = window.L.icon({
+   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
+ 
+ const destMarker = window.L.marker([destination.lat, destination.lng], {icon: destIcon})
+   .addTo(map)
+   .bindPopup(`<strong>${property.value.title}</strong><br>${property.value.address}`);
+ 
+ // Si success es true y tenemos ruta detallada
+ if (routeData.success && routeData.route && routeData.route.coordinates && routeData.route.coordinates.length > 0) {
+   // Ruta detallada exitosa
+   const routePolyline = window.L.polyline(routeData.route.coordinates, {
+     color: '#fd5631',
+     weight: 5,
+     opacity: 0.8
+   }).addTo(map);
+   
+   map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+ } 
+ // Si hay una ruta con geometría en formato polyline
+ else if (routeData.success && routeData.route && routeData.route.geometry) {
+   try {
+     let coordinates = [];
+     
+     // Intentar decodificar el polyline
+     if (typeof window.L.Polyline.fromEncoded === 'function') {
+       // Si está disponible el plugin para decodificar polylines
+       const decodedPath = window.L.Polyline.fromEncoded(routeData.route.geometry).getLatLngs();
+       coordinates = decodedPath;
+     } else {
+       // Intentar decodificar manualmente si es posible
+       console.warn("No se encontró la función para decodificar polyline. Usando línea recta.");
+       coordinates = [
+         [origin.lat, origin.lng],
+         [destination.lat, destination.lng]
+       ];
+     }
+     
+     // Crear polyline con las coordenadas
+     const routePolyline = window.L.polyline(coordinates, {
+       color: '#fd5631',
+       weight: 5,
+       opacity: 0.8
+     }).addTo(map);
+     
+     map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+   } catch (error) {
+     console.error("Error al decodificar geometría de la ruta:", error);
+     showLineDistance();
+   }
+ } 
+ // Si estamos en modo línea recta
+ else {
+   showLineDistance();
+ }
+ 
+ // Función interna para mostrar la línea recta
+ function showLineDistance() {
+   // Crear línea recta con estilo diferente para indicar que es aproximación
+   const straightLinePolyline = window.L.polyline([
+     [origin.lat, origin.lng],
+     [destination.lat, destination.lng]
+   ], {
+     color: '#fd5631',
+     dashArray: '6, 10', // Línea punteada
+     weight: 4,
+     opacity: 0.7
+   }).addTo(map);
+   
+   // Ajustar zoom para ver ambos puntos
+   map.fitBounds(straightLinePolyline.getBounds(), { padding: [50, 50] });
+   
+   // Añadir botón "Ver en Google Maps" si existe distancia en línea recta
+   if (routeData.straightLine) {
+     // Mostrar la información de distancia aproximada
+     directionsDistance.value = routeData.straightLine.distance;
+     directionsTime.value = routeData.straightLine.duration;
+     directionsFound.value = true;
+     directionsError.value = routeData.straightLine.errorMessage;
+     
+     // Crear botón para Google Maps
+     const googleMapsButton = document.createElement("button");
+     googleMapsButton.className = "mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center w-full";
+     googleMapsButton.innerHTML = '<span class="material-icons mr-2">map</span>Ver ruta en Google Maps';
+     
+     googleMapsButton.addEventListener("click", () => {
+       // Crear URL para Google Maps direcciones
+       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&travelmode=driving`;
+       window.open(googleMapsUrl, '_blank');
+     });
+     
+     // Añadir el botón al contenedor de información
+     setTimeout(() => {
+       const directionsInfo = document.querySelector('.bg-green-50');
+       if (directionsInfo) {
+         directionsInfo.appendChild(googleMapsButton);
+       }
+     }, 100);
+   }
+ }
 };
 
 
 // Función auxiliar para asignar iconos de dirección según el tipo de maniobra
 const getDirectionIcon = (sign) => {
-  switch(sign) {
-    case 0: return 'arrow_forward'; // continuar recto
-    case 1: return 'turn_slight_right'; // giro ligero a la derecha
-    case 2: return 'turn_right'; // giro a la derecha
-    case 3: return 'turn_sharp_right'; // giro cerrado a la derecha
-    case 4: return 'u_turn_right'; // vuelta de 180 grados
-    case 5: return 'turn_sharp_left'; // giro cerrado a la izquierda
-    case 6: return 'turn_left'; // giro a la izquierda
-    case 7: return 'turn_slight_left'; // giro ligero a la izquierda
-    case 8: return 'roundabout'; // rotonda
-    default: return 'arrow_forward';
-  }
+ switch(sign) {
+   case 0: return 'arrow_forward'; // continuar recto
+   case 1: return 'turn_slight_right'; // giro ligero a la derecha
+   case 2: return 'turn_right'; // giro a la derecha
+   case 3: return 'turn_sharp_right'; // giro cerrado a la derecha
+   case 4: return 'u_turn_right'; // vuelta de 180 grados
+   case 5: return 'turn_sharp_left'; // giro cerrado a la izquierda
+   case 6: return 'turn_left'; // giro a la izquierda
+   case 7: return 'turn_slight_left'; // giro ligero a la izquierda
+   case 8: return 'roundabout'; // rotonda
+   default: return 'arrow_forward';
+ }
 };
 
 // Función auxiliar para cargar dinámicamente la biblioteca polyline-util si es necesario
 const loadPolylineScript = () => {
-  return new Promise((resolve, reject) => {
-    if (typeof polylineUtil !== 'undefined') {
-      resolve();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js';
-    script.onload = () => {
-      window.polylineUtil = {
-        decode: function(str, precision) {
-          return window.polyline.decode(str, precision);
-        }
-      };
-      resolve();
-    };
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-};
-
- // Funciones para obtener iconos para amenidades
- const getAmenityIcon = (amenity) => {
-   const icons = {
-     'wifi': 'wifi',
-     'aire-acondicionado': 'ac_unit',
-     'piscina': 'pool',
-     'jacuzzi': 'hot_tub',
-     'gimnasio': 'fitness_center',
-     'parking': 'local_parking',
-     'ascensor': 'elevator',
-     'balcon': 'balcony',
-     'terraza': 'deck',
-     'jardin': 'yard',
-     'cocina-equipada': 'kitchen',
-     'lavadora': 'local_laundry_service',
-     'lavavajillas': 'dishwasher',
-     'calefaccion': 'hvac',
-     'chimenea': 'fireplace',
-     'seguridad-24h': 'security',
-     'vigilancia-24h': 'videocam',
-     'alarma': 'notifications_active',
-     'garaje': 'garage',
-     'trastero': 'inventory_2',
-     'amueblado': 'chair',
-     'armarios-empotrados': 'inventory',
-     'barbacoa': 'outdoor_grill',
-     'agua-incluida': 'water_drop',
-     'electricidad-incluida': 'bolt',
-     'fibra-optica': 'wifi_tethering',
-     'piscina-comunitaria': 'pool',
-     'zona-infantil': 'child_care',
-     'suelo-radiante': 'floor',
-     'urbanizacion-privada': 'gated_community'
-   };
-
-   // Convertir a minúsculas y quitar espacios para facilitar la búsqueda
-   const normalizedAmenity = amenity.toLowerCase().replace(/\s+/g, '-');
-
-   return icons[normalizedAmenity] || 'check';
- };
-
- // Funciones de traducción
- const translatePropertyType = (type) => {
-   const translations = {
-     'apartment': 'Apartamento',
-     'house': 'Casa',
-     'room': 'Habitación',
-     'office': 'Oficina',
-     'commercial': 'Comercial',
-     'land': 'Terreno',
-     'daily-rental': 'Alquiler diario',
-     'new-building': 'Edificio nuevo',
-     'parking-lot': 'Estacionamiento'
-   };
-
-   return translations[type] || type;
- };
-
- const getStarsText = (rating) => {
-   if (rating === undefined || rating === null) return "★ 0.0 (0 reseñas)";
-
-   const numericRating = parseFloat(rating) || 0;
-   const formattedRating = numericRating.toFixed(1);
-   return `★ ${formattedRating}`;
- };
-
- // Función para obtener array de estrellas (llenas o vacías)
- const getStarsArray = (rating) => {
-   if (rating === undefined || rating === null) return [false, false, false, false, false];
-
-   const numericRating = Math.round(parseFloat(rating) || 0);
-   return Array(5).fill(false).map((_, index) => index < numericRating);
- };
-
- const translatePetsAllowed = (petsAllowed) => {
-   if (!petsAllowed || petsAllowed.length === 0) return 'No permitidas';
-
-   if (Array.isArray(petsAllowed)) {
-     if (petsAllowed.includes('cats-allowed') && petsAllowed.includes('dogs-allowed')) {
-       return 'Gatos y perros';
-     }
-     if (petsAllowed.includes('cats-allowed')) {
-       return 'Solo gatos';
-     }
-     if (petsAllowed.includes('dogs-allowed')) {
-       return 'Solo perros';
-     }
-   }
-
-   return 'No permitidas';
- };
-
- const translateAmenity = (amenity) => {
-   const translations = {
-     'wifi': 'WiFi',
-     'aire-acondicionado': 'Aire acondicionado',
-     'piscina': 'Piscina',
-     'jacuzzi': 'Jacuzzi',
-     'gimnasio': 'Gimnasio',
-     'parking': 'Estacionamiento',
-     'ascensor': 'Ascensor',
-     'balcon': 'Balcón',
-     'terraza': 'Terraza',
-     'jardin': 'Jardín',
-     'cocina-equipada': 'Cocina equipada',
-     'lavadora': 'Lavadora',
-     'lavavajillas': 'Lavavajillas',
-     'calefaccion': 'Calefacción',
-     'chimenea': 'Chimenea',
-     'seguridad-24h': 'Seguridad 24h',
-     'vigilancia-24h': 'Vigilancia 24h',
-     'alarma': 'Alarma',
-     'garaje': 'Garaje',
-     'trastero': 'Trastero',
-     'amueblado': 'Amueblado',
-     'armarios-empotrados': 'Armarios empotrados',
-     'barbacoa': 'Barbacoa',
-     'agua-incluida': 'Agua incluida',
-     'electricidad-incluida': 'Electricidad incluida',
-     'fibra-optica': 'Fibra óptica',
-     'piscina-comunitaria': 'Piscina comunitaria',
-     'zona-infantil': 'Zona infantil',
-     'suelo-radiante': 'Suelo radiante',
-     'urbanizacion-privada': 'Urbanización privada',
-     'vistas-mar': 'Vistas al mar',
-     'vistas-montana': 'Vistas a la montaña',
-     'vistas-panoramicas': 'Vistas panorámicas',
-     'primera-linea-playa': 'Primera línea de playa'
-   };
-
-   return translations[amenity] || amenity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
- };
-
- // Funciones de galería de imágenes
- const goToPrevImage = () => {
-   if (activeImageIndex.value === 0) {
-     activeImageIndex.value = propertyImages.value.length - 1;
-   } else {
-     activeImageIndex.value--;
-   }
- };
-
- const goToNextImage = () => {
-   if (activeImageIndex.value === propertyImages.value.length - 1) {
-     activeImageIndex.value = 0;
-   } else {
-     activeImageIndex.value++;
-   }
- };
-
- const setActiveImage = (index) => {
-   activeImageIndex.value = index;
- };
-
- // Compartir propiedad
- const shareProperty = () => {
-   if (navigator.share) {
-     navigator.share({
-       title: property.value.title,
-       text: `¡Mira este negocio: ${property.value.title}!`,
-       url: window.location.href
-     }).catch(err => {
-       console.error('Error compartiendo:', err);
-       showNotification('Error al compartir el negocio', 'error');
-     });
-   } else {
-     // Fallback - copiar enlace al portapapeles
-     const dummy = document.createElement('input');
-     document.body.appendChild(dummy);
-     dummy.value = window.location.href;
-     dummy.select();
-     document.execCommand('copy');
-     document.body.removeChild(dummy);
-     
-     // Mostrar notificación en lugar de alert
-     showNotification('Enlace copiado al portapapeles', 'success');
-   }
- };
-
- // Formatear precio con comas
- const formatPrice = (price) => {
-   if (!price) return "0";
-   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
- };
-
- // Formatear fecha
- const formatDate = (dateString) => {
-   if (!dateString) return "Sin fecha";
-   try {
-     const date = new Date(dateString);
-     return date.toLocaleDateString('es-ES', { 
-       year: 'numeric', 
-       month: 'short', 
-       day: 'numeric' 
-     });
-   } catch (err) {
-     return "Sin fecha";
-   }
- };
-
- // Formatear horario
- const formatSchedule = (schedule) => {
-   if (!schedule) return "No disponible";
-   // Convierte el texto del horario "Lunes Martes" en "Lun, Mar"
-   return schedule
-     .split(' ')
-     .map(day => {
-       const firstThree = day.substring(0, 3);
-       return firstThree.charAt(0).toUpperCase() + firstThree.slice(1).toLowerCase();
-     })
-     .join(', ');
- };
-
- // Navegar a otra propiedad
- const navigateToProperty = (id) => {
-   // Si estamos en la misma ruta pero con diferente ID, forzar recarga
-   if (route.name === route.name && route.params.id !== id.toString()) {
-     router.replace(`/properties/${id}`);
-     setTimeout(() => {
-       window.scrollTo({ top: 0, behavior: 'smooth' });
-     }, 100);
-   } else {
-     router.push(`/properties/${id}`);
-   }
- };
-
- // Función para activar la animación cuando cambia el contador
- const animateViewCount = () => {
-   viewCountUpdated.value = true;
-   setTimeout(() => {
-     viewCountUpdated.value = false;
-   }, 1000); // La animación dura 1 segundo
- };
-
-
- // Incrementar contador de vistas - versión actualizada para coincidencia con Postman
- const incrementViewCount = async () => {
-   try {
-     console.log("Función incrementViewCount iniciada");
-     if (!property.value) {
-       console.log("No hay propiedad, saliendo de la función");
-       return;
-     }
-     
-     // Formar la URL exactamente como en Postman
-     const endpoint = `${API_URL}/properties/${propertyId}/view`;
-     console.log(`Intentando llamar a: ${endpoint}`);
-     
-     // Realizar la solicitud POST sin cuerpo, igual que en Postman
-     const response = await axios.post(endpoint);
-     console.log("Respuesta de vista:", response);
-     
-     if (response.data && response.data.success) {
-       // Incrementar contador local
-       property.value.views = (property.value.views || 0) + 1;
-       viewCount.value = property.value.views;
-       
-       console.log(`Contador actualizado a: ${property.value.views}`);
-       showNotification(`Visita registrada. Total: ${property.value.views}`, 'success');
-       
-       // Guardar en localStorage para no incrementar nuevamente en la misma sesión
-       const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
-       if (!viewedProperties.includes(parseInt(propertyId))) {
-         viewedProperties.push(parseInt(propertyId));
-         localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
-       }
-     } else {
-       console.error("La respuesta del servidor no fue exitosa:", response.data);
-     }
-   } catch (err) {
-     console.error("Error en incrementViewCount:", err);
-     if (err.response) {
-       console.error("Datos de error:", err.response.data);
-       console.error("Estado HTTP:", err.response.status);
-     }
-   }
- };
-
- // Modificación en el método fetchPropertyData para inicializar correctamente el contador
- const fetchPropertyData = async () => {
-   isLoading.value = true;
-   error.value = null;
-
-   try {
-     // Obtener datos de la propiedad
-     const response = await axios.get(`${API_URL}/properties/${propertyId}`);
-     
-     if (response.data && response.data.success) {
-       property.value = response.data.data;
-       
-       // Configurar nueva reseña
-       newReview.value.property_id = property.value.id;
-       
-       // Cargar datos del anfitrión
-       await fetchHostData();
-       
-       // Cargar reseñas
-       await fetchReviews();
-       
-       // Cargar propiedades similares
-       await fetchSimilarProperties();
-       
-       // Inicializar viewCount con el valor de la API
-       // Asegurarse de que views es un número
-       property.value.views = property.value.views ? parseInt(property.value.views) : 0;
-       viewCount.value = property.value.views;
-       
-       // Incrementar contador de visitas - ahora con una pequeña demora para evitar
-       // que se haga antes de que el usuario pueda ver la página
-       setTimeout(() => {
-         incrementViewCount();
-       }, 2000);
-       
-       // Inicializar el mapa
-       setTimeout(() => {
-         initializeMap();
-       }, 300);
-       
-       showNotification('Negocio cargado correctamente', 'success');
-     } else {
-       error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo.';
-       showNotification('Error al cargar el negocio', 'error');
-     }
-   } catch (err) {
-     console.error('Error cargando el negocio:', err);
-     error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo más tarde.';
-     showNotification('Error al cargar el negocio', 'error');
-   } finally {
-     isLoading.value = false;
-   }
- };
-
- // Agregar esta función en el script
- const getActionButtonText = () => {
-   if (property.value.category === 'Alojamiento') {
-     return property.value.status === 'for-rent' ? 'Reservar Ahora' : 'Contactar';
-   } else if (property.value.category === 'Restaurante y bar') {
-     return 'Reservar Mesa';
-   } else if (property.value.category === 'Entretenimiento') {
-     return 'Más Información';
-   }
-   return 'Contactar';
- };
-
- // Cargar propiedades similares
- const fetchSimilarProperties = async () => {
-   isLoadingSimilar.value = true;
-
-   try {
-     if (!property.value) return;
-     
-     // Construir parámetros de filtro para propiedades similares
-     const filters = {
-       category: property.value.category,
-       property_type: property.value.property_type,
-       include_ratings: true, // Asegurarse de incluir los ratings
-       limit: 4
-     };
-     
-     // Opcional: añadir filtros adicionales como ciudad, etc.
-     
-     // Armar la URL con los parámetros
-     const queryString = Object.entries(filters)
-       .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-       .join('&');
-     
-     const response = await axios.get(`${API_URL}/properties?${queryString}`);
-     
-     if (response.data && response.data.success) {
-       // Filtrar para no incluir la propiedad actual
-       const filteredProperties = response.data.data.properties
-         .filter(p => p.id !== property.value.id)
-         .slice(0, 4);
-       
-       // Para cada propiedad, si no tiene average_rating, obtenerlo
-       for (const prop of filteredProperties) {
-         if (!prop.average_rating || !prop.review_count) {
-           try {
-             const ratingResponse = await axios.get(`${API_URL}/reviews/property/${prop.id}/rating`);
-             if (ratingResponse.data && ratingResponse.data.success) {
-               prop.average_rating = ratingResponse.data.data.averageRating;
-               prop.review_count = ratingResponse.data.data.reviewCount || 0;
-             }
-           } catch (err) {
-            console.warn(`No se pudo obtener rating para negocio ${prop.id}:`, err);
-             // Si falla, asignar valores por defecto
-             prop.average_rating = prop.average_rating || 0;
-             prop.review_count = prop.review_count || 0;
-           }
-         }
-       }
-       
-       similarProperties.value = filteredProperties;
-       
-       if (filteredProperties.length > 0) {
-         showNotification('Se encontraron negocios similares', 'info');
-       }
-     } else {
-       similarProperties.value = [];
-     }
-   } catch (err) {
-     console.error('Error cargando negocios similares:', err);
-     similarProperties.value = [];
-     showNotification('Error al cargar negocio similares', 'error');
-   } finally {
-     isLoadingSimilar.value = false;
-   }
- };
-
- // Función para formatear calificación
- const formatRating = (rating) => {
-   if (!rating || isNaN(parseFloat(rating))) return '0.0';
-   return parseFloat(rating).toFixed(1);
- };
-
- // Función para obtener array de estrellas llenas/vacías basado en rating
- const getRatingStars = (rating) => {
-   const numericRating = Math.round(parseFloat(rating) || 0);
-   return Array(5).fill(false).map((_, index) => index < numericRating);
- };
-
- // Función para obtener el texto de calificación con número de reseñas
- const getRatingText = (rating, reviewCount) => {
-   const formattedRating = formatRating(rating);
-   const count = reviewCount || 0;
-   return `${formattedRating} (${count} ${count === 1 ? 'reseña' : 'reseñas'})`;
- };
-
- // Cargar reseñas de la propiedad
- const fetchReviews = async () => {
-   loadingReviews.value = true;
-
-   try {
-     // Obtener reseñas directamente de la API para evitar problemas con el store
-     const response = await axios.get(`${API_URL}/reviews`, {
-       params: { property_id: parseInt(propertyId) }
-     });
-     
-     if (response.data && response.data.success) {
-       const fetchedReviews = response.data.data.reviews || [];
-       
-       // Actualizar el store con las reseñas obtenidas
-       reviewStore.reviews = [
-         ...reviewStore.reviews.filter(r => r.property_id !== parseInt(propertyId)),
-         ...fetchedReviews
-       ];
-       
-       if (fetchedReviews.length > 0) {
-         showNotification(`Se encontraron ${fetchedReviews.length} reseñas`, 'info');
-       }
-     }
-   } catch (err) {
-     console.error('Error cargando reseñas:', err);
-     showNotification('Error al cargar reseñas', 'error');
-   } finally {
-     loadingReviews.value = false;
-   }
- };
-
- // Manejar like de reseña
- const handleLikeReview = async (review) => {
-   try {
-     await axios.post(`${API_URL}/reviews/${review.id}/like`);
-     
-     // Actualizar la reseña localmente para mostrar el cambio inmediatamente
-     const updatedReview = { ...review, likes: (review.likes || 0) + 1 };
-     
-     // Actualizar en el store
-     const index = reviewStore.reviews.findIndex(r => r.id === review.id);
-     if (index !== -1) {
-       reviewStore.reviews[index] = updatedReview;
-     }
-     
-     showNotification('Has marcado que te gusta esta reseña', 'success');
-   } catch (err) {
-     console.error('Error al dar like a la reseña:', err);
-     showNotification('Error al interactuar con la reseña', 'error');
-   }
- };
-
- // Manejar dislike de reseña
- const handleDislikeReview = async (review) => {
-   try {
-     await axios.post(`${API_URL}/reviews/${review.id}/dislike`);
-     
-     // Actualizar la reseña localmente para mostrar el cambio inmediatamente
-     const updatedReview = { ...review, dislikes: (review.dislikes || 0) + 1 };
-     
-     // Actualizar en el store
-     const index = reviewStore.reviews.findIndex(r => r.id === review.id);
-     if (index !== -1) {
-       reviewStore.reviews[index] = updatedReview;
-     }
-     
-     showNotification('Has marcado que no te gusta esta reseña', 'info');
-   } catch (err) {
-     console.error('Error al dar dislike a la reseña:', err);
-     showNotification('Error al interactuar con la reseña', 'error');
-   }
- };
-
- // Funciones de reseñas
- const openReviewModal = () => {
-   showReviewModal.value = true;
-   // Asegurarse de que el ID de la propiedad esté establecido
-   newReview.value.property_id = parseInt(propertyId);
- };
-
- // Función actualizada para enviar reseña con notificaciones
- const submitReview = async () => {
-   // Validación básica
-   if (!newReview.value.rating) {
-     showNotification('Por favor asigne una calificación', 'error');
+ return new Promise((resolve, reject) => {
+   if (typeof polylineUtil !== 'undefined') {
+     resolve();
      return;
    }
 
-   submittingReview.value = true;
-
-   try {
-     // Obtener datos del usuario del store
-     const user = authStore.user || JSON.parse(localStorage.getItem('user') || '{}');
-     
-     if (!user || !user.id) {
-       throw new Error('No hay información de usuario disponible. Por favor, inicia sesión nuevamente.');
-     }
-     
-     // Preparar los datos para la API, incluyendo user_id
-     const reviewData = {
-       property_id: parseInt(propertyId),
-       rating: parseInt(newReview.value.rating),
-       comment: newReview.value.comment || '',
-       user_id: user.id,
-       // Opcionalmente, incluir nombre para que el backend no tenga que buscarlo
-       reviewer_name: `${user.first_name || ''} ${user.last_name || ''}`.trim()
+   const script = document.createElement('script');
+   script.src = 'https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js';
+   script.onload = () => {
+     window.polylineUtil = {
+       decode: function(str, precision) {
+         return window.polyline.decode(str, precision);
+       }
      };
-     
-     console.log('Enviando reseña con datos:', reviewData);
-     
-     // Enviar sin token
-     const response = await axios.post(`${API_URL}/reviews`, reviewData);
-     
-     if (response.data && response.data.success) {
-       // Cerrar modal y limpiar formulario
-       showReviewModal.value = false;
-       newReview.value = {
-         property_id: parseInt(propertyId),
-         rating: 0,
-         comment: ''
-       };
-       
-       // Recargar reseñas
-       await fetchReviews();
-       
-       showNotification('¡Gracias por tu reseña!', 'success');
-     } else {
-       throw new Error(response.data?.message || 'Error al crear la reseña');
-     }
-   } catch (err) {
-     console.error('Error al enviar reseña:', err);
-     showNotification('Error al enviar la reseña: ' + (err.message || 'Intenta nuevamente'), 'error');
-   } finally {
-     submittingReview.value = false;
-   }
- };
-
- // Observar cambios en el ID de la propiedad (para navegación entre propiedades)
- watch(() => route.params.id, (newId, oldId) => {
-   if (newId !== oldId) {
-     propertyId = newId;
-     fetchPropertyData();
-     window.scrollTo({ top: 0, behavior: 'smooth' });
-   }
+     resolve();
+   };
+   script.onerror = reject;
+   document.head.appendChild(script);
  });
+};
 
- // Observar cambios en la propiedad para actualizar el mapa
- watch(() => property.value, (newProperty) => {
-   if (newProperty && newProperty.lat && newProperty.lng) {
-     // Dar tiempo para que el DOM se actualice
-     setTimeout(() => {
-       initializeMap();
-     }, 300);
-   }
- }, { deep: true });
+// Funciones para obtener iconos para amenidades
+const getAmenityIcon = (amenity) => {
+  const icons = {
+    'wifi': 'wifi',
+    'aire-acondicionado': 'ac_unit',
+    'piscina': 'pool',
+    'jacuzzi': 'hot_tub',
+    'gimnasio': 'fitness_center',
+    'parking': 'local_parking',
+    'ascensor': 'elevator',
+    'balcon': 'balcony',
+    'terraza': 'deck',
+    'jardin': 'yard',
+    'cocina-equipada': 'kitchen',
+    'lavadora': 'local_laundry_service',
+    'lavavajillas': 'dishwasher',
+    'calefaccion': 'hvac',
+    'chimenea': 'fireplace',
+    'seguridad-24h': 'security',
+    'vigilancia-24h': 'videocam',
+    'alarma': 'notifications_active',
+    'garaje': 'garage',
+    'trastero': 'inventory_2',
+    'amueblado': 'chair',
+    'armarios-empotrados': 'inventory',
+    'barbacoa': 'outdoor_grill',
+    'agua-incluida': 'water_drop',
+    'electricidad-incluida': 'bolt',
+    'fibra-optica': 'wifi_tethering',
+    'piscina-comunitaria': 'pool',
+    'zona-infantil': 'child_care',
+    'suelo-radiante': 'floor',
+    'urbanizacion-privada': 'gated_community'
+  };
 
- // Cargar datos cuando el componente se monta
- onMounted(async () => {
-   // Cargar los datos de la propiedad específica
-   await fetchPropertyData();
+  // Convertir a minúsculas y quitar espacios para facilitar la búsqueda
+  const normalizedAmenity = amenity.toLowerCase().replace(/\s+/g, '-');
 
-   // Inicializar el store de autenticación si es necesario
-   if (!authStore.isInitialized) {
-     authStore.initialize();
-   }
+  return icons[normalizedAmenity] || 'check';
+};
 
-   // Cargar favoritos
-   await favoritesStore.fetchFavorites();
+// Funciones de traducción
+const translatePropertyType = (type) => {
+  const translations = {
+    'apartment': 'Apartamento',
+    'house': 'Casa',
+    'room': 'Habitación',
+    'office': 'Oficina',
+    'commercial': 'Comercial',
+    'land': 'Terreno',
+    'daily-rental': 'Alquiler diario',
+    'new-building': 'Edificio nuevo',
+    'parking-lot': 'Estacionamiento'
+  };
 
-   // Cargar email recordado si existe
-   const rememberedEmail = localStorage.getItem('rememberedEmail');
-   if (rememberedEmail) {
-     loginForm.value.email = rememberedEmail;
-     loginForm.value.remember = true;
-   }
- });
+  return translations[type] || type;
+};
+
+const getStarsText = (rating) => {
+  if (rating === undefined || rating === null) return "★ 0.0 (0 reseñas)";
+
+  const numericRating = parseFloat(rating) || 0;
+  const formattedRating = numericRating.toFixed(1);
+  return `★ ${formattedRating}`;
+};
+
+// Función para obtener array de estrellas (llenas o vacías)
+const getStarsArray = (rating) => {
+  if (rating === undefined || rating === null) return [false, false, false, false, false];
+
+  const numericRating = Math.round(parseFloat(rating) || 0);
+  return Array(5).fill(false).map((_, index) => index < numericRating);
+};
+
+const translatePetsAllowed = (petsAllowed) => {
+  if (!petsAllowed || petsAllowed.length === 0) return 'No permitidas';
+
+  if (Array.isArray(petsAllowed)) {
+    if (petsAllowed.includes('cats-allowed') && petsAllowed.includes('dogs-allowed')) {
+      return 'Gatos y perros';
+    }
+    if (petsAllowed.includes('cats-allowed')) {
+      return 'Solo gatos';
+    }
+    if (petsAllowed.includes('dogs-allowed')) {
+      return 'Solo perros';
+    }
+  }
+
+  return 'No permitidas';
+};
+
+const translateAmenity = (amenity) => {
+  const translations = {
+    'wifi': 'WiFi',
+    'aire-acondicionado': 'Aire acondicionado',
+    'piscina': 'Piscina',
+    'jacuzzi': 'Jacuzzi',
+    'gimnasio': 'Gimnasio',
+    'parking': 'Estacionamiento',
+    'ascensor': 'Ascensor',
+    'balcon': 'Balcón',
+    'terraza': 'Terraza',
+    'jardin': 'Jardín',
+    'cocina-equipada': 'Cocina equipada',
+    'lavadora': 'Lavadora',
+    'lavavajillas': 'Lavavajillas',
+    'calefaccion': 'Calefacción',
+    'chimenea': 'Chimenea',
+    'seguridad-24h': 'Seguridad 24h',
+    'vigilancia-24h': 'Vigilancia 24h',
+    'alarma': 'Alarma',
+    'garaje': 'Garaje',
+    'trastero': 'Trastero',
+    'amueblado': 'Amueblado',
+    'armarios-empotrados': 'Armarios empotrados',
+    'barbacoa': 'Barbacoa',
+    'agua-incluida': 'Agua incluida',
+    'electricidad-incluida': 'Electricidad incluida',
+    'fibra-optica': 'Fibra óptica',
+    'piscina-comunitaria': 'Piscina comunitaria',
+    'zona-infantil': 'Zona infantil',
+    'suelo-radiante': 'Suelo radiante',
+    'urbanizacion-privada': 'Urbanización privada',
+    'vistas-mar': 'Vistas al mar',
+    'vistas-montana': 'Vistas a la montaña',
+    'vistas-panoramicas': 'Vistas panorámicas',
+    'primera-linea-playa': 'Primera línea de playa'
+  };
+
+  return translations[amenity] || amenity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+// Funciones de galería de imágenes
+const goToPrevImage = () => {
+  if (activeImageIndex.value === 0) {
+    activeImageIndex.value = propertyImages.value.length - 1;
+  } else {
+    activeImageIndex.value--;
+  }
+};
+
+const goToNextImage = () => {
+  if (activeImageIndex.value === propertyImages.value.length - 1) {
+    activeImageIndex.value = 0;
+  } else {
+    activeImageIndex.value++;
+  }
+};
+
+const setActiveImage = (index) => {
+  activeImageIndex.value = index;
+};
+
+// Compartir propiedad
+const shareProperty = () => {
+  if (navigator.share) {
+    navigator.share({
+      title: property.value.title,
+      text: `¡Mira este negocio: ${property.value.title}!`,
+      url: window.location.href
+    }).catch(err => {
+      console.error('Error compartiendo:', err);
+      showNotification('Error al compartir el negocio', 'error');
+    });
+  } else {
+    // Fallback - copiar enlace al portapapeles
+    const dummy = document.createElement('input');
+    document.body.appendChild(dummy);
+    dummy.value = window.location.href;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    
+    // Mostrar notificación en lugar de alert
+    showNotification('Enlace copiado al portapapeles', 'success');
+  }
+};
+
+// Formatear precio con comas
+const formatPrice = (price) => {
+  if (!price) return "0";
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+// Formatear fecha
+const formatDate = (dateString) => {
+  if (!dateString) return "Sin fecha";
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  } catch (err) {
+    return "Sin fecha";
+  }
+};
+
+// Formatear horario
+const formatSchedule = (schedule) => {
+  if (!schedule) return "No disponible";
+  // Convierte el texto del horario "Lunes Martes" en "Lun, Mar"
+  return schedule
+    .split(' ')
+    .map(day => {
+      const firstThree = day.substring(0, 3);
+      return firstThree.charAt(0).toUpperCase() + firstThree.slice(1).toLowerCase();
+    })
+    .join(', ');
+};
+
+// Navegar a otra propiedad
+const navigateToProperty = (id) => {
+  // Si estamos en la misma ruta pero con diferente ID, forzar recarga
+  if (route.name === route.name && route.params.id !== id.toString()) {
+    router.replace(`/properties/${id}`);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  } else {
+    router.push(`/properties/${id}`);
+  }
+};
+
+// Función para activar la animación cuando cambia el contador
+const animateViewCount = () => {
+  viewCountUpdated.value = true;
+  setTimeout(() => {
+    viewCountUpdated.value = false;
+  }, 1000); // La animación dura 1 segundo
+};
+
+
+// Incrementar contador de vistas - versión actualizada para coincidencia con Postman
+const incrementViewCount = async () => {
+  try {
+    console.log("Función incrementViewCount iniciada");
+    if (!property.value) {
+      console.log("No hay propiedad, saliendo de la función");
+      return;
+    }
+    
+    // Formar la URL exactamente como en Postman
+    const endpoint = `${API_URL}/properties/${propertyId}/view`;
+    console.log(`Intentando llamar a: ${endpoint}`);
+    
+    // Realizar la solicitud POST sin cuerpo, igual que en Postman
+    const response = await axios.post(endpoint);
+    console.log("Respuesta de vista:", response);
+    
+    if (response.data && response.data.success) {
+      // Incrementar contador local
+      property.value.views = (property.value.views || 0) + 1;
+      viewCount.value = property.value.views;
+      
+      console.log(`Contador actualizado a: ${property.value.views}`);
+      showNotification(`Visita registrada. Total: ${property.value.views}`, 'success');
+      
+      // Guardar en localStorage para no incrementar nuevamente en la misma sesión
+      const viewedProperties = JSON.parse(localStorage.getItem('viewedProperties') || '[]');
+      if (!viewedProperties.includes(parseInt(propertyId))) {
+        viewedProperties.push(parseInt(propertyId));
+        localStorage.setItem('viewedProperties', JSON.stringify(viewedProperties));
+      }
+    } else {
+      console.error("La respuesta del servidor no fue exitosa:", response.data);
+    }
+  } catch (err) {
+    console.error("Error en incrementViewCount:", err);
+    if (err.response) {
+      console.error("Datos de error:", err.response.data);
+      console.error("Estado HTTP:", err.response.status);
+    }
+  }
+};
+
+// Modificación en el método fetchPropertyData para inicializar correctamente el contador
+const fetchPropertyData = async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    // Obtener datos de la propiedad
+    const response = await axios.get(`${API_URL}/properties/${propertyId}`);
+    
+    if (response.data && response.data.success) {
+      property.value = response.data.data;
+      
+      // Configurar nueva reseña
+      newReview.value.property_id = property.value.id;
+      
+      // Cargar datos del anfitrión
+      await fetchHostData();
+      
+      // Cargar reseñas
+      await fetchReviews();
+      
+      // Cargar propiedades similares
+      await fetchSimilarProperties();
+      
+      // Inicializar viewCount con el valor de la API
+      // Asegurarse de que views es un número
+      property.value.views = property.value.views ? parseInt(property.value.views) : 0;
+      viewCount.value = property.value.views;
+      
+      // Incrementar contador de visitas - ahora con una pequeña demora para evitar
+      // que se haga antes de que el usuario pueda ver la página
+      setTimeout(() => {
+        incrementViewCount();
+      }, 2000);
+      
+      // Inicializar el mapa
+      setTimeout(() => {
+        initializeMap();
+      }, 300);
+      
+      showNotification('Negocio cargado correctamente', 'success');
+    } else {
+      error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo.';
+      showNotification('Error al cargar el negocio', 'error');
+    }
+  } catch (err) {
+    console.error('Error cargando el negocio:', err);
+    error.value = 'No se pudo cargar el negocio. Por favor intente de nuevo más tarde.';
+    showNotification('Error al cargar el negocio', 'error');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Agregar esta función en el script
+const getActionButtonText = () => {
+  if (property.value.category === 'Alojamiento') {
+    return property.value.status === 'for-rent' ? 'Reservar Ahora' : 'Contactar';
+  } else if (property.value.category === 'Restaurante y bar') {
+    return 'Reservar Mesa';
+  } else if (property.value.category === 'Entretenimiento') {
+    return 'Más Información';
+  }
+  return 'Contactar';
+};
+
+// Cargar propiedades similares
+const fetchSimilarProperties = async () => {
+  isLoadingSimilar.value = true;
+
+  try {
+    if (!property.value) return;
+    
+    // Construir parámetros de filtro para propiedades similares
+    const filters = {
+      category: property.value.category,
+      property_type: property.value.property_type,
+      include_ratings: true, // Asegurarse de incluir los ratings
+      limit: 4
+    };
+    
+    // Opcional: añadir filtros adicionales como ciudad, etc.
+    
+    // Armar la URL con los parámetros
+    const queryString = Object.entries(filters)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join('&');
+    
+    const response = await axios.get(`${API_URL}/properties?${queryString}`);
+    
+    if (response.data && response.data.success) {
+      // Filtrar para no incluir la propiedad actual
+      const filteredProperties = response.data.data.properties
+        .filter(p => p.id !== property.value.id)
+        .slice(0, 4);
+      
+      // Para cada propiedad, si no tiene average_rating, obtenerlo
+      for (const prop of filteredProperties) {
+        if (!prop.average_rating || !prop.review_count) {
+          try {
+            const ratingResponse = await axios.get(`${API_URL}/reviews/property/${prop.id}/rating`);
+            if (ratingResponse.data && ratingResponse.data.success) {
+              prop.average_rating = ratingResponse.data.data.averageRating;
+              prop.review_count = ratingResponse.data.data.reviewCount || 0;
+            }
+          } catch (err) {
+           console.warn(`No se pudo obtener rating para negocio ${prop.id}:`, err);
+            // Si falla, asignar valores por defecto
+            prop.average_rating = prop.average_rating || 0;
+            prop.review_count = prop.review_count || 0;
+          }
+        }
+      }
+      
+      similarProperties.value = filteredProperties;
+      
+      if (filteredProperties.length > 0) {
+        showNotification('Se encontraron negocios similares', 'info');
+      }
+    } else {
+      similarProperties.value = [];
+    }
+  } catch (err) {
+    console.error('Error cargando negocios similares:', err);
+    similarProperties.value = [];
+    showNotification('Error al cargar negocio similares', 'error');
+  } finally {
+    isLoadingSimilar.value = false;
+  }
+};
+
+// Función para formatear calificación
+const formatRating = (rating) => {
+  if (!rating || isNaN(parseFloat(rating))) return '0.0';
+  return parseFloat(rating).toFixed(1);
+};
+
+// Función para obtener array de estrellas llenas/vacías basado en rating
+const getRatingStars = (rating) => {
+  const numericRating = Math.round(parseFloat(rating) || 0);
+  return Array(5).fill(false).map((_, index) => index < numericRating);
+};
+
+// Función para obtener el texto de calificación con número de reseñas
+const getRatingText = (rating, reviewCount) => {
+  const formattedRating = formatRating(rating);
+  const count = reviewCount || 0;
+  return `${formattedRating} (${count} ${count === 1 ? 'reseña' : 'reseñas'})`;
+};
+
+// Cargar reseñas de la propiedad
+const fetchReviews = async () => {
+  loadingReviews.value = true;
+
+  try {
+    // Obtener reseñas directamente de la API para evitar problemas con el store
+    const response = await axios.get(`${API_URL}/reviews`, {
+      params: { property_id: parseInt(propertyId) }
+    });
+    
+    if (response.data && response.data.success) {
+      const fetchedReviews = response.data.data.reviews || [];
+      
+      // Actualizar el store con las reseñas obtenidas
+      reviewStore.reviews = [
+        ...reviewStore.reviews.filter(r => r.property_id !== parseInt(propertyId)),
+        ...fetchedReviews
+      ];
+      
+      if (fetchedReviews.length > 0) {
+        showNotification(`Se encontraron ${fetchedReviews.length} reseñas`, 'info');
+      }
+      
+      // Cargar interacciones del usuario después de cargar las reseñas
+      await loadUserInteractions();
+    }
+  } catch (err) {
+    console.error('Error cargando reseñas:', err);
+    showNotification('Error al cargar reseñas', 'error');
+  } finally {
+    loadingReviews.value = false;
+  }
+};
+
+// Funciones de reseñas
+const openReviewModal = () => {
+  showReviewModal.value = true;
+  // Asegurarse de que el ID de la propiedad esté establecido
+  newReview.value.property_id = parseInt(propertyId);
+};
+
+// Función actualizada para enviar reseña con notificaciones
+const submitReview = async () => {
+  // Validación básica
+  if (!newReview.value.rating) {
+    showNotification('Por favor asigne una calificación', 'error');
+    return;
+  }
+
+  submittingReview.value = true;
+
+  try {
+    // Obtener datos del usuario del store
+    const user = authStore.user || JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (!user || !user.id) {
+      throw new Error('No hay información de usuario disponible. Por favor, inicia sesión nuevamente.');
+    }
+    
+    // Preparar los datos para la API, incluyendo user_id
+    const reviewData = {
+      property_id: parseInt(propertyId),
+      rating: parseInt(newReview.value.rating),
+      comment: newReview.value.comment || '',
+      user_id: user.id,
+      // Opcionalmente, incluir nombre para que el backend no tenga que buscarlo
+      reviewer_name: `${user.first_name || ''} ${user.last_name || ''}`.trim()
+    };
+    
+    console.log('Enviando reseña con datos:', reviewData);
+    
+    // Enviar sin token
+    const response = await axios.post(`${API_URL}/reviews`, reviewData);
+    
+    if (response.data && response.data.success) {
+      // Cerrar modal y limpiar formulario
+      showReviewModal.value = false;
+      newReview.value = {
+        property_id: parseInt(propertyId),
+        rating: 0,
+        comment: ''
+      };
+      
+      // Recargar reseñas
+      await fetchReviews();
+      
+      showNotification('¡Gracias por tu reseña!', 'success');
+    } else {
+      throw new Error(response.data?.message || 'Error al crear la reseña');
+    }
+  } catch (err) {
+    console.error('Error al enviar reseña:', err);
+    showNotification('Error al enviar la reseña: ' + (err.message || 'Intenta nuevamente'), 'error');
+  } finally {
+    submittingReview.value = false;
+  }
+};
+
+// Observar cambios en el ID de la propiedad (para navegación entre propiedades)
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    propertyId = newId;
+    fetchPropertyData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// Observar cambios en la propiedad para actualizar el mapa
+watch(() => property.value, (newProperty) => {
+  if (newProperty && newProperty.lat && newProperty.lng) {
+    // Dar tiempo para que el DOM se actualice
+    setTimeout(() => {
+      initializeMap();
+    }, 300);
+  }
+}, { deep: true });
+
+// Cargar datos cuando el componente se monta
+onMounted(async () => {
+  // Cargar los datos de la propiedad específica
+  await fetchPropertyData();
+
+  // Inicializar el store de autenticación si es necesario
+  if (!authStore.isInitialized) {
+    authStore.initialize();
+  }
+
+  // Cargar favoritos
+  await favoritesStore.fetchFavorites();
+
+  // Cargar email recordado si existe
+  const rememberedEmail = localStorage.getItem('rememberedEmail');
+  if (rememberedEmail) {
+    loginForm.value.email = rememberedEmail;
+    loginForm.value.remember = true;
+  }
+});
 </script>
 
 <style>
 /* Estilos para texto negro */
 .text-black {
- color: #000000 !important;
+color: #000000 !important;
 }
 
 /* Hacer más visibles las direcciones y descripciones */
@@ -2252,23 +2478,23 @@ const loadPolylineScript = () => {
 .property-page .description,
 .property-page .address,
 .property-page span:not(.material-icons):not(.text-white):not(.text-red-500):not(.text-green-500):not(.text-orange-800):not(.text-yellow-400) {
- color: #000000 !important;
+color: #000000 !important;
 }
 
 /* Estilos para el spinner de carga */
 .spinner {
- animation: spin 1s linear infinite;
+animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
- to { transform: rotate(360deg); }
+to { transform: rotate(360deg); }
 }
 
 /* Estilos para las estrellas en reseñas */
 .material-icons {
- font-size: 20px;
- line-height: 1;
- vertical-align: middle;
+font-size: 20px;
+line-height: 1;
+vertical-align: middle;
 }
 
 /* Estilos globales para estrellas amarillas */
@@ -2282,7 +2508,7 @@ span.star,
 [class*="stars"] ★,
 [class*="rating"] .material-icons,
 ★ {
- color: #facc15 !important; /* Amarillo brillante para todas las estrellas */
+color: #facc15 !important; /* Amarillo brillante para todas las estrellas */
 }
 
 /* Estilos globales para estrellas inactivas */
@@ -2296,16 +2522,16 @@ span.star:not(.active),
 [class*="stars"]:not(.active) ★,
 [class*="rating"] .material-icons:not(.active),
 ★:not(.active) {
- color: #d1d5db !important; /* Gris muy claro para estrellas inactivas */
+color: #d1d5db !important; /* Gris muy claro para estrellas inactivas */
 }
 
 /* Reglas específicas para estrellas en ratings */
 .flex.text-yellow-400 .material-icons {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 .flex.text-yellow-400 .material-icons.text-gray-300 {
- color: #d1d5db !important;
+color: #d1d5db !important;
 }
 
 /* Estilos para caracteres Unicode de estrellas */
@@ -2314,52 +2540,52 @@ span.star:not(.active),
 .star-rating,
 [class*="rating"],
 [class*="stars"] {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 /* Estilo para botones like/dislike */
 .like-button:hover .material-icons, 
 .dislike-button:hover .material-icons {
- transform: scale(1.2);
- transition: transform 0.2s;
+transform: scale(1.2);
+transition: transform 0.2s;
 }
 
 /* Transiciones suaves para imágenes */
 .property-page img {
- transition: transform 0.3s ease;
+transition: transform 0.3s ease;
 }
 
 .property-page img:hover {
- transform: scale(1.02);
+transform: scale(1.02);
 }
 
 /* Estilo para el contador de vistas */
 .view-counter {
- display: flex;
- align-items: center;
- color: #000000;
+display: flex;
+align-items: center;
+color: #000000;
 }
 
 .view-counter .material-icons {
- color: #fd5631; /* orange-800 */
- font-size: 18px;
- margin-right: 4px;
+color: #fd5631; /* orange-800 */
+font-size: 18px;
+margin-right: 4px;
 }
 
 .view-counter .view-count {
- font-weight: bold;
- margin-left: 4px;
+font-weight: bold;
+margin-left: 4px;
 }
 
 /* Animación cuando cambia el contador */
 @keyframes pulse {
- 0% { transform: scale(1); }
- 50% { transform: scale(1.2); color: #fd5631; }
- 100% { transform: scale(1); }
+0% { transform: scale(1); }
+50% { transform: scale(1.2); color: #fd5631; }
+100% { transform: scale(1); }
 }
 
 .view-count.updated {
- animation: pulse 0.5s ease-in-out;
+animation: pulse 0.5s ease-in-out;
 }
 
 /* Estilos para inputs en formularios */
@@ -2368,13 +2594,13 @@ input[type="email"],
 input[type="number"],
 textarea,
 select {
- color: #000000 !important;
- background-color: #ffffff;
+color: #000000 !important;
+background-color: #ffffff;
 }
 
 /* Estilos para etiquetas de formularios */
 label {
- color: #000000 !important;
+color: #000000 !important;
 }
 
 /* Destacar elementos importantes */
@@ -2383,227 +2609,227 @@ label {
 .amenities-title,
 .location-title,
 .similar-properties-title {
- color: #000000 !important;
+color: #000000 !important;
 }
 
 /* Estilos para botones principales */
 .bg-orange-800 {
- background-color: #fd5631 !important;
+background-color: #fd5631 !important;
 }
 
 .bg-orange-900 {
- background-color: #fd5631 !important;
+background-color: #fd5631 !important;
 }
 
 .hover\:bg-orange-800:hover {
- background-color: #fd5631 !important;
+background-color: #fd5631 !important;
 }
 
 .hover\:bg-orange-900:hover {
- background-color: #fd5631 !important;
+background-color: #fd5631 !important;
 }
 
 .text-orange-800 {
- color: #fd5631 !important;
+color: #fd5631 !important;
 }
 
 .hover\:text-orange-800:hover {
- color: #fd5631 !important;
+color: #fd5631 !important;
 }
 
 .hover\:text-orange-900:hover {
- color: #fd5631 !important;
+color: #fd5631 !important;
 }
 
 /* Estilos para miniaturas de imágenes */
 .border-orange-800 {
- border-color: #fd5631 !important;
+border-color: #fd5631 !important;
 }
 
 /* Estilos específicos para el formulario de reseña */
 .modal-form input,
 .modal-form textarea {
- color: #000000 !important;
- border: 1px solid #d1d5db;
+color: #000000 !important;
+border: 1px solid #d1d5db;
 }
 
 .modal-form label {
- font-weight: 500;
+font-weight: 500;
 }
 
 /* Estilos para el botón de envío de reseña */
 .submit-button {
- background-color: #fd5631 !important;
- color: white !important;
- font-weight: 500;
- padding: 0.5rem 1rem;
- border-radius: 0.375rem;
- transition: background-color 0.2s;
+background-color: #fd5631 !important;
+color: white !important;
+font-weight: 500;
+padding: 0.5rem 1rem;
+border-radius: 0.375rem;
+transition: background-color 0.2s;
 }
 
 .submit-button:hover {
- background-color: #fd5631 !important;
+background-color: #fd5631 !important;
 }
 
 .submit-button:disabled {
- background-color: #93c5fd !important;
- cursor: not-allowed;
+background-color: #93c5fd !important;
+cursor: not-allowed;
 }
 
 /* Estilos adicionales para el mapa de rutas */
 #directionsMap {
- z-index: 10;
+z-index: 10;
 }
 
 .leaflet-routing-container {
- background-color: white;
- padding: 10px;
- border-radius: 4px;
- box-shadow: 0 1px 5px rgba(0,0,0,0.4);
- font-size: 12px;
- max-height: 320px;
- overflow-y: auto;
- width: 320px;
+background-color: white;
+padding: 10px;
+border-radius: 4px;
+box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+font-size: 12px;
+max-height: 320px;
+overflow-y: auto;
+width: 320px;
 }
 
 /* Ocultar algunas partes de la interfaz de Leaflet Routing Machine que no necesitamos */
 .leaflet-routing-geocoder input {
- width: 100%;
- padding: 5px;
- border: 1px solid #ccc;
- border-radius: 3px;
+width: 100%;
+padding: 5px;
+border: 1px solid #ccc;
+border-radius: 3px;
 }
 
 .leaflet-routing-alt {
- max-height: 240px;
- overflow-y: auto;
- border-bottom: 1px solid #ccc;
- padding-bottom: 5px;
- margin-bottom: 5px;
+max-height: 240px;
+overflow-y: auto;
+border-bottom: 1px solid #ccc;
+padding-bottom: 5px;
+margin-bottom: 5px;
 }
 
 .leaflet-routing-alt h2 {
- font-size: 14px;
- font-weight: bold;
- margin: 0 0 5px 0;
+font-size: 14px;
+font-weight: bold;
+margin: 0 0 5px 0;
 }
 
 .leaflet-routing-alt-minimized {
- display: none;
+display: none;
 }
 
 .leaflet-routing-geocoder-result {
- background-color: white;
- border: 1px solid #ccc;
- border-radius: 3px;
- max-height: 200px;
- overflow-y: auto;
- list-style: none;
- padding: 0;
- margin: 0;
+background-color: white;
+border: 1px solid #ccc;
+border-radius: 3px;
+max-height: 200px;
+overflow-y: auto;
+list-style: none;
+padding: 0;
+margin: 0;
 }
 
 .leaflet-routing-geocoder-result li {
- padding: 5px;
- cursor: pointer;
+padding: 5px;
+cursor: pointer;
 }
 
 .leaflet-routing-geocoder-result li:hover {
- background-color: #f0f0f0;
+background-color: #f0f0f0;
 }
 
 .leaflet-routing-icon {
- width: 20px;
- height: 20px;
- background-color: #fff;
- border-radius: 50%;
- box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
- text-align: center;
- line-height: 20px;
- color: #000;
- font-weight: bold;
+width: 20px;
+height: 20px;
+background-color: #fff;
+border-radius: 50%;
+box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+text-align: center;
+line-height: 20px;
+color: #000;
+font-weight: bold;
 }
 
 .leaflet-routing-icon-start {
- background-color: #72af2e;
- color: #fff;
+background-color: #72af2e;
+color: #fff;
 }
 
 .leaflet-routing-icon-end {
- background-color: #d63e2a;
- color: #fff;
+background-color: #d63e2a;
+color: #fff;
 }
 
 /* Estilos para las notificaciones toast */
 .fixed.bottom-4.right-4 {
- z-index: 9999; /* Asegurar que aparece por encima de otros elementos */
+z-index: 9999; /* Asegurar que aparece por encima de otros elementos */
 }
 
 /* Animación de entrada y salida para notificaciones */
 .transition-opacity {
- transition-property: opacity;
- transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
- transition-duration: 300ms;
+transition-property: opacity;
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+transition-duration: 300ms;
 }
 
 /* Efectos de aparición y desaparición */
 @keyframes slideInRight {
- from {
-   transform: translateX(100%);
-   opacity: 0;
- }
- to {
-   transform: translateX(0);
-   opacity: 1;
- }
+from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+to {
+  transform: translateX(0);
+  opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
- from {
-   opacity: 1;
- }
- to {
-   opacity: 0;
- }
+from {
+  opacity: 1;
+}
+to {
+  opacity: 0;
+}
 }
 
 /* Aplicar animaciones */
 .fixed.bottom-4.right-4[v-if="notification.show"] {
- animation: slideInRight 0.3s ease-out forwards;
+animation: slideInRight 0.3s ease-out forwards;
 }
 
 .fixed.bottom-4.right-4 {
- box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
- max-width: 90%;
- width: 320px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+max-width: 90%;
+width: 320px;
 }
 
 /* Estilos específicos por tipo */
 .bg-green-100.border-green-500 {
- border-left-width: 4px;
+border-left-width: 4px;
 }
 
 .bg-red-100.border-red-500 {
- border-left-width: 4px;
+border-left-width: 4px;
 }
 
 .bg-blue-100.border-blue-500 {
- border-left-width: 4px;
+border-left-width: 4px;
 }
 
 /* Mejora de iconos */
 .material-icons.text-sm {
- font-size: 16px;
+font-size: 16px;
 }
 
 /* Responsive */
 @media (max-width: 640px) {
- .fixed.bottom-4.right-4 {
-   bottom: 1rem;
-   right: 1rem;
-   left: 1rem;
-   width: auto;
- }
+.fixed.bottom-4.right-4 {
+  bottom: 1rem;
+  right: 1rem;
+  left: 1rem;
+  width: auto;
+}
 }
 
 /* Estilo global para todos los caracteres unicode de estrella (★) */
@@ -2611,13 +2837,13 @@ label {
 .flex .flex ★,
 .reviews-section ★,
 .star-rating ★ {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 /* !important es necesario para anular cualquier otro estilo */
 * {
- --star-color-active: #facc15 !important;
- --star-color-inactive: #d1d5db !important;
+--star-color-active: #facc15 !important;
+--star-color-inactive: #d1d5db !important;
 }
 
 /* Regla de prioridad máxima para asegurar que se aplique */
@@ -2627,7 +2853,7 @@ body span.text-yellow-400,
 body div.text-yellow-400,
 html .material-icons.text-yellow-400,
 html .star-icon.text-yellow-400 {
- color: #facc15 !important;
+color: #facc15 !important;
 }
 
 body .material-icons.text-gray-300,
@@ -2636,6 +2862,52 @@ body span.text-gray-300,
 body div.text-gray-300,
 html .material-icons.text-gray-300,
 html .star-icon.text-gray-300 {
- color: #d1d5db !important;
+color: #d1d5db !important;
+}
+
+/* Estilos adicionales para los botones de like/dislike mejorados */
+button[disabled] {
+cursor: not-allowed !important;
+}
+
+/* Animación de procesamiento */
+@keyframes processing {
+0% { opacity: 0.5; }
+50% { opacity: 0.8; }
+100% { opacity: 0.5; }
+}
+
+.opacity-50.cursor-not-allowed {
+animation: processing 1s ease-in-out infinite;
+}
+
+/* Estilos para los iconos de like/dislike cuando están activos */
+.text-orange-800 .material-icons {
+color: #fd5631 !important;
+}
+
+.text-red-500 .material-icons {
+color: #ef4444 !important;
+}
+
+/* Transición suave para los botones */
+button.transition-all {
+transition: all 0.2s ease-in-out;
+}
+
+button.transition-all:hover:not(:disabled) {
+transform: translateY(-1px);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto de pulso cuando se hace click */
+@keyframes clickPulse {
+0% { transform: scale(1); }
+50% { transform: scale(0.95); }
+100% { transform: scale(1); }
+}
+
+button:active:not(:disabled) {
+animation: clickPulse 0.2s ease-in-out;
 }
 </style>
