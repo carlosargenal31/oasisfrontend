@@ -3,7 +3,11 @@ export const usePropertyService = () => {
   const config = useRuntimeConfig();
   const { $axios } = useNuxtApp();
   
-  // Fetch properties from API - MODIFICADO
+  // ================================
+  // MÉTODOS ORIGINALES (para admin)
+  // ================================
+  
+  // Fetch properties from API - ORIGINAL
   const getProperties = async (params = {}) => {
     try {
       const response = await $axios.get('/properties', { params });
@@ -14,7 +18,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Obtener propiedades por categoría
+  // Obtener propiedades por categoría - ORIGINAL
   const getPropertiesByCategory = async (category, params = {}) => {
     try {
       const response = await $axios.get(`/properties/categories/${category}`, { params });
@@ -28,18 +32,14 @@ export const usePropertyService = () => {
   const getPropertiesByCategoryFeatured = async (category, params = {}) => {
     try {
       const response = await $axios.get(`/properties/categories/featured/${category}`, { params });
-      
       return response.data;
     } catch (error) {
-      
       console.error(`Error fetching properties by category ${category}:`, error);
       return { success: false, data: { properties: [], total: 0 } };
     }
   };
   
-  // Mejora del método getPropertiesByCategoryAndType en propertyService.js
-
-  // Obtener propiedades por categoría Y tipo - MEJORADO
+  // Obtener propiedades por categoría Y tipo - ORIGINAL MEJORADO
   const getPropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
     try {
       if (!category) {
@@ -121,7 +121,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Get all main categories
+  // Get all main categories - ORIGINAL
   const getMainCategories = async () => {
     try {
       const response = await $axios.get('/properties/categories');
@@ -132,7 +132,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Get a single property by ID
+  // Get a single property by ID - ORIGINAL
   const getProperty = async (id) => {
     try {
       const response = await $axios.get(`/properties/${id}`);
@@ -143,7 +143,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Create a new property
+  // Create a new property - ORIGINAL
   const createProperty = async (propertyData) => {
     try {
       const response = await $axios.post('/properties', propertyData);
@@ -154,7 +154,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Update a property
+  // Update a property - ORIGINAL
   const updateProperty = async (id, propertyData) => {
     try {
       const response = await $axios.put(`/properties/${id}`, propertyData);
@@ -165,7 +165,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Delete a property
+  // Delete a property - ORIGINAL
   const deleteProperty = async (id) => {
     try {
       const response = await $axios.delete(`/properties/${id}`);
@@ -176,7 +176,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Get featured properties
+  // Get featured properties - ORIGINAL
   const getFeaturedProperties = async (limit = 6, status = null) => {
     try {
       const params = { limit };
@@ -190,7 +190,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Get recent properties
+  // Get recent properties - ORIGINAL
   const getRecentProperties = async (limit = 6, status = null) => {
     try {
       const params = { limit };
@@ -204,7 +204,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Get popular properties
+  // Get popular properties - ORIGINAL
   const getPopularProperties = async (limit = 6) => {
     try {
       const response = await $axios.get('/properties/popular', { params: { limit } });
@@ -215,7 +215,7 @@ export const usePropertyService = () => {
     }
   };
   
-  // Search properties by query - MEJORADO
+  // Search properties by query - ORIGINAL MEJORADO
   const searchProperties = async (query, fields = [], params = {}) => {
     try {
       if (!query) {
@@ -271,6 +271,189 @@ export const usePropertyService = () => {
       };
     }
   };
+
+  // ================================
+  // NUEVOS MÉTODOS PARA PROPIEDADES ACTIVAS (para usuarios públicos)
+  // ================================
+  
+  // Método para obtener solo propiedades activas
+  const getActiveProperties = async (params = {}) => {
+    try {
+      const response = await $axios.get('/properties/active', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active properties:', error);
+      return { success: false, data: { properties: [], total: 0 } };
+    }
+  };
+
+  // Método para buscar en propiedades activas
+  const searchActiveProperties = async (query, fields = [], params = {}) => {
+    try {
+      if (!query) {
+        console.error('Error: Término de búsqueda no proporcionado');
+        return { 
+          success: false, 
+          data: { properties: [], total: 0 },
+          error: 'Se requiere un término de búsqueda'
+        };
+      }
+      
+      // Combinar parámetros de búsqueda con sort, page, limit, etc.
+      const queryParams = { 
+        q: query,
+        ...params 
+      };
+      
+      // Si se proporcionan campos específicos para buscar
+      if (fields && fields.length > 0) {
+        queryParams.searchFields = fields.join(',');
+      }
+      
+      console.log('Enviando búsqueda activa con parámetros:', JSON.stringify(queryParams, null, 2));
+      
+      const response = await $axios.get('/properties/active/search', { params: queryParams });
+      
+      // Validar respuesta
+      if (response.data && response.data.success) {
+        const { properties = [], total = 0 } = response.data.data || {};
+        console.log(`Búsqueda activa exitosa: ${properties.length} resultados de ${total} totales`);
+        
+        return response.data;
+      } else {
+        console.warn('Respuesta de búsqueda activa sin éxito:', response.data);
+        return { 
+          success: false, 
+          data: { properties: [], total: 0 },
+          error: response.data?.message || 'Error desconocido en la búsqueda'
+        };
+      }
+    } catch (error) {
+      console.error('Error searching active properties:', error);
+      return { 
+        success: false, 
+        data: { properties: [], total: 0 },
+        error: error.message || 'Error en la solicitud de búsqueda activa'
+      };
+    }
+  };
+
+  // Método para obtener propiedades activas por categoría
+  const getActivePropertiesByCategory = async (category, params = {}) => {
+    try {
+      const response = await $axios.get(`/properties/active/categories/${category}`, { params });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching active properties by category ${category}:`, error);
+      return { success: false, data: { properties: [], total: 0 } };
+    }
+  };
+
+  // Método para obtener propiedades activas por categoría y tipo
+  const getActivePropertiesByCategoryAndType = async (category, propertyType, params = {}) => {
+    try {
+      if (!category) {
+        console.error('Error: Se requiere una categoría');
+        return { success: false, data: { properties: [], total: 0 }, error: 'Categoría no proporcionada' };
+      }
+      
+      // Clonar los parámetros básicos
+      const queryParams = { ...params };
+      
+      // Asegurarse de que la categoría esté incluida
+      queryParams.category = category;
+      
+      // Añadir el tipo de propiedad al objeto de parámetros
+      if (propertyType) {
+        if (Array.isArray(propertyType)) {
+          queryParams.property_type = propertyType;
+        } else {
+          queryParams.property_type = propertyType;
+        }
+      }
+      
+      console.log(`Solicitud API activa - Categoría: ${category}, Tipo: ${JSON.stringify(propertyType)}`);
+      console.log('Parámetros completos (activos):', queryParams);
+      
+      // Usar la ruta de categoría activa
+      const response = await $axios.get(`/properties/active/categories/${category}`, { 
+        params: queryParams 
+      });
+      
+      if (response.data && response.data.success) {
+        console.log(`Respuesta activa exitosa: ${response.data.data.properties?.length || 0} propiedades encontradas`);
+        return response.data;
+      } else {
+        console.error('Error en respuesta del API activo:', response.data);
+        return {
+          success: false,
+          data: { properties: [], total: 0 },
+          error: response.data?.message || 'Error desconocido al obtener propiedades activas'
+        };
+      }
+    } catch (error) {
+      console.error(`Error obteniendo propiedades activas por categoría ${category} y tipo ${propertyType}:`, error);
+      return {
+        success: false,
+        data: { properties: [], total: 0 },
+        error: error.message || 'Error en la solicitud al API de propiedades activas'
+      };
+    }
+  };
+
+  // Método para obtener categorías principales activas
+  const getActiveMainCategories = async (params = {}) => {
+    try {
+      const response = await $axios.get('/properties/active/categories', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active main categories:', error);
+      return { success: false, data: [] };
+    }
+  };
+
+  // Método para obtener propiedades destacadas activas
+  const getActiveFeaturedProperties = async (limit = 6, status = null) => {
+    try {
+      const params = { limit };
+      if (status) params.status = status;
+      
+      const response = await $axios.get('/properties/active/featured', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active featured properties:', error);
+      return { success: false, data: [] };
+    }
+  };
+
+  // Método para obtener propiedades recientes activas
+  const getActiveRecentProperties = async (limit = 6, status = null) => {
+    try {
+      const params = { limit };
+      if (status) params.status = status;
+      
+      const response = await $axios.get('/properties/active/recent', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active recent properties:', error);
+      return { success: false, data: [] };
+    }
+  };
+
+  // Método para obtener propiedades populares activas
+  const getActivePopularProperties = async (limit = 6) => {
+    try {
+      const response = await $axios.get('/properties/active/popular', { params: { limit } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching active popular properties:', error);
+      return { success: false, data: [] };
+    }
+  };
+
+  // ================================
+  // MÉTODOS COMPARTIDOS
+  // ================================
 
   // Increment property views - MEJORADO
   const incrementPropertyViews = async (id) => {
@@ -361,6 +544,7 @@ export const usePropertyService = () => {
   };
   
   return {
+    // MÉTODOS ORIGINALES (para admin)
     getProperties,
     getPropertiesByCategory,
     getPropertiesByCategoryFeatured,
@@ -374,6 +558,18 @@ export const usePropertyService = () => {
     getRecentProperties,
     getPopularProperties,
     searchProperties,
+    
+    // NUEVOS MÉTODOS ACTIVOS (para usuarios públicos)
+    getActiveProperties,
+    searchActiveProperties,
+    getActivePropertiesByCategory,
+    getActivePropertiesByCategoryAndType,
+    getActiveMainCategories,
+    getActiveFeaturedProperties,
+    getActiveRecentProperties,
+    getActivePopularProperties,
+    
+    // MÉTODOS COMPARTIDOS
     incrementPropertyViews,
     getSimilarProperties,
     getPropertyRating,

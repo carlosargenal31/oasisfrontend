@@ -538,10 +538,10 @@ const loadPropertyRatings = async () => {
 // Manejar la búsqueda
 // Actualización para la función handleSearch en rent.vue
 
-// Manejar la búsqueda
+// Actualizar la función handleSearch para usar el endpoint de búsqueda activa
 const handleSearch = async () => {
   if (searchQuery.value.trim()) {
-    console.log('Buscando:', searchQuery.value);
+    console.log('Buscando en propiedades activas:', searchQuery.value);
     currentPage.value = 1;
     loading.value = true;
     error.value = null;
@@ -557,12 +557,12 @@ const handleSearch = async () => {
       // Incluir filtros de categoría y tipo si están establecidos
       if (filters.value.category) {
         apiFilters.category = filters.value.category;
-        console.log('Incluyendo filtro de categoría en búsqueda:', filters.value.category);
+        console.log('Incluyendo filtro de categoría en búsqueda activa:', filters.value.category);
       }
       
       if (filters.value.property_type) {
         apiFilters.property_type = filters.value.property_type;
-        console.log('Incluyendo filtro de tipo en búsqueda:', filters.value.property_type);
+        console.log('Incluyendo filtro de tipo en búsqueda activa:', filters.value.property_type);
       }
       
       if (filters.value.amenities && filters.value.amenities.length > 0) {
@@ -572,13 +572,14 @@ const handleSearch = async () => {
       // Especificar los campos donde queremos buscar
       const searchFields = ['title', 'description', 'address', 'category', 'property_type'];
       
-      console.log('Realizando búsqueda con filtros:', apiFilters);
-      const result = await propertyService.searchProperties(searchQuery.value, searchFields, apiFilters);
+      console.log('Realizando búsqueda activa con filtros:', apiFilters);
+      // USAR EL NUEVO MÉTODO DE BÚSQUEDA ACTIVA
+      const result = await propertyService.searchActiveProperties(searchQuery.value, searchFields, apiFilters);
       
       if (result && result.success) {
         properties.value = result.data?.properties || [];
         totalProperties.value = result.data?.total || properties.value.length;
-        console.log('Negocios encontradas:', properties.value.length);
+        console.log('Negocios activos encontrados:', properties.value.length);
         
         // Cargar calificaciones para las propiedades encontradas
         await loadPropertyRatings();
@@ -588,7 +589,7 @@ const handleSearch = async () => {
         totalProperties.value = 0;
       }
     } catch (err) {
-      console.error('Error en búsqueda:', err);
+      console.error('Error en búsqueda activa:', err);
       error.value = 'Error al buscar negocios';
       properties.value = [];
       totalProperties.value = 0;
@@ -602,7 +603,7 @@ const handleSearch = async () => {
   } else if (searchQuery.value === '' && route.query.q) {
     // Si se borra la búsqueda pero hay una búsqueda activa en la URL,
     // limpiar y recargar con los filtros actuales
-    console.log('Búsqueda borrada, recargando con filtros actuales');
+    console.log('Búsqueda borrada, recargando propiedades activas con filtros actuales');
     
     // Construir nueva query sin el parámetro q
     const { q, ...restQuery } = route.query;
@@ -613,13 +614,13 @@ const handleSearch = async () => {
       }
     });
     
-    // Cargar propiedades con los filtros actuales
+    // Cargar propiedades activas con los filtros actuales
     currentPage.value = 1;
     fetchProperties();
   }
 };
 // Actualización mejorada para la función fetchProperties
-
+// Actualizar la función fetchProperties para usar el endpoint de propiedades activas
 const fetchProperties = async () => {
   loading.value = true;
   error.value = null;
@@ -662,41 +663,39 @@ const fetchProperties = async () => {
     
     // Lógica mejorada para manejar la combinación de filtros
     if (searchQuery.value.trim()) {
-      // Caso 1: Búsqueda de texto con filtros adicionales
+      // Caso 1: Búsqueda de texto con filtros adicionales - USAR ENDPOINT ACTIVO
       const searchFields = ['title', 'description', 'address', 'category', 'property_type'];
-      result = await propertyService.searchProperties(searchQuery.value, searchFields, apiFilters);
+      result = await propertyService.searchActiveProperties(searchQuery.value, searchFields, apiFilters);
     } 
     else if (filters.value.category && selectedPropertyTypes.value.length > 0) {
-      // Caso 2: Categoría seleccionada y tipos de propiedad específicos seleccionados
+      // Caso 2: Categoría seleccionada y tipos de propiedad específicos seleccionados - USAR ENDPOINT ACTIVO
       console.log(`Filtrando por categoría ${filters.value.category} y tipos específicos: ${JSON.stringify(selectedPropertyTypes.value)}`);
-      // Usar getPropertiesByCategoryAndType para obtener resultados más precisos
-      result = await propertyService.getPropertiesByCategoryAndType(
+      result = await propertyService.getActivePropertiesByCategoryAndType(
         filters.value.category,
         selectedPropertyTypes.value.length === 1 ? selectedPropertyTypes.value[0] : selectedPropertyTypes.value,
         apiFilters
       );
     }
     else if (filters.value.category) {
-      // Caso 3: Solo categoría seleccionada (sin tipos específicos)
+      // Caso 3: Solo categoría seleccionada (sin tipos específicos) - USAR ENDPOINT ACTIVO
       console.log(`Filtrando solo por categoría: ${filters.value.category}`);
-      result = await propertyService.getPropertiesByCategory(
+      result = await propertyService.getActivePropertiesByCategory(
         filters.value.category,
         apiFilters
       );
     }
     else if (selectedPropertyTypes.value.length > 0) {
-      // Caso 4: Solo tipos de propiedad seleccionados (sin categoría)
+      // Caso 4: Solo tipos de propiedad seleccionados (sin categoría) - USAR ENDPOINT ACTIVO
       console.log(`Filtrando solo por tipos: ${JSON.stringify(selectedPropertyTypes.value)}`);
-      // Asegurar que property_type esté correctamente establecido
-      result = await propertyService.getProperties(apiFilters);
+      result = await propertyService.getActiveProperties(apiFilters);
     }
     else {
-      // Caso 5: Sin filtros específicos
-      console.log('Sin filtros específicos, obteniendo todas las propiedades');
-      result = await propertyService.getProperties(apiFilters);
+      // Caso 5: Sin filtros específicos - USAR ENDPOINT ACTIVO
+      console.log('Sin filtros específicos, obteniendo todas las propiedades activas');
+      result = await propertyService.getActiveProperties(apiFilters);
     }
     
-    console.log('Respuesta del API:', result);
+    console.log('Respuesta del API (activos):', result);
     
     // Procesar resultados
     if (result && result.success) {
@@ -705,7 +704,7 @@ const fetchProperties = async () => {
       
       // Debug: Mostrar qué tipos de propiedades se han cargado
       if (properties.value.length > 0) {
-        console.log('Propiedades cargadas por tipo:');
+        console.log('Propiedades activas cargadas por tipo:');
         const tiposPropiedades = {};
         properties.value.forEach(p => {
           if (!tiposPropiedades[p.property_type]) {
@@ -715,7 +714,7 @@ const fetchProperties = async () => {
         });
         console.log(tiposPropiedades);
       } else {
-        console.log('No se encontraron propiedades con los filtros actuales');
+        console.log('No se encontraron propiedades activas con los filtros actuales');
       }
       
       // Cargar calificaciones para las propiedades si es necesario
@@ -728,7 +727,7 @@ const fetchProperties = async () => {
       totalProperties.value = 0;
     }
   } catch (err) {
-    console.error('Error al obtener propiedades:', err);
+    console.error('Error al obtener propiedades activas:', err);
     error.value = 'Error al cargar las propiedades. Por favor, inténtelo de nuevo.';
     properties.value = [];
     totalProperties.value = 0;
