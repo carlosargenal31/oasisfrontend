@@ -1,1 +1,1 @@
-export { default } from "file:///C:/Users/xRivera27/Documents/Ceutec/II%20Q2025/Tecnologia%20Emergente/En%20La%20Ceiba%20Frontend/enlaceibafrontend/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
+export { default } from "file:///C:/Users/carlo/OneDrive/Escritorio/OasisWeb/client/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
